@@ -19,6 +19,7 @@ implements OnMapReadyCallback
 {
 	private boolean dialogWasShowed = false;
 	private Context context;
+	private Bundle savedInstanceStateGlobal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,13 +28,14 @@ implements OnMapReadyCallback
         setContentView(R.layout.main);
 
 		context = this;
+		savedInstanceStateGlobal = savedInstanceState;
 
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
 		makeToolbar();
-		setTransparentStatusBar();
+		//setTransparentStatusBar();
     }
 
 	// Maak toolbar
@@ -52,9 +54,20 @@ implements OnMapReadyCallback
 		UiSettings uiSettings = googleMap.getUiSettings();
 		uiSettings.setCompassEnabled(false);
 		
-		// Richt camera
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+		// Zoom in op Nederland bij eerste opstart app
+		/*if (savedInstanceStateGlobal == null)
+		{
+			final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
+			findViewById(R.id.map).post(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(nederland, 1));
+					}
+				});
+		}*/
+		
 		
 		// Maak TileOverlay
 		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider()));

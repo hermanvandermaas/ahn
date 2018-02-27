@@ -47,7 +47,7 @@ public class WMSTileProvider extends UrlTileProvider
 		"&transparent=true";
 	
     // Construct with tile size in pixels, normally 256, see parent class
-    public WMSTileProvider(int x, int y)
+    private WMSTileProvider(int x, int y)
 	{
     	super(x, y);
     }
@@ -80,13 +80,13 @@ public class WMSTileProvider extends UrlTileProvider
 
 	private boolean tileExists(double[] bbox)
 	{
-		if (bbox[MINX] > MAXX_MAP ||
-			bbox[MAXX] < MINX_MAP ||
-			bbox[MINY] > MINY_MAP ||
-			bbox[MAXY] < MINY_MAP)
+		if ((bbox[MINX] > MAXX_MAP) ||
+			(bbox[MAXX] < MINX_MAP) ||
+			(bbox[MINY] > MINY_MAP) ||
+			(bbox[MAXY] < MINY_MAP))
 			return false;
-		
-		return true;
+		else
+			return true;
 	}
 
     // Return a web Mercator bounding box given tile x/y indexes and a zoom
@@ -105,7 +105,7 @@ public class WMSTileProvider extends UrlTileProvider
     	bbox[MAXX] = maxx;
     	bbox[MAXY] = maxy;
 		
-		Log.i("HermLog", "bbox: " + bbox.toString());
+		Log.i("HermLog", "bbox: " + Arrays.toString(bbox));
 
     	return bbox;
     }
