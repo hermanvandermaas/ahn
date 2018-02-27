@@ -53,21 +53,22 @@ implements OnMapReadyCallback
 		// Instellingen basiskaart
 		UiSettings uiSettings = googleMap.getUiSettings();
 		uiSettings.setCompassEnabled(false);
+		uiSettings.setRotateGesturesEnabled(false);
 		
 		// Zoom in op Nederland bij eerste opstart app
-		/*if (savedInstanceStateGlobal == null)
+		if (savedInstanceStateGlobal == null)
 		{
 			final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
-			findViewById(R.id.map).post(new Runnable()
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
+			/*findViewById(R.id.map).post(new Runnable()
 				{
 					@Override
 					public void run()
 					{
 						googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(nederland, 1));
 					}
-				});
-		}*/
-		
+				});*/
+		}
 		
 		// Maak TileOverlay
 		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider()));
