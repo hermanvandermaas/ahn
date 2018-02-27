@@ -95,48 +95,6 @@ implements OnMapReadyCallback
 		}
 		return result;
 	}
-
-	// UrlTileProvider voor WMTS kaartlaag
-	private TileProvider getTileProvider()
-	{
-		TileProvider tileProvider = new UrlTileProvider(256, 256)
-		{
-			@Override
-			public URL getTileUrl(int x, int y, int zoom)
-			{
-				String s = String.format("", zoom, x, y);
-				
-				if (!checkTileExists(x, y, zoom))
-				{
-					return null;
-				}
-				
-				try
-				{
-					return new URL(s);
-				}
-				catch (MalformedURLException e)
-				{
-					throw new AssertionError(e);
-				}
-			}
-			
-			private boolean checkTileExists(int x, int y, int zoom)
-			{
-				int minZoom = 12;
-				int maxZoom = 16;
-				
-				if (zoom < minZoom || zoom > maxZoom)
-				{
-					return false;
-				}
-				
-				return true;
-			}
-		};
-		
-		return tileProvider;
-	}
 	
 	@Override
 	protected void onResume()
