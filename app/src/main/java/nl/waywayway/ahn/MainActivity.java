@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.*;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
+	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -119,8 +121,23 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
     public void onMapClick(LatLng point)
 	{
-		Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
+		putMarker(point);
     }
+	
+	private void putMarker(LatLng point)
+	{
+		//gMap.clear();
+		Log.i("HermLog", "markerList size(): " + markerList.size());
+		
+		if (markerList.size() > 0)
+		{
+			markerList.get(0).remove();
+			markerList.remove(0);
+		}
+		
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+	}
 	
 	@Override
 	protected void onResume()
