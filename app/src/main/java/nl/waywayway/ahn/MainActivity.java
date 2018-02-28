@@ -7,13 +7,18 @@ import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
+import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity implements GoogleMap.OnCameraIdleListener, OnMapReadyCallback
+public class MainActivity extends AppCompatActivity implements 
+	GoogleMap.OnCameraIdleListener, 
+	OnMapReadyCallback,
+	GoogleMap.OnMapClickListener
 {
 	private boolean dialogWasShowed = false;
 	private Context context;
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnCamer
 		
 		// Maak TileOverlay
 		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider(256, 256)));
+		
+		gMap.setOnMapClickListener(this);
     }
 
 	// Check beschikbaarheid Play Services
@@ -107,6 +114,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnCamer
 	@Override
     public void onCameraIdle() {
         Log.i("HermLog", "Zoom: " + gMap.getCameraPosition().zoom);
+    }
+	
+	@Override
+    public void onMapClick(LatLng point)
+	{
+		Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
     }
 	
 	@Override
