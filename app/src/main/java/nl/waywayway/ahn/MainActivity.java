@@ -10,16 +10,15 @@ import android.view.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import java.net.*;
 
 import android.support.v7.app.ActionBar;
 
-public class MainActivity extends AppCompatActivity
-implements OnMapReadyCallback
+public class MainActivity extends AppCompatActivity implements GoogleMap.OnCameraIdleListener, OnMapReadyCallback
 {
 	private boolean dialogWasShowed = false;
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
+	private GoogleMap gMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,34 +43,29 @@ implements OnMapReadyCallback
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
-		toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
+		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
 	}
 
 	@Override
 	public void onMapReady(GoogleMap googleMap)
 	{
+		gMap = googleMap;
+		
 		// Instellingen basiskaart
 		UiSettings uiSettings = googleMap.getUiSettings();
 		uiSettings.setCompassEnabled(false);
 		uiSettings.setRotateGesturesEnabled(false);
+		googleMap.setOnCameraIdleListener(this);
 		
 		// Zoom in op Nederland bij eerste opstart app
 		if (savedInstanceStateGlobal == null)
 		{
 			final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
-			/*findViewById(R.id.map).post(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(nederland, 1));
-					}
-				});*/
 		}
 		
 		// Maak TileOverlay
-		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider()));
+		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider(256, 256)));
     }
 
 	// Check beschikbaarheid Play Services
@@ -109,6 +103,11 @@ implements OnMapReadyCallback
 		}
 		return result;
 	}
+	
+	@Override
+    public void onCameraIdle() {
+        Log.i("HermLog", "Zoom: " + gMap.getCameraPosition().zoom);
+    }
 	
 	@Override
 	protected void onResume()

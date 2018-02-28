@@ -9,71 +9,86 @@ import java.util.*;
 
 public class WMSTileProvider extends UrlTileProvider
 {
+	private int tileWidth;
+	private int tileHeight;
+
 	// Web Mercator n/w corner of the map.
     private static final double[] TILE_ORIGIN = {-20037508.34789244, 20037508.34789244};
-	
+
     //array indexes for that data
     private static final int ORIG_X = 0;
     private static final int ORIG_Y = 1;
-	
+
     // Size of square world map in meters, using WebMerc projection.
     private static final double MAP_SIZE = 20037508.34789244 * 2;
-	
+
     // array indexes for array to hold bounding boxes.
     protected static final int MINX = 0;
 	protected static final int MINY = 1;
     protected static final int MAXX = 2;
     protected static final int MAXY = 3;
-	
+
 	// bounding box van de kaart van Nederland
 	// voor check of gevraagde tegel bestaat
 	protected static final double MINX_MAP = 361403.7366878665;
 	protected static final double MINY_MAP = 6573443.017669047;
 	protected static final double MAXX_MAP = 807808.8874921346;
 	protected static final double MAXY_MAP = 7082066.659439815;
-	
+
 	private static final String URL_FORMAT =
-		"https://geodata.nationaalgeoregister.nl/ahn2/ows" +
-		"?service=WMS" +
-		"&version=1.3.0" +
-		"&request=GetMap" +
-		"&layers=ahn2_05m_ruw" +
-		"&styles=ahn2:ahn2_05m_detail" +
-		"&bbox=%f,%f,%f,%f" +
-		"&width=256" +
-		"&height=256" +
-		"&crs=EPSG:3857" +
-		"&format=image/png" +
-		"&transparent=true";
-	
+	"https://geodata.nationaalgeoregister.nl/ahn2/ows" +
+	"?service=WMS" +
+	"&version=1.3.0" +
+	"&request=GetMap" +
+	"&layers=ahn2_05m_ruw" +
+	"&styles=ahn2:ahn2_05m_detail" +
+	"&bbox=%f,%f,%f,%f" +
+	"&width=%d" +
+	"&height=%d" +
+	"&crs=EPSG:3857" +
+	"&format=image/png" +
+	"&transparent=true";
+
     // Construct with tile size in pixels, normally 256, see parent class
     private WMSTileProvider(int x, int y)
 	{
     	super(x, y);
+		this.tileWidth = x;
+		this.tileHeight = y;
     }
 
 	// return a wms tile layer
-	public static TileProvider getTileProvider() {
-		return new WMSTileProvider(512,512);
+	public static TileProvider getTileProvider(int x, int y)
+	{
+		return new WMSTileProvider(x, y);
 	}
-	
+
 	@Override
-	public synchronized URL getTileUrl(int x, int y, int zoom) {
+	public synchronized URL getTileUrl(int x, int y, int zoom)
+	{
 		double[] bbox = getBoundingBox(x, y, zoom);
-		String s = String.format(Locale.US, URL_FORMAT, bbox[MINX],
-								 bbox[MINY], bbox[MAXX], bbox[MAXY]);
-								 
-		//Log.i("HermLog", "tile exists?: " + tileExists(bbox));					 
-								 
+		String s = String.format(
+			Locale.US, 
+			URL_FORMAT, 
+			bbox[MINX],
+			bbox[MINY], 
+			bbox[MAXX], 
+			bbox[MAXY],
+			tileWidth,
+			tileHeight);
+
 		if (!tileExists(bbox))
 		{
 			return null;
 		}
-		
-		try {
+
+		try
+		{
 			//Log.i("HermLog", "Url van tegel: " + new URL(s).toString());
 			return new URL(s);
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e)
+		{
 			throw new AssertionError(e);
 		}
 	}
@@ -104,7 +119,7 @@ public class WMSTileProvider extends UrlTileProvider
     	bbox[MINY] = miny;
     	bbox[MAXX] = maxx;
     	bbox[MAXY] = maxy;
-		
+
 		//Log.i("HermLog", "bbox array.toString(): " + Arrays.toString(bbox));
 		//Log.i("HermLog", "bbox array per element: " + bbox[MINX] + " > " + MAXX_MAP + " " + bbox[MINY] + " " + bbox[MAXX] + " " + bbox[MAXY]);
 
