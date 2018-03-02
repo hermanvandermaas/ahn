@@ -2,6 +2,7 @@ package nl.waywayway.ahn;
 
 import android.app.*;
 import android.content.*;
+import android.graphics.*;
 import android.os.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
@@ -11,10 +12,10 @@ import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import java.util.*;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
@@ -127,16 +128,19 @@ public class MainActivity extends AppCompatActivity implements
 	
 	private void putMarker(LatLng point)
 	{
-		//gMap.clear();
-		Log.i("HermLog", "markerList size(): " + markerList.size());
+		//Log.i("HermLog", "markerList size(): " + markerList.size());
 		
+		// Verwijder huidige marker van kaart en uit de lijst met markers
 		if (markerList.size() > 0)
 		{
 			markerList.get(0).remove();
 			markerList.remove(0);
 		}
 		
+		// Plaats nieuwe marker op kaart en in de lijst
 		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+		
+		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override

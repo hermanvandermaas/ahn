@@ -29,6 +29,7 @@ public class WMSTileProvider extends UrlTileProvider
     protected static final int MAXY = 3;
 
 	// bounding box van de kaart van Nederland
+	// in eenheden van het CRS 3857, meters
 	// voor check of gevraagde tegel bestaat
 	protected static final double MINX_MAP = 361403.7366878665;
 	protected static final double MINY_MAP = 6573443.017669047;
