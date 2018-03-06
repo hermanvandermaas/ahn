@@ -4,15 +4,20 @@ import android.graphics.*;
 import android.util.*;
 import com.google.android.gms.maps.model.*;
 
-// Projectie Web Mercator
-// Converteren tussen breedte/lengte en geprojecteerde pixels
-// in de ruimte x[0...256) y[0...256), eerste pixel is 0, bereik is exclusief pixel 256 
+// Projectie Web Mercator (WM)
+// Converteren tussen breedte-/lengtecoordinaten in decimale graden (wgs84 ellipsoide)
+// en op een vierkante kaart geprojecteerde pixels in de ruimte x[0...256*2^zoom), y[0...256*2^zoom), eerste pixel is 0, bereik is exclusief laatste pixel
 // x=0, y=0 is oorsprong in het noordwesten; x toenemend naar oost, y toenemend naar zuid
+// zoom is in double formaat
 
 public class ProjectionWM
 {
-	// Size of square world map in pixels
-    private static final double MAP_SIZE = 256;
+	// Grootte van 1 tegel
+	// Size of square world map in pixels at zoom level 0
+    private static final double TILE_SIZE = 256;
+	
+	// Size of square world map in meters, using WebMerc projection.
+    private static final double MAP_SIZE_METERS = 20037508.34789244 * 2;
 	
 	// Grenzen kaart
 	private static final double minLat = -85.05112878;
@@ -24,17 +29,17 @@ public class ProjectionWM
     private static final int X = 0;
     private static final int Y = 1;
 	
-	// Private constructor
-	private ProjectionWM() {}
+	// Lege constructor, instances niet nodig
+	public ProjectionWM() {}
 	
-	// Van genormaliseerde x/y coordinaten in pixels x{0...256} y{0...256}
-	// naar breedte/lengte coordinaten in decimale graden (wgs84 ellipsoide)
-	// in double formaat, niet afgerond, voor eventueel omrekenen van pixels naar meters
-	// of projecteren op grotere kaarten dan 256x256 pixels
+	// Van x/y coordinaten in meters naar breedte/lengte coordinaten in decimale graden
 	public static LatLng xyToLatLng(double[] xyMeters)
 	{
-		double x = (clip(xyMeters[X], 0, MAP_SIZE - 1) / MAP_SIZE) - 0.5;
-		double y = 0.5 - (clip(xyMeters[Y], 0, MAP_SIZE - 1) / MAP_SIZE);
+		// TO DO
+		// deze method correct maken
+		
+		double x = (clip(xyMeters[X], 0, TILE_SIZE - 1) / TILE_SIZE) - 0.5;
+		double y = 0.5 - (clip(xyMeters[Y], 0, TILE_SIZE - 1) / TILE_SIZE);
 
 		double latitude = 90 - 360 * Math.atan(Math.exp(-y * 2 * Math.PI)) / Math.PI;
 		double longitude = 360 * x;
@@ -44,7 +49,9 @@ public class ProjectionWM
 		return new LatLng(latitude, longitude);
 	}
 	
-	// ... en andersom
+	// Van breedte/lengte naar x/y weergegeven als fractie [0-1)
+	// voor later omrekenen naar pixels of meters
+	// Let op bij testen: breedte/lengte (latitude/longitude) is y/x, niet x/y
 	public static double[] latLngToXY(LatLng mLatLong)
 	{
 		double latitude = clip(mLatLong.latitude, minLat, maxLat);
@@ -54,17 +61,62 @@ public class ProjectionWM
 		double sinLatitude = Math.sin(latitude * Math.PI / 180);
 		double y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
 
-		double pixelX = clip(x * MAP_SIZE + 0.5, 0, MAP_SIZE - 1);
-		double pixelY = clip(y * MAP_SIZE + 0.5, 0, MAP_SIZE - 1);
+		double[] xyFractionArray = new double[2];
+		xyFractionArray[X] = x;
+		xyFractionArray[Y] = y;
 		
-		double[] xyArray = new double[]{pixelX, pixelY};
+		Log.i("HermLog", "X/y coordinaten als fractie: x: " + xyFractionArray[X] + " y: " + xyFractionArray[Y]);
 		
-		Log.i("HermLog", "Pixelcoordinaten: x: " + xyArray[0] + " y: " + xyArray[1]);
-		
-		return xyArray;
+		return xyFractionArray;
 	}
 	
-	private static double clip(double n, double minValue, double maxValue)
+	// Van breedte/lengte naar x/y in pixels
+	public static int[] latLngToXYpixels(LatLng mLatLong, int zoom)
+	{
+		// Eerst xy als fractie bepalen
+		double[] xyFractionArray = latLngToXY(mLatLong);
+		
+		// Fractie coordinaten * kaartgrootte gegeven zoomlevel = pixel coordinaten
+		int pixelX = (int) Math.floor(clip(xyFractionArray[X] * mapSize(zoom) + 0.5, 0, mapSize(zoom) - 1));
+		int pixelY = (int) Math.floor(clip(xyFractionArray[Y] * mapSize(zoom) + 0.5, 0, mapSize(zoom) - 1));
+
+		int[] xyPixelArray = new int[2];
+		xyPixelArray[X] = pixelX;
+		xyPixelArray[Y] = pixelY;
+
+		Log.i("HermLog", "Pixelcoordinaten: x: " + xyPixelArray[X] + " y: " + xyPixelArray[Y]);
+
+		return xyPixelArray;
+	}
+	
+	// Van breedte/lengte naar x/y in meters
+	public static double[] latLngToXYmeters(LatLng mLatLong, int zoom)
+	{
+		// Eerst xy als fractie bepalen
+		double[] xyFractionArray = latLngToXY(mLatLong);
+
+		// Fractie coordinaten * omtrek aarde in WM = metercoordinaten
+		double meterX = clip(xyFractionArray[X] * mapSize(zoom), 0, mapSize(zoom));
+		double meterY = clip(xyFractionArray[Y] * mapSize(zoom), 0, mapSize(zoom));
+
+		double[] xyMeterArray = new double[2];
+		xyMeterArray[X] = meterX;
+		xyMeterArray[Y] = meterY;
+
+		Log.i("HermLog", "Metercoordinaten: x: " + xyMeterArray[X] + " y: " + xyMeterArray[Y]);
+
+		return xyMeterArray;
+	}
+	
+	// Kaartgrootte in pixels bij gegeven zoomniveau
+	public static int mapSize(double zoomLevel)
+	{
+		int mapSize = (int) Math.floor(TILE_SIZE * Math.pow(2, zoomLevel));
+		Log.i("HermLog", "mapSize: " + mapSize + " zoomLevel: " + zoomLevel);
+		return mapSize;
+	}
+	
+	public static double clip(double n, double minValue, double maxValue)
 	{
 		return Math.min(Math.max(n, minValue), maxValue);
 	}

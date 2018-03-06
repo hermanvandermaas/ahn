@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
+	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements
 		// Zoom in op Nederland bij eerste opstart app
 		if (savedInstanceStateGlobal == null)
 		{
-			final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
 		}
 		
