@@ -23,14 +23,14 @@ public class ProjectionWM
 	private static final double minLat = -85.05112878;
 	private static final double maxLat = 85.05112878;
 	private static final double minLon = -180;
-	private static final double maxLon = 180;
+	private static final double maxLon = 179.999999999999;
 	
 	// Array indexes
     private static final int X = 0;
     private static final int Y = 1;
 	
-	// Lege constructor, instances niet nodig
-	public ProjectionWM() {}
+	// Lege private constructor, instances niet nodig
+	private ProjectionWM() {}
 	
 	// Van x/y coordinaten in meters naar breedte/lengte coordinaten in decimale graden
 	public static LatLng xyToLatLng(double[] xyMeters)
@@ -61,9 +61,7 @@ public class ProjectionWM
 		double sinLatitude = Math.sin(latitude * Math.PI / 180);
 		double y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
 
-		double[] xyFractionArray = new double[2];
-		xyFractionArray[X] = x;
-		xyFractionArray[Y] = y;
+		double[] xyFractionArray = new double[]{x, y};
 		
 		Log.i("HermLog", "X/y coordinaten als fractie: x: " + xyFractionArray[X] + " y: " + xyFractionArray[Y]);
 		
@@ -76,13 +74,11 @@ public class ProjectionWM
 		// Eerst xy als fractie bepalen
 		double[] xyFractionArray = latLngToXY(mLatLong);
 		
-		// Fractie coordinaten * kaartgrootte gegeven zoomlevel = pixel coordinaten
+		// Fractie coordinaten * kaartgrootte gegeven zoomlevel = pixelcoordinaten
 		int pixelX = (int) Math.floor(clip(xyFractionArray[X] * mapSize(zoom) + 0.5, 0, mapSize(zoom) - 1));
 		int pixelY = (int) Math.floor(clip(xyFractionArray[Y] * mapSize(zoom) + 0.5, 0, mapSize(zoom) - 1));
 
-		int[] xyPixelArray = new int[2];
-		xyPixelArray[X] = pixelX;
-		xyPixelArray[Y] = pixelY;
+		int[] xyPixelArray = new int[]{pixelX, pixelY};
 
 		Log.i("HermLog", "Pixelcoordinaten: x: " + xyPixelArray[X] + " y: " + xyPixelArray[Y]);
 
@@ -96,12 +92,10 @@ public class ProjectionWM
 		double[] xyFractionArray = latLngToXY(mLatLong);
 
 		// Fractie coordinaten * omtrek aarde in WM = metercoordinaten
-		double meterX = clip(xyFractionArray[X] * mapSize(zoom), 0, mapSize(zoom));
-		double meterY = clip(xyFractionArray[Y] * mapSize(zoom), 0, mapSize(zoom));
+		double meterX = clip(xyFractionArray[X] * MAP_SIZE_METERS, 0, MAP_SIZE_METERS);
+		double meterY = clip(xyFractionArray[Y] * MAP_SIZE_METERS, 0, MAP_SIZE_METERS);
 
-		double[] xyMeterArray = new double[2];
-		xyMeterArray[X] = meterX;
-		xyMeterArray[Y] = meterY;
+		double[] xyMeterArray = new double[]{meterX, meterY};
 
 		Log.i("HermLog", "Metercoordinaten: x: " + xyMeterArray[X] + " y: " + xyMeterArray[Y]);
 
@@ -118,6 +112,8 @@ public class ProjectionWM
 	
 	public static double clip(double n, double minValue, double maxValue)
 	{
-		return Math.min(Math.max(n, minValue), maxValue);
+		double value = Math.min(Math.max(n, minValue), maxValue);
+		if (n != value) Log.i("HermLog", "clip(): n=" + n + " wordt value=" + value);
+		return value;
 	}
 }

@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements
 		// Plaats nieuwe marker op kaart en in de lijst
 		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
 		
+		testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
 	
@@ -151,5 +152,38 @@ public class MainActivity extends AppCompatActivity implements
 
 		// Check beschikbaarheid Google Play services
 		isPlayServicesAvailable();
+	}
+	
+	private void testProjection()
+	{
+		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon -180, zoom 0: ");
+		ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, -180), 0);
+		
+		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon -180, zoom 0: ");
+		ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, -180), 0);
+		
+		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon 179.99999999, zoom 0: ");
+		ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, 179.99999999), 0);
+		
+		Log.i("HermLog", "latLngToXYpixels() lat 0, lon 0, zoom 0: ");
+		ProjectionWM.latLngToXYpixels(new LatLng(0, 0), 0);
+		
+		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon 179.99999999, zoom 0: ");
+		ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, 179.99999999), 0);
+		
+		Log.i("HermLog", "latLngToXYmeters() lat -85.05112878, lon -180, zoom 0: ");
+		ProjectionWM.latLngToXYmeters(new LatLng(-85.05112878, -180), 0);
+		
+		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon -180, zoom 0: ");
+		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, -180), 0);
+
+		Log.i("HermLog", "latLngToXYmeters() lat -85.05112878, lon 179.99999999, zoom 0: ");
+		ProjectionWM.latLngToXYmeters(new LatLng(-85.05112878, 179.99999999), 0);
+
+		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon 179.99999999, zoom 0: ");
+		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, 179.99999999), 0);
+		
+		Log.i("HermLog", "latLngToXYmeters() lat 0, lon 0, zoom 0: ");
+		ProjectionWM.latLngToXYmeters(new LatLng(0, 0), 0);
 	}
 }
