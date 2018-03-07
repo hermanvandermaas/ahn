@@ -51,7 +51,8 @@ public class ProjectionWM
 	
 	// Van breedte/lengte naar x/y weergegeven als fractie [0-1)
 	// voor later omrekenen naar pixels of meters
-	// Let op bij testen: breedte/lengte (latitude/longitude) is y/x, niet x/y
+	// Nb: breedte/lengte (latitude/longitude) is y/x, niet x/y
+	// Nb2: oorsprong linksboven
 	public static double[] latLngToXY(LatLng mLatLong)
 	{
 		double latitude = clip(mLatLong.latitude, minLat, maxLat);
@@ -86,6 +87,7 @@ public class ProjectionWM
 	}
 	
 	// Van breedte/lengte naar x/y in meters
+	// Nb: oorsprong linksboven
 	public static double[] latLngToXYmeters(LatLng mLatLong, int zoom)
 	{
 		// Eerst xy als fractie bepalen
@@ -100,6 +102,16 @@ public class ProjectionWM
 		Log.i("HermLog", "Metercoordinaten: x: " + xyMeterArray[X] + " y: " + xyMeterArray[Y]);
 
 		return xyMeterArray;
+	}
+	
+	// Tegelcoordinaten volgens Google Maps
+	// van tegel die de gegeven pixel bevat
+	// oorsprong linksboven, begint met x=0, y=0
+	public static int[] getTileCoordinates(int[] pixelCoordinates)
+	{
+		int[] tileCoordinates = new int[]{(int) Math.floor(pixelCoordinates[X] / TILE_SIZE), (int) Math.floor(pixelCoordinates[Y] / TILE_SIZE)};
+		Log.i("HermLog", "tileCoordinates: x=" + tileCoordinates[X] + " y: " + tileCoordinates[Y]);
+		return tileCoordinates;
 	}
 	
 	// Kaartgrootte in pixels bij gegeven zoomniveau
