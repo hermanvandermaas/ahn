@@ -2,32 +2,34 @@ package nl.waywayway.ahn;
 
 import android.app.*;
 import android.content.*;
-import android.graphics.*;
 import android.os.*;
+import android.support.v4.app.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
-import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import java.util.*;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
 	OnMapReadyCallback,
-	GoogleMap.OnMapClickListener
+	GoogleMap.OnMapClickListener,
+	TaskFragment.TaskCallbacks
 {
+	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private boolean dialogWasShowed = false;
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
+	private TaskFragment taskFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,6 +40,18 @@ public class MainActivity extends AppCompatActivity implements
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 
+		// Handler voor worker fragment
+		FragmentManager fm = getSupportFragmentManager();
+		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+
+		// If the Fragment is non-null, then it is being retained
+		// over a configuration change.
+		if (taskFragment == null)
+		{
+			taskFragment = new TaskFragment();
+			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
+		}
+		
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -152,6 +166,33 @@ public class MainActivity extends AppCompatActivity implements
 
 		// Check beschikbaarheid Google Play services
 		isPlayServicesAvailable();
+	}
+	
+	/*********************************/
+	/***** TASK CALLBACK METHODS *****/
+	/*********************************/
+
+	@Override
+	public void onPreExecute()
+	{
+		Log.i("HermLog", "onPreExecute()");
+	}
+
+	@Override
+	public void onProgressUpdate(int percent)
+	{
+	}
+
+	@Override
+	public void onCancelled()
+	{
+		Log.i("HermLog", "onCancelled()");
+	}
+
+	@Override
+	public void onPostExecute(String result)
+	{
+		Log.i("HermLog", "onPostExecute()");
 	}
 	
 	private void testProjection()
