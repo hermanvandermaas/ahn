@@ -58,7 +58,7 @@ public class WMSTileProvider extends UrlTileProvider
 		this.tileHeight = y;
     }
 
-	// return a wms tile layer
+	// return a wms tile provider
 	public static TileProvider getTileProvider(int x, int y)
 	{
 		return new WMSTileProvider(x, y);

@@ -114,6 +114,19 @@ public class ProjectionWM
 		return tileCoordinates;
 	}
 	
+	// Pixel coordinaten binnen een tegel
+	// voor opvragen wms feature
+	// oorsprong linksboven, begint met x=0, y=0
+	public static int[] getPixelCoordinatesOnTile(int[] pixelCoordinates)
+	{
+		int x = (int) Math.floor(pixelCoordinates[X] - getTileCoordinates(pixelCoordinates)[X] * TILE_SIZE);
+		int y = (int) Math.floor(pixelCoordinates[Y] - getTileCoordinates(pixelCoordinates)[Y] * TILE_SIZE);
+		
+		int[] pixelOnTileCoordinates = new int[]{x, y};
+		Log.i("HermLog", "pixelOnTileCoordinates: x=" + pixelOnTileCoordinates[X] + " y: " + pixelOnTileCoordinates[Y]);
+		return pixelOnTileCoordinates;
+	}
+	
 	// Kaartgrootte in pixels bij gegeven zoomniveau
 	public static int mapSize(double zoomLevel)
 	{

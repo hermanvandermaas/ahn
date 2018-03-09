@@ -2,12 +2,14 @@ package nl.waywayway.ahn;
 
 import android.app.*;
 import android.content.*;
+import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
+import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
@@ -15,6 +17,7 @@ import java.util.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
@@ -40,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 
+		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+		
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
@@ -140,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 		putMarker(point);
     }
 	
-	private void putMarker(LatLng point)
+	private void putMarker(LatLng pointLatLong)
 	{
 		//Log.i("HermLog", "markerList size(): " + markerList.size());
 		
@@ -152,10 +157,31 @@ public class MainActivity extends AppCompatActivity implements
 		}
 		
 		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
 		
-		testProjection();
+		// Vraag hoogte op voor punt
+		getElevationFromLatLong(pointLatLong);
+		
+		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
+	}
+	
+	// Netwerkverbinding ja/nee
+	private boolean isNetworkConnected()
+	{
+		ConnectivityManager connMgr = (ConnectivityManager)
+			getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		return networkInfo != null && networkInfo.isConnected();
+	}
+	
+	private void getElevationFromLatLong(LatLng pointLatLong)
+	{
+		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+		
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		
+		taskFragment.start();
 	}
 	
 	@Override
