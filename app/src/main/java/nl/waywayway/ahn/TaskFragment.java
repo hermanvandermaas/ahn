@@ -5,6 +5,7 @@ import android.os.*;
 import android.support.v4.app.*;
 import android.util.*;
 import java.net.*;
+import java.util.*;
 
 /**
  * TaskFragment manages a single background task and retains itself across
@@ -80,12 +81,12 @@ public class TaskFragment extends Fragment
 	 */
 	// parameter false: eerste download
 	// parameter true: extra data downoaden bij endless scrolling
-	public void start(URL url)
+	public void start(URL[] urls)
 	{
 		if (!running)
 		{
-			task = new DummyTask(url);
-			task.execute();
+			task = new DummyTask();
+			task.execute(urls);
 			running = true;
 		}
 	}
@@ -117,12 +118,7 @@ public class TaskFragment extends Fragment
 	 */
 	private class DummyTask extends AsyncTask<URL, Integer, String>
 	{
-		private URL url;
-		
-		public DummyTask(URL url)
-		{
-			this.url = url;
-		}
+		public DummyTask(){}
 
 		@Override
 		protected void onPreExecute()
@@ -137,24 +133,24 @@ public class TaskFragment extends Fragment
 		 * background thread, as this could result in a race condition.
 		 */
 		@Override
-		protected String doInBackground(URL... url)
+		protected String doInBackground(URL... urls)
 		{
 			Log.i("HermLog", "doInBackground");
-			Log.i("HermLog", "url[0]: " + url[0]);
-/*
-			DownloadJsonString downloader = new DownloadJsonString("url");
+			Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
+			
+			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
 			String jsonstring = downloader.download();
 			
 			if (jsonstring.equals("Fout in DownloadJsonString!"))
 			{
-				Log.i("HermLog", "TaskFragment doInBackground jsonstring: " + jsonstring);
+				Log.i("HermLog", "doInBackground jsonstring: " + jsonstring);
 			}
 			else if (jsonstring != null)
 			{
 				parseResult(jsonstring);
 			}
-			*/
-			return "hoempa";
+			
+			return jsonstring;
 			// Eind asynchrone taak
 		}
 
@@ -184,9 +180,10 @@ public class TaskFragment extends Fragment
 		}
 		
 		// json string verwerken na download
-		private void parseResult(String result)
+		private double parseResult(String result)
 		{
 			Log.i("HermLog", "TaskFragment: parseResult()");
+			return 1.23;
 		}
 	}
 }

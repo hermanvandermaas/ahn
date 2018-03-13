@@ -131,14 +131,14 @@ public class ProjectionWM
 	public static int mapSize(double zoomLevel)
 	{
 		int mapSize = (int) Math.floor(TILE_SIZE * Math.pow(2, zoomLevel));
-		Log.i("HermLog", "mapSize: " + mapSize + " zoomLevel: " + zoomLevel);
+		//Log.i("HermLog", "mapSize: " + mapSize + " zoomLevel: " + zoomLevel);
 		return mapSize;
 	}
 	
 	public static double clip(double n, double minValue, double maxValue)
 	{
 		double value = Math.min(Math.max(n, minValue), maxValue);
-		if (n != value) Log.i("HermLog", "clip(): n=" + n + " wordt value=" + value);
+		//if (n != value) Log.i("HermLog", "clip(): n=" + n + " wordt value=" + value);
 		return value;
 	}
 }

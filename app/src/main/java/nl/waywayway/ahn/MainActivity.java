@@ -13,6 +13,7 @@ import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import java.net.*;
 import java.util.*;
 
 import android.support.v4.app.FragmentManager;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 	private TaskFragment taskFragment;
+	private float zoomLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -134,8 +136,10 @@ public class MainActivity extends AppCompatActivity implements
 	}
 	
 	@Override
-    public void onCameraIdle() {
-        Log.i("HermLog", "Zoom: " + gMap.getCameraPosition().zoom);
+    public void onCameraIdle()
+	{
+		zoomLevel = gMap.getCameraPosition().zoom;
+		Log.i("HermLog", "Zoom: " + zoomLevel);
     }
 	
 	@Override
@@ -178,10 +182,13 @@ public class MainActivity extends AppCompatActivity implements
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
-		
 		if (taskFragment.isRunning()) taskFragment.cancel();
 		
-		taskFragment.start();
+		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel).makeUrl();
+		URL[] urls = new URL[]{url};
+		//Log.i("HermLog", "");
+		
+		taskFragment.start(urls);
 	}
 	
 	@Override
@@ -219,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements
 	public void onPostExecute(String result)
 	{
 		Log.i("HermLog", "onPostExecute()");
+		
+		Log.i("HermLog", "onPostExecute() result: " + result);
 	}
 	
 	private void testProjection()

@@ -2,14 +2,15 @@ package nl.waywayway.ahn;
 
 import android.util.*;
 import java.io.*;
+import java.net.*;
 import java.util.concurrent.*;
 import okhttp3.*;
 
 public class DownloadJsonString
 {
-	private String url;
+	private URL url;
 
-	public DownloadJsonString(String url)
+	public DownloadJsonString(URL url)
 	{
 		this.url = url;
 	}
