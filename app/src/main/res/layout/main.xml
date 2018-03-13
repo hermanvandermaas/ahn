@@ -28,16 +28,28 @@
 			android:theme="@style/transparent_toolbar"
 			app:popupTheme="@style/overflow_menu">
 		</android.support.v7.widget.Toolbar>
-
-		<ProgressBar
-			android:id="@+id/progress_bar"
-			style="@android:style/Widget.ProgressBar.Horizontal"
-			android:layout_below="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:visibility="gone"
-			android:progress="0" />
-
 	</RelativeLayout>
+	
+	<me.zhanghai.android.materialprogressbar.MaterialProgressBar
+		android:id="@+id/progressbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:indeterminate="true"
+		app:mpb_progressStyle="horizontal"
+		app:mpb_useIntrinsicPadding="false"
+		style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal.NoPadding"
+		android:visibility="gone"/>
+	<!--
+	<ProgressBar
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:paddingTop="0dp"
+		android:paddingBottom="0dp"
+        android:indeterminate="true"
+        android:visibility="gone" />
+	-->
 
 </android.support.design.widget.CoordinatorLayout>

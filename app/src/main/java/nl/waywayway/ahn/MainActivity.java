@@ -161,9 +161,19 @@ public class MainActivity extends AppCompatActivity implements
 		}
 		
 		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions()
+			.position(pointLatLong)
+			.title("Hoogte")
+			.snippet("1.23m +NAP")));
+		
+		markerList.get(0).showInfoWindow();
 		
 		// Vraag hoogte op voor punt
+		if (!isNetworkConnected())
+		{
+			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+			return;
+		}
 		getElevationFromLatLong(pointLatLong);
 		
 		//testProjection();
@@ -181,14 +191,18 @@ public class MainActivity extends AppCompatActivity implements
 	
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
-		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		
 		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel).makeUrl();
 		URL[] urls = new URL[]{url};
-		//Log.i("HermLog", "");
-		
 		taskFragment.start(urls);
+	}
+	
+	// int showOrNot is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showProgressBar(int visibility)
+	{
+		View progressbar = findViewById(R.id.progressbar);
+		progressbar.setVisibility(visibility);
+		return;
 	}
 	
 	@Override
@@ -209,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements
 	public void onPreExecute()
 	{
 		Log.i("HermLog", "onPreExecute()");
+		showProgressBar(View.VISIBLE);
 	}
 
 	@Override
@@ -220,14 +235,15 @@ public class MainActivity extends AppCompatActivity implements
 	public void onCancelled()
 	{
 		Log.i("HermLog", "onCancelled()");
+		showProgressBar(View.GONE);
 	}
 
 	@Override
 	public void onPostExecute(String result)
 	{
 		Log.i("HermLog", "onPostExecute()");
-		
 		Log.i("HermLog", "onPostExecute() result: " + result);
+		showProgressBar(View.GONE);
 	}
 	
 	private void testProjection()

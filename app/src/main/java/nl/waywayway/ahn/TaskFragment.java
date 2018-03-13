@@ -141,11 +141,11 @@ public class TaskFragment extends Fragment
 			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
 			String jsonstring = downloader.download();
 			
-			if (jsonstring.equals("Fout in DownloadJsonString!"))
+			if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
 			{
-				Log.i("HermLog", "doInBackground jsonstring: " + jsonstring);
+				Log.i("HermLog", "doInBackground: " + jsonstring);
 			}
-			else if (jsonstring != null)
+			else
 			{
 				parseResult(jsonstring);
 			}
