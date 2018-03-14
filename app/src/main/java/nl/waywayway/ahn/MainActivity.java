@@ -161,12 +161,7 @@ public class MainActivity extends AppCompatActivity implements
 		}
 		
 		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions()
-			.position(pointLatLong)
-			.title("Hoogte")
-			.snippet("1.23m +NAP")));
-		
-		markerList.get(0).showInfoWindow();
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
 		
 		// Vraag hoogte op voor punt
 		if (!isNetworkConnected())
@@ -174,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements
 			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 			return;
 		}
+		
 		getElevationFromLatLong(pointLatLong);
 		
 		//testProjection();
@@ -202,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements
 	{
 		View progressbar = findViewById(R.id.progressbar);
 		progressbar.setVisibility(visibility);
-		return;
 	}
 	
 	@Override
@@ -222,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	public void onPreExecute()
 	{
-		Log.i("HermLog", "onPreExecute()");
+		//Log.i("HermLog", "onPreExecute()");
 		showProgressBar(View.VISIBLE);
 	}
 
@@ -241,9 +236,22 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	public void onPostExecute(String result)
 	{
-		Log.i("HermLog", "onPostExecute()");
-		Log.i("HermLog", "onPostExecute() result: " + result);
+		//Log.i("HermLog", "onPostExecute() result: " + result);
 		showProgressBar(View.GONE);
+		
+		// Toon hoogte bij marker
+		if (result.equals("Download niet gelukt"))
+		{
+			Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			String info = result + " meter NAP";
+			Marker marker = markerList.get(0);
+			marker.setTitle("Hoogte");
+			marker.setSnippet(info);
+			marker.showInfoWindow();
+		}
 	}
 	
 	private void testProjection()

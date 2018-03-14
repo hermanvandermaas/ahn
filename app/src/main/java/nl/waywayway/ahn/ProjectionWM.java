@@ -64,7 +64,7 @@ public class ProjectionWM
 
 		double[] xyFractionArray = new double[]{x, y};
 		
-		Log.i("HermLog", "X/y coordinaten als fractie: x: " + xyFractionArray[X] + " y: " + xyFractionArray[Y]);
+		//Log.i("HermLog", "X/y coordinaten als fractie: x: " + xyFractionArray[X] + " y: " + xyFractionArray[Y]);
 		
 		return xyFractionArray;
 	}
@@ -81,7 +81,7 @@ public class ProjectionWM
 
 		int[] xyPixelArray = new int[]{pixelX, pixelY};
 
-		Log.i("HermLog", "Pixelcoordinaten: x: " + xyPixelArray[X] + " y: " + xyPixelArray[Y]);
+		//Log.i("HermLog", "Pixelcoordinaten: x: " + xyPixelArray[X] + " y: " + xyPixelArray[Y]);
 
 		return xyPixelArray;
 	}
@@ -99,7 +99,7 @@ public class ProjectionWM
 
 		double[] xyMeterArray = new double[]{meterX, meterY};
 
-		Log.i("HermLog", "Metercoordinaten: x: " + xyMeterArray[X] + " y: " + xyMeterArray[Y]);
+		//Log.i("HermLog", "Metercoordinaten: x: " + xyMeterArray[X] + " y: " + xyMeterArray[Y]);
 
 		return xyMeterArray;
 	}
@@ -110,7 +110,7 @@ public class ProjectionWM
 	public static int[] getTileCoordinates(int[] pixelCoordinates)
 	{
 		int[] tileCoordinates = new int[]{(int) Math.floor(pixelCoordinates[X] / TILE_SIZE), (int) Math.floor(pixelCoordinates[Y] / TILE_SIZE)};
-		Log.i("HermLog", "tileCoordinates: x=" + tileCoordinates[X] + " y: " + tileCoordinates[Y]);
+		//Log.i("HermLog", "tileCoordinates: x=" + tileCoordinates[X] + " y: " + tileCoordinates[Y]);
 		return tileCoordinates;
 	}
 	
@@ -123,7 +123,7 @@ public class ProjectionWM
 		int y = (int) Math.floor(pixelCoordinates[Y] - getTileCoordinates(pixelCoordinates)[Y] * TILE_SIZE);
 		
 		int[] pixelOnTileCoordinates = new int[]{x, y};
-		Log.i("HermLog", "pixelOnTileCoordinates: x=" + pixelOnTileCoordinates[X] + " y: " + pixelOnTileCoordinates[Y]);
+		//Log.i("HermLog", "pixelOnTileCoordinates: x=" + pixelOnTileCoordinates[X] + " y: " + pixelOnTileCoordinates[Y]);
 		return pixelOnTileCoordinates;
 	}
 	

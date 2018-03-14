@@ -69,7 +69,7 @@ public class WMSGetMapFeatureUrlMaker
 			pixelOnTileCoordinates[X], 
 			pixelOnTileCoordinates[Y]);
 			
-		Log.i("HermLog", "GetFeatureMap url: " + url);
+		//Log.i("HermLog", "GetFeatureMap url: " + url);
 			
 		try
 		{

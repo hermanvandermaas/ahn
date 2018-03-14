@@ -36,7 +36,7 @@ public class DownloadJsonString
 				throw new IOException("Unexpected code in DownloadJsonString: " + mResponse);
 			}
 
-			Log.i("HermLog", "Gedownload");
+			//Log.i("HermLog", "Gedownload");
 
 			return mResponse.body().string();
 		}

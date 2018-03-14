@@ -6,11 +6,13 @@ import android.support.v4.app.*;
 import android.util.*;
 import java.net.*;
 import java.util.*;
+import org.json.*;
 
 /**
  * TaskFragment manages a single background task and retains itself across
  * configuration changes.
  */
+
 public class TaskFragment extends Fragment
 {
 	/**
@@ -135,23 +137,28 @@ public class TaskFragment extends Fragment
 		@Override
 		protected String doInBackground(URL... urls)
 		{
-			Log.i("HermLog", "doInBackground");
-			Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
+			//Log.i("HermLog", "doInBackground");
+			//Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
 			
 			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
 			String jsonstring = downloader.download();
 			
 			if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
 			{
-				Log.i("HermLog", "doInBackground: " + jsonstring);
+				Log.i("HermLog", "doInBackground: fout");
+				return "Download niet gelukt";
 			}
 			else
 			{
-				parseResult(jsonstring);
+				//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
+				Double hoogte = parseResult(jsonstring);
+				//Log.i("HermLog", "< 10000d? " + (hoogte < 10000d));
+				if (hoogte == null || hoogte > 10000d || hoogte < -10000d) return "n/a";
+				String hoogteAfgerond = String.format ("%.2f", hoogte);
+				if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
+				
+				return hoogteAfgerond;
 			}
-			
-			return jsonstring;
-			// Eind asynchrone taak
 		}
 
 		@Override
@@ -172,7 +179,7 @@ public class TaskFragment extends Fragment
 		@Override
 		protected void onPostExecute(String result)
 		{	
-			Log.i("HermLog", "TaskFragment");
+			//Log.i("HermLog", "TaskFragment");
 			
 			// Proxy the call to the Activity
 			callbacks.onPostExecute(result);
@@ -180,10 +187,28 @@ public class TaskFragment extends Fragment
 		}
 		
 		// json string verwerken na download
-		private double parseResult(String result)
+		// geeft null indien geen waarde
+		private Double parseResult(String result)
 		{
-			Log.i("HermLog", "TaskFragment: parseResult()");
-			return 1.23;
+			//Log.i("HermLog", "TaskFragment: parseResult()");
+			
+			try
+			{
+				//JSONObject 
+				double hoogte = new JSONObject(result)
+					.optJSONArray("features")
+					.optJSONObject(0)
+					.optJSONObject("properties")
+					.optDouble("GRAY_INDEX");
+				//Log.i("HermLog", "Hoogte: " + hoogte);
+					
+				return hoogte;
+			}
+			catch (JSONException e)
+			{
+				Log.i("HermLog", e.getStackTrace().toString());
+				return null;
+			}
 		}
 	}
 }
