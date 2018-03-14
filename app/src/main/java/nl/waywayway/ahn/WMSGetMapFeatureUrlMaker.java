@@ -50,9 +50,10 @@ public class WMSGetMapFeatureUrlMaker
 		
 		// Eerste deel url kan gemaakt worden door WMSTileProvider
 		UrlTileProvider tileProvider = (UrlTileProvider) WMSTileProvider.getTileProvider(tileWidth, tileHeight);
-		String url = tileProvider.getTileUrl(tileCoordinates[X], tileCoordinates[Y], zoomInt).toString();
+		URL tileUrl = tileProvider.getTileUrl(tileCoordinates[X], tileCoordinates[Y], zoomInt);
+		if (tileUrl == null) return null;
+		String url = tileUrl.toString();
 		//Log.i("HermLog", "GetMap url van tegel met pixel: " + url);
-		if (url == null) return null;
 		
 		// GetFeatureInfo in plaats van GetMap 
 		String regex = "(?i)&request=GetMap";

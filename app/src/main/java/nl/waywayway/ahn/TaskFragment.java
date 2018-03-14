@@ -140,6 +140,7 @@ public class TaskFragment extends Fragment
 			//Log.i("HermLog", "doInBackground");
 			//Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
 			
+			if (urls[0] == null) return "n/a";
 			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
 			String jsonstring = downloader.download();
 			
