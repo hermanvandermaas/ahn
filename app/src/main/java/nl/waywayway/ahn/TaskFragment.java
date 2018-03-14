@@ -26,12 +26,12 @@ public class TaskFragment extends Fragment
 		public void onCancelled();
 		public void onPostExecute(String result);
 	}
-	
+
 	private Context context;
 	private TaskCallbacks callbacks;
 	private DummyTask task;
 	private boolean running;
-	
+
 	/**
 	 * Hold a reference to the parent Activity so we can report the task's current
 	 * progress and results. The Android framework will pass us a reference to the
@@ -77,7 +77,7 @@ public class TaskFragment extends Fragment
 	}
 
 	// Task fragment API
-	
+
 	/**
 	 * Start the background task.
 	 */
@@ -120,7 +120,8 @@ public class TaskFragment extends Fragment
 	 */
 	private class DummyTask extends AsyncTask<URL, Integer, String>
 	{
-		public DummyTask(){}
+		public DummyTask()
+		{}
 
 		@Override
 		protected void onPreExecute()
@@ -139,11 +140,11 @@ public class TaskFragment extends Fragment
 		{
 			//Log.i("HermLog", "doInBackground");
 			//Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
-			
+
 			if (urls[0] == null) return "n/a";
 			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
 			String jsonstring = downloader.download();
-			
+
 			if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
 			{
 				Log.i("HermLog", "doInBackground: fout");
@@ -153,11 +154,10 @@ public class TaskFragment extends Fragment
 			{
 				//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
 				Double hoogte = parseResult(jsonstring);
-				//Log.i("HermLog", "< 10000d? " + (hoogte < 10000d));
 				if (hoogte == null || hoogte > 10000d || hoogte < -10000d) return "n/a";
-				String hoogteAfgerond = String.format ("%.2f", hoogte);
+				String hoogteAfgerond = String.format("%.2f", hoogte);
 				if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
-				
+
 				return hoogteAfgerond;
 			}
 		}
@@ -181,28 +181,30 @@ public class TaskFragment extends Fragment
 		protected void onPostExecute(String result)
 		{	
 			//Log.i("HermLog", "TaskFragment");
-			
+
 			// Proxy the call to the Activity
 			callbacks.onPostExecute(result);
 			running = false;
 		}
-		
+
 		// json string verwerken na download
 		// geeft null indien geen waarde
 		private Double parseResult(String result)
 		{
 			//Log.i("HermLog", "TaskFragment: parseResult()");
-			
+
 			try
 			{
-				//JSONObject 
-				double hoogte = new JSONObject(result)
-					.optJSONArray("features")
+				JSONArray jArray = new JSONObject(result).optJSONArray("features");
+
+				if (jArray.length() == 0) return null;
+				
+				double hoogte = jArray
 					.optJSONObject(0)
 					.optJSONObject("properties")
 					.optDouble("GRAY_INDEX");
 				//Log.i("HermLog", "Hoogte: " + hoogte);
-					
+
 				return hoogte;
 			}
 			catch (JSONException e)

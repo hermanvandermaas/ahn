@@ -246,7 +246,8 @@ public class MainActivity extends AppCompatActivity implements
 		}
 		else
 		{
-			String info = result + " meter NAP";
+			String affix = result.equals("n/a") ? "" : " meter NAP";
+			String info = result + affix;
 			Marker marker = markerList.get(0);
 			marker.setTitle("Hoogte");
 			marker.setSnippet(info);
