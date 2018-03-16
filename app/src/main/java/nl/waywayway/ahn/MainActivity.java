@@ -19,6 +19,9 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.widget.*;
+import android.support.v4.view.*;
+import android.support.v7.content.res.*;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 	private TaskFragment taskFragment;
 	private float zoomLevel;
+	private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 		
@@ -73,7 +78,27 @@ public class MainActivity extends AppCompatActivity implements
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp));
 		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+
+		switch (item.getItemId())
+		{
+			case android.R.id.home:
+				drawerLayout.openDrawer(GravityCompat.START);
+				return true;
+				
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
