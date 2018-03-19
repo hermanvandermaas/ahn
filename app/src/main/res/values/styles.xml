@@ -20,4 +20,12 @@
 	
 	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">
 	</style>
+	
+	<style name="navigation_drawer" parent="ThemeOverlay.AppCompat.Light">
+	</style>
+	
+	<style name="nav_view_title" parent="ThemeOverlay.AppCompat.Dark">
+		<item name="android:textSize">16dp</item>
+	</style>
+	
 </resources>

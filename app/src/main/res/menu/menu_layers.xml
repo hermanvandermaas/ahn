@@ -1,0 +1,49 @@
+<menu
+	android:id="@+id/menu_layers"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".MainActivity">
+
+	<item 
+		android:id="@+id/layer1"
+		android:title="Laag1"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="10">
+
+		<SeekBar
+			android:id="@+id/seekbar1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+	</item>
+	<item 
+		android:id="@+id/layer2"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="20" />
+	<item 
+		android:id="@+id/layer3"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="30" />
+	<item 
+		android:id="@+id/layer4"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="40" />
+	<item 
+		android:id="@+id/layer5"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="50" />
+	<item 
+		android:id="@+id/layer6"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="60" />
+	<item 
+		android:id="@+id/layer7"
+		android:title="Laag2"
+		android:icon="@drawable/ic_menu_black_24dp"
+		android:orderInCategory="70" />
+</menu>

@@ -1,0 +1,21 @@
+<menu
+	android:id="@+id/menu_main"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".MainActivity">
+	
+	<item
+		android:id="@+id/action_search"
+		android:title="@string/action_search"
+		android:icon="@drawable/ic_search_black_24px"
+		android:orderInCategory="10"
+		app:showAsAction="always" />
+	
+	<item
+		android:id="@+id/action_layers"
+		android:title="@string/action_layers"
+		android:icon="@drawable/ic_layers_black_24px"
+		android:orderInCategory="50"
+		app:showAsAction="always" />
+</menu>

@@ -5,6 +5,7 @@ import android.content.*;
 import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
+import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
@@ -18,10 +19,8 @@ import java.util.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.support.v4.widget.*;
-import android.support.v4.view.*;
-import android.support.v7.content.res.*;
 
 public class MainActivity extends AppCompatActivity implements 
 	GoogleMap.OnCameraIdleListener, 
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
+	private static final String MARKER_LIST = "marker_list";
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 	private TaskFragment taskFragment;
 	private float zoomLevel;
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements
 
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 		
@@ -64,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 		
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -78,9 +79,16 @@ public class MainActivity extends AppCompatActivity implements
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp));
+		// AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp)
 		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+		return true;
 	}
 	
 	@Override
@@ -92,8 +100,11 @@ public class MainActivity extends AppCompatActivity implements
 
 		switch (item.getItemId())
 		{
-			case android.R.id.home:
-				drawerLayout.openDrawer(GravityCompat.START);
+			case R.id.action_layers:
+				View itemView = findViewById(R.id.action_layers);
+				PopupMenu popup = new PopupMenu(this, itemView);
+				popup.inflate(R.menu.menu_layers);
+				popup.show();
 				return true;
 				
 			default:
@@ -223,6 +234,14 @@ public class MainActivity extends AppCompatActivity implements
 	{
 		View progressbar = findViewById(R.id.progressbar);
 		progressbar.setVisibility(visibility);
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		Log.i("HermLog", "onDestroy()");
 	}
 	
 	@Override
