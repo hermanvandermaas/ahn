@@ -12,10 +12,4 @@
 		android:orderInCategory="10"
 		app:showAsAction="always" />
 	
-	<item
-		android:id="@+id/action_layers"
-		android:title="@string/action_layers"
-		android:icon="@drawable/ic_layers_black_24px"
-		android:orderInCategory="50"
-		app:showAsAction="always" />
 </menu>

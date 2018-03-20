@@ -5,8 +5,10 @@ import android.content.*;
 import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
+import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
+import android.support.v7.content.res.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 		
@@ -79,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
+		actionBar.setTitle(null);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_layers_black_24px));
 		// AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp)
 		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
 	}
@@ -100,11 +106,12 @@ public class MainActivity extends AppCompatActivity implements
 
 		switch (item.getItemId())
 		{
-			case R.id.action_layers:
-				View itemView = findViewById(R.id.action_layers);
-				PopupMenu popup = new PopupMenu(this, itemView);
-				popup.inflate(R.menu.menu_layers);
-				popup.show();
+			case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+			
+			case R.id.action_search:
+				// TODO 
 				return true;
 				
 			default:
