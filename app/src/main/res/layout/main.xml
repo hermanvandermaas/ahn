@@ -13,7 +13,8 @@
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:id="@+id/coordinator"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		android:fitsSystemWindows="true">
 
 		<fragment
 			xmlns:tools="http://schemas.android.com/tools"
@@ -65,10 +66,36 @@
 	
 	<android.support.design.widget.NavigationView
 		android:id="@+id/nav_view"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="start"
-		android:fitsSystemWindows="true"
-		app:headerLayout="@layout/nav_header" />
-	
+		>
+		
+		<!-- app:headerLayout="@layout/nav_header" -->
+		<LinearLayout 
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:app="http://schemas.android.com/apk/res-auto"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:fitsSystemWindows="true"
+			android:orientation="vertical"
+			android:padding="16dp">
+			
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Kaartlagen"
+				android:fitsSystemWindows="true"
+				style="@style/text_title" />
+
+			<android.support.v7.widget.RecyclerView
+				android:id="@+id/layers_recycler_view"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:fitsSystemWindows="true"
+				android:scrollbars="vertical"
+				app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+			
+		</LinearLayout>
+	</android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

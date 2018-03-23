@@ -21,14 +21,14 @@ import java.util.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.support.design.widget.*;
 
 public class MainActivity extends AppCompatActivity implements 
-	GoogleMap.OnCameraIdleListener, 
-	OnMapReadyCallback,
-	GoogleMap.OnMapClickListener,
-	TaskFragment.TaskCallbacks
+GoogleMap.OnCameraIdleListener, 
+OnMapReadyCallback,
+GoogleMap.OnMapClickListener,
+TaskFragment.TaskCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private boolean dialogWasShowed = false;
@@ -36,11 +36,13 @@ public class MainActivity extends AppCompatActivity implements
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
-	private static final String MARKER_LIST = "marker_list";
+	private ArrayList<LayerItem> layerList;
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
 	private TaskFragment taskFragment;
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
+	private NavigationView navigationView;
+	private boolean layerRecyclerViewIsSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,9 +53,10 @@ public class MainActivity extends AppCompatActivity implements
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		layerList = new ArrayList<LayerItem>();
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
-		
+
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
@@ -65,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements
 			taskFragment = new TaskFragment();
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
-		
+
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		
+
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
 		// AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp)
 		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -109,38 +112,70 @@ public class MainActivity extends AppCompatActivity implements
 			case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
-			
+
 			case R.id.action_search:
 				// TODO 
 				return true;
-				
+
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	// RecyclerView
+	private void makeRecyclerview()
+	{
+		RecyclerView recyclerView = (RecyclerView) findViewById(R.id.layers_recycler_view);
+		//Log.i("HermLog", "recyclerView: " + recyclerView);
+		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+		recyclerView.setLayoutManager(linearLayoutManager);
+		LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
+		recyclerView.setAdapter(adapter);
 	}
 
 	@Override
 	public void onMapReady(GoogleMap googleMap)
 	{
 		gMap = googleMap;
-		
+
 		// Instellingen basiskaart
 		UiSettings uiSettings = googleMap.getUiSettings();
 		uiSettings.setCompassEnabled(false);
 		uiSettings.setRotateGesturesEnabled(false);
 		googleMap.setOnCameraIdleListener(this);
-		
+
 		// Zoom in op Nederland bij eerste opstart app
 		if (savedInstanceStateGlobal == null)
 		{
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
 		}
-		
+
+		createLayers();
+		makeRecyclerview();
+
 		// Maak TileOverlay
 		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider(256, 256)));
-		
+
 		gMap.setOnMapClickListener(this);
     }
+
+	private ArrayList<LayerItem> jsonToLayerList()
+	{
+		// Lees json
+		String jsonLayers = new Scanner(getResources().openRawResource(R.raw.layers)).useDelimiter("\\A").next();
+		return new ArrayList<LayerItem>();
+	}
+
+	private void createLayers()
+	{
+		LayerItem li1 = new LayerItem();
+		li1.setTitle("ahn2");
+		layerList.add(li1);
+		LayerItem li2 = new LayerItem();
+		li2.setTitle("ahn3");
+		layerList.add(li2);
+		//Log.i("HermLog", "jsonLayers: " + jsonLayers);
+	}
 
 	// Check beschikbaarheid Play Services
 	protected void isPlayServicesAvailable()
@@ -168,57 +203,59 @@ public class MainActivity extends AppCompatActivity implements
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
 	}
-	
-	private int getStatusBarHeight() {
+
+	private int getStatusBarHeight()
+	{
 		int result = 0;
 		int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-		if (resourceId > 0) {
+		if (resourceId > 0)
+		{
 			result = getResources().getDimensionPixelSize(resourceId);
 		}
 		return result;
 	}
-	
+
 	@Override
     public void onCameraIdle()
 	{
 		zoomLevel = gMap.getCameraPosition().zoom;
 		Log.i("HermLog", "Zoom: " + zoomLevel);
     }
-	
+
 	@Override
     public void onMapClick(LatLng point)
 	{
 		//Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
 		putMarker(point);
     }
-	
+
 	private void putMarker(LatLng pointLatLong)
 	{
 		//Log.i("HermLog", "markerList size(): " + markerList.size());
-		
+
 		// Verwijder huidige marker van kaart en uit de lijst met markers
 		if (markerList.size() > 0)
 		{
 			markerList.get(0).remove();
 			markerList.remove(0);
 		}
-		
+
 		// Plaats nieuwe marker op kaart en in de lijst
 		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
-		
+
 		// Vraag hoogte op voor punt
 		if (!isNetworkConnected())
 		{
 			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
+
 		getElevationFromLatLong(pointLatLong);
-		
+
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
-	
+
 	// Netwerkverbinding ja/nee
 	private boolean isNetworkConnected()
 	{
@@ -227,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 		return networkInfo != null && networkInfo.isConnected();
 	}
-	
+
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
@@ -235,14 +272,14 @@ public class MainActivity extends AppCompatActivity implements
 		URL[] urls = new URL[]{url};
 		taskFragment.start(urls);
 	}
-	
-	// int showOrNot is View.VISIBLE, View.GONE of View.INVISIBLE
+
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBar(int visibility)
 	{
 		View progressbar = findViewById(R.id.progressbar);
 		progressbar.setVisibility(visibility);
 	}
-	
+
 	@Override
 	protected void onDestroy()
 	{
@@ -250,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements
 		if (taskFragment.isRunning()) taskFragment.cancel();
 		Log.i("HermLog", "onDestroy()");
 	}
-	
+
 	@Override
 	protected void onResume()
 	{
@@ -260,7 +297,14 @@ public class MainActivity extends AppCompatActivity implements
 		// Check beschikbaarheid Google Play services
 		isPlayServicesAvailable();
 	}
-	
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		Log.i("HermLog", "onStart()");
+	}
+
 	/*********************************/
 	/***** TASK CALLBACK METHODS *****/
 	/*********************************/
@@ -289,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements
 	{
 		//Log.i("HermLog", "onPostExecute() result: " + result);
 		showProgressBar(View.GONE);
-		
+
 		// Toon hoogte bij marker
 		if (result.equals("Download niet gelukt"))
 		{
@@ -305,34 +349,34 @@ public class MainActivity extends AppCompatActivity implements
 			marker.showInfoWindow();
 		}
 	}
-	
+
 	private void testProjection()
 	{
 		int[] test;
-		
+
 		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon -180, zoom 3: ");
 		test = ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, -180), 3);
 		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-		
+
 		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon -180, zoom 3: ");
 		test = ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, -180), 3);
 		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-		
+
 		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon 179.99999999, zoom 3: ");
 		test = ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, 179.99999999), 3);
 		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-		
+
 		Log.i("HermLog", "latLngToXYpixels() lat 0, lon 0, zoom 3: ");
 		test = ProjectionWM.latLngToXYpixels(new LatLng(0, 0), 3);
 		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-		
+
 		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon 179.99999999, zoom 3: ");
 		test = ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, 179.99999999), 3);
 		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-		
+
 		Log.i("HermLog", "latLngToXYmeters() lat -85.05112878, lon -180, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(-85.05112878, -180), 3);
-		
+
 		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon -180, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, -180), 3);
 
@@ -341,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon 179.99999999, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, 179.99999999), 3);
-		
+
 		Log.i("HermLog", "latLngToXYmeters() lat 0, lon 0, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(0, 0), 3);
 	}
