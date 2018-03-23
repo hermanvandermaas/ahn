@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.*;
+import android.widget.Toolbar.*;
 
 public class MainActivity extends AppCompatActivity implements 
 GoogleMap.OnCameraIdleListener, 
@@ -85,9 +86,9 @@ TaskFragment.TaskCallbacks
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
-		actionBar.setTitle(null);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_layers_black_24px));
+		//actionBar.setTitle(null);
+		//actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_layers_black_24px));
 		// AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp)
 		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
 	}
@@ -109,8 +110,16 @@ TaskFragment.TaskCallbacks
 
 		switch (item.getItemId())
 		{
-			case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
+			case R.id.action_layer_menu:
+				if (drawerLayout.isDrawerOpen(Gravity.RIGHT))
+				{
+					drawerLayout.closeDrawer(Gravity.RIGHT);
+				} 
+				else
+				{
+					drawerLayout.openDrawer(Gravity.RIGHT);
+				}
+				
                 return true;
 
 			case R.id.action_search:
@@ -131,6 +140,12 @@ TaskFragment.TaskCallbacks
 		recyclerView.setLayoutManager(linearLayoutManager);
 		LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
 		recyclerView.setAdapter(adapter);
+		
+		// Plaats titel van lagenmenu onder status bar
+		TextView layersTitle = (TextView) findViewById(R.id.layers_title);
+		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
+		layoutParams.topMargin = getStatusBarHeight();
+		layersTitle.setLayoutParams(layoutParams);
 	}
 
 	@Override

@@ -11,5 +11,11 @@
 		android:icon="@drawable/ic_search_black_24px"
 		android:orderInCategory="10"
 		app:showAsAction="always" />
+	<item
+		android:id="@+id/action_layer_menu"
+		android:title="@string/action_layers"
+		android:icon="@drawable/ic_layers_black_24px"
+		android:orderInCategory="20"
+		app:showAsAction="always" />
 	
 </menu>

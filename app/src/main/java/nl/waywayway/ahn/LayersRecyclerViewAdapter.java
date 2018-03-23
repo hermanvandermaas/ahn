@@ -35,6 +35,31 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
         //Set text views
         customViewHolder.checkBoxView.setText(layerItem.getTitle());
+
+		// NavigationView (drawer) niet laten meeschuiven met SeekBar
+		customViewHolder.seekBarView.setOnTouchListener(new View.OnTouchListener() 
+			{
+				@Override
+				public boolean onTouch(View v, MotionEvent event) 
+				{
+					int action = event.getAction();
+					
+					switch (action) 
+					{
+						case MotionEvent.ACTION_DOWN:
+							v.getParent().requestDisallowInterceptTouchEvent(true);
+							break;
+
+						case MotionEvent.ACTION_UP:
+							v.getParent().requestDisallowInterceptTouchEvent(true);
+							break;
+					}
+
+					// Handle seekbar touch events.
+					v.onTouchEvent(event);
+					return true;
+				}
+			});
     }
 
     @Override
@@ -46,11 +71,13 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
     class CustomViewHolder extends RecyclerView.ViewHolder
 	{
         protected CheckBox checkBoxView;
-		
+		protected SeekBar seekBarView;
+
         public CustomViewHolder(View view)
 		{
             super(view);
             this.checkBoxView = (CheckBox) view.findViewById(R.id.layer_checkbox);
+			this.seekBarView = (SeekBar) view.findViewById(R.id.layer_seekbar);
         }
     }
 }

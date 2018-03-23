@@ -68,7 +68,7 @@
 		android:id="@+id/nav_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_gravity="start"
+		android:layout_gravity="end"
 		>
 		
 		<!-- app:headerLayout="@layout/nav_header" -->
@@ -82,9 +82,10 @@
 			android:padding="16dp">
 			
 			<TextView
+				android:id="@+id/layers_title"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="Kaartlagen"
+				android:text="@string/action_layers"
 				android:fitsSystemWindows="true"
 				style="@style/text_title" />
 
