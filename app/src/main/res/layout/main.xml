@@ -87,7 +87,7 @@
 				android:layout_height="wrap_content"
 				android:text="@string/action_layers"
 				android:fitsSystemWindows="true"
-				style="@style/text_title" />
+				style="@style/layers_menu_title" />
 
 			<android.support.v7.widget.RecyclerView
 				android:id="@+id/layers_recycler_view"

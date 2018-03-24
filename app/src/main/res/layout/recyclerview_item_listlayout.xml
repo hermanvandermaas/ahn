@@ -20,5 +20,10 @@
 		android:max="100"
 		android:progress="100"
 		android:layout_below="@id/layer_checkbox" />
+	
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#ABABAB"/>
 
 </RelativeLayout>

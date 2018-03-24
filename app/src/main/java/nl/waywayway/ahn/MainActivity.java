@@ -167,19 +167,13 @@ TaskFragment.TaskCallbacks
 
 		createLayers();
 		makeRecyclerview();
+		JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 
 		// Maak TileOverlay
 		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider(256, 256)));
 
 		gMap.setOnMapClickListener(this);
     }
-
-	private ArrayList<LayerItem> jsonToLayerList()
-	{
-		// Lees json
-		String jsonLayers = new Scanner(getResources().openRawResource(R.raw.layers)).useDelimiter("\\A").next();
-		return new ArrayList<LayerItem>();
-	}
 
 	private void createLayers()
 	{
