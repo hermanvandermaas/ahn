@@ -4,7 +4,7 @@
 		{
 			"title": "AHN 2",
 			"serviceUrl": "https://geodata.nationaalgeoregister.nl/ahn2/ows?service=WMS&version=1.3.0&request=GetMap&layers=ahn2_05m_ruw&styles=ahn2:ahn2_05m_detail&bbox=%f,%f,%f,%f&width=%d&height=%d&crs=EPSG:3857&format=image/png&transparent=true",
-			"WMSGetMapFeatureInfoQueryLayer": "ahn2_05m_ruw"
+			"WMSGetMapFeatureInfoQueryLayer": "ahn2_05m_ruw",
 			"minx": 361403.7366878665,
 			"miny": 6573443.017669047,
 			"maxx": 807808.8874921346,
