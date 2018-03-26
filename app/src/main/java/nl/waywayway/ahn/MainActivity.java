@@ -42,8 +42,6 @@ TaskFragment.TaskCallbacks
 	private TaskFragment taskFragment;
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
-	private NavigationView navigationView;
-	private boolean layerRecyclerViewIsSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,7 +52,7 @@ TaskFragment.TaskCallbacks
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		layerList = new ArrayList<LayerItem>();
+		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 
@@ -112,14 +110,10 @@ TaskFragment.TaskCallbacks
 		{
 			case R.id.action_layer_menu:
 				if (drawerLayout.isDrawerOpen(Gravity.RIGHT))
-				{
 					drawerLayout.closeDrawer(Gravity.RIGHT);
-				} 
 				else
-				{
 					drawerLayout.openDrawer(Gravity.RIGHT);
-				}
-				
+
                 return true;
 
 			case R.id.action_search:
@@ -131,22 +125,7 @@ TaskFragment.TaskCallbacks
 		}
 	}
 
-	// RecyclerView
-	private void makeRecyclerview()
-	{
-		RecyclerView recyclerView = (RecyclerView) findViewById(R.id.layers_recycler_view);
-		//Log.i("HermLog", "recyclerView: " + recyclerView);
-		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-		recyclerView.setLayoutManager(linearLayoutManager);
-		LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
-		recyclerView.setAdapter(adapter);
-		
-		// Plaats titel van lagenmenu onder status bar
-		TextView layersTitle = (TextView) findViewById(R.id.layers_title);
-		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
-		layoutParams.topMargin = getStatusBarHeight();
-		layersTitle.setLayoutParams(layoutParams);
-	}
+
 
 	@Override
 	public void onMapReady(GoogleMap googleMap)
@@ -166,24 +145,47 @@ TaskFragment.TaskCallbacks
 		}
 
 		createLayers();
-		makeRecyclerview();
-		JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
-
-		// Maak TileOverlay
-		TileOverlay tileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(WMSTileProvider.getTileProvider(256, 256)));
+		createLayerMenu();
 
 		gMap.setOnMapClickListener(this);
     }
 
+	// Maak kaartlagen en zet in ArrayList
 	private void createLayers()
 	{
-		LayerItem li1 = new LayerItem();
-		li1.setTitle("ahn2");
-		layerList.add(li1);
-		LayerItem li2 = new LayerItem();
-		li2.setTitle("ahn3");
-		layerList.add(li2);
-		//Log.i("HermLog", "jsonLayers: " + jsonLayers);
+		for (LayerItem layerItem : layerList)
+		{
+			// Maak TileOverlay
+			TileOverlay tileOverlay = gMap.addTileOverlay(new TileOverlayOptions().tileProvider(
+				WMSTileProvider.getTileProvider(
+					256, 
+					256, 
+					layerItem.getServiceUrl(), 
+					layerItem.getMinx(), 
+					layerItem.getMiny(), 
+					layerItem.getMaxx(), 
+					layerItem.getMaxy()
+				)));
+				
+			layerItem.setLayerObject(tileOverlay);
+		}
+	}
+
+	// RecyclerView
+	private void createLayerMenu()
+	{
+		RecyclerView recyclerView = (RecyclerView) findViewById(R.id.layers_recycler_view);
+		//Log.i("HermLog", "recyclerView: " + recyclerView);
+		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+		recyclerView.setLayoutManager(linearLayoutManager);
+		LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
+		recyclerView.setAdapter(adapter);
+
+		// Plaats titel van lagenmenu onder status bar
+		TextView layersTitle = (TextView) findViewById(R.id.layers_title);
+		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
+		layoutParams.topMargin = getStatusBarHeight();
+		layersTitle.setLayoutParams(layoutParams);
 	}
 
 	// Check beschikbaarheid Play Services
@@ -277,7 +279,7 @@ TaskFragment.TaskCallbacks
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel).makeUrl();
+		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, layerList.get(0)).makeUrl();
 		URL[] urls = new URL[]{url};
 		taskFragment.start(urls);
 	}

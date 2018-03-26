@@ -9,6 +9,17 @@ public class LayerItem
 	private double miny;
 	private double maxx;
 	private double maxy;
+	private Object layerObject;
+
+	public void setLayerObject(Object layerObject)
+	{
+		this.layerObject = layerObject;
+	}
+
+	public Object getLayerObject()
+	{
+		return layerObject;
+	}
 
 	public void setWMSGetMapFeatureInfoQueryLayer(String wMSGetMapFeatureInfoQueryLayer)
 	{

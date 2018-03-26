@@ -11,6 +11,14 @@ public class WMSTileProvider extends UrlTileProvider
 {
 	private int tileWidth;
 	private int tileHeight;
+	private String urlFormat;
+	// bounding box van de kaart van Nederland
+	// in eenheden van het CRS 3857, meters
+	// voor check of gevraagde tegel bestaat
+	private double minxMap;
+	private double minyMap;
+	private double maxxMap;
+	private double maxyMap;
 
 	// Web Mercator n/w corner of the map.
     private static final double[] TILE_ORIGIN = {-20037508.34789244, 20037508.34789244};
@@ -27,41 +35,24 @@ public class WMSTileProvider extends UrlTileProvider
 	protected static final int MINY = 1;
     protected static final int MAXX = 2;
     protected static final int MAXY = 3;
-
-	// bounding box van de kaart van Nederland
-	// in eenheden van het CRS 3857, meters
-	// voor check of gevraagde tegel bestaat
-	protected static final double MINX_MAP = 361403.7366878665;
-	protected static final double MINY_MAP = 6573443.017669047;
-	protected static final double MAXX_MAP = 807808.8874921346;
-	protected static final double MAXY_MAP = 7082066.659439815;
-
-	private static final String URL_FORMAT =
-	"https://geodata.nationaalgeoregister.nl/ahn2/ows" +
-	"?service=WMS" +
-	"&version=1.3.0" +
-	"&request=GetMap" +
-	"&layers=ahn2_05m_ruw" +
-	"&styles=ahn2:ahn2_05m_detail" +
-	"&bbox=%f,%f,%f,%f" +
-	"&width=%d" +
-	"&height=%d" +
-	"&crs=EPSG:3857" +
-	"&format=image/png" +
-	"&transparent=true";
-
+	
     // Construct with tile size in pixels, normally 256, see parent class
-    private WMSTileProvider(int x, int y)
+    private WMSTileProvider(int x, int y, String urlFormat, double minx, double miny, double maxx, double maxy)
 	{
     	super(x, y);
 		this.tileWidth = x;
 		this.tileHeight = y;
+		this.urlFormat = urlFormat;
+		this.minxMap = minx;
+		this.minyMap = miny;
+		this.maxxMap = maxx;
+		this.maxyMap = maxy;
     }
 
 	// return a wms tile provider
-	public static TileProvider getTileProvider(int x, int y)
+	public static TileProvider getTileProvider(int x, int y, String urlFormat, double minx, double miny, double maxx, double maxy)
 	{
-		return new WMSTileProvider(x, y);
+		return new WMSTileProvider(x, y, urlFormat, minx, miny, maxx, maxy);
 	}
 
 	@Override
@@ -70,7 +61,7 @@ public class WMSTileProvider extends UrlTileProvider
 		double[] bbox = getBoundingBox(x, y, zoom);
 		String s = String.format(
 			Locale.US, 
-			URL_FORMAT, 
+			urlFormat, 
 			bbox[MINX],
 			bbox[MINY], 
 			bbox[MAXX], 
@@ -96,10 +87,10 @@ public class WMSTileProvider extends UrlTileProvider
 
 	private boolean tileExists(double[] bbox)
 	{
-		if ((bbox[MINX] > MAXX_MAP) ||
-			(bbox[MAXX] < MINX_MAP) ||
-			(bbox[MINY] > MAXY_MAP) ||
-			(bbox[MAXY] < MINY_MAP))
+		if ((bbox[MINX] > maxxMap) ||
+			(bbox[MAXX] < minxMap) ||
+			(bbox[MINY] > maxyMap) ||
+			(bbox[MAXY] < minyMap))
 			return false;
 		else
 			return true;

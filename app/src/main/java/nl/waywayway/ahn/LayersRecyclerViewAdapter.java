@@ -5,6 +5,7 @@ import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
+import com.google.android.gms.maps.model.*;
 import java.util.*;
 
 public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecyclerViewAdapter.CustomViewHolder>
@@ -43,7 +44,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 				public boolean onTouch(View v, MotionEvent event) 
 				{
 					int action = event.getAction();
-					
+
 					switch (action) 
 					{
 						case MotionEvent.ACTION_DOWN:
@@ -55,9 +56,44 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 							break;
 					}
 
-					// Handle seekbar touch events.
+					// Transparantie aanpassen
 					v.onTouchEvent(event);
 					return true;
+				}
+			});
+
+		// Laag zichtbaar/onzichtbaar
+		customViewHolder.seekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+			{
+
+				@Override       
+				public void onStopTrackingTouch(SeekBar seekBar)
+				{}       
+
+				@Override       
+				public void onStartTrackingTouch(SeekBar seekBar)
+				{}       
+
+				@Override       
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+				{
+					TileOverlay layer = (TileOverlay) layerItem.getLayerObject();
+					float transp = 1f - progress / 100f;
+					layer.setTransparency(transp);
+					Log.i("HermLog", "seekBar verschoven, transp: " + transp);
+
+				}
+			});
+
+		// Laag aan/uit
+		customViewHolder.checkBoxView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+			{
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				{
+					TileOverlay layer = (TileOverlay) layerItem.getLayerObject();
+					
+					if (buttonView.isChecked()) layer.setVisible(true);
+					else layer.setVisible(false);
 				}
 			});
     }

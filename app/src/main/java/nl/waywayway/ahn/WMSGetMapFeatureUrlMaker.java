@@ -13,30 +13,33 @@ public class WMSGetMapFeatureUrlMaker
 	private int tileHeight;
 	private LatLng pointLatLong;
 	private float zoom;
+	private LayerItem layerItem;
 	
 	// Array indexes
     private static final int X = 0;
     private static final int Y = 1;
 	
+	private static final String URL_TO_BE_REPLACED_FORMAT = 
+		"&request=GetMap";
 	private static final String URL_REPLACEMENT_FORMAT =
-	"&request=GetFeatureInfo";
-	
+		"&request=GetFeatureInfo";
 	private static final String URL_AFFIX_FORMAT =
-	"&query_layers=ahn2_05m_ruw" +
-	"&i=%d" +
-	"&j=%d" +
-	"&info_format=application/json";
+		"&query_layers=ahn2_05m_ruw" +
+		"&i=%d" +
+		"&j=%d" +
+		"&info_format=application/json";
 
-	private WMSGetMapFeatureUrlMaker(int x, int y, LatLng pointLatLong, double zoom){
+	private WMSGetMapFeatureUrlMaker(int x, int y, LatLng pointLatLong, double zoom, LayerItem layerItem){
 		this.tileWidth = x;
 		this.tileHeight = y;
 		this.pointLatLong = pointLatLong;
 		this.zoom = (int) Math.floor(zoom);
+		this.layerItem = layerItem;
 	}
 	
-	public static WMSGetMapFeatureUrlMaker getUrlMaker(int tileWidth, int tileHeight, LatLng cPointLatLong, double cZoom)
+	public static WMSGetMapFeatureUrlMaker getUrlMaker(int tileWidth, int tileHeight, LatLng cPointLatLong, double cZoom, LayerItem cLayerItem )
 	{
-		return new WMSGetMapFeatureUrlMaker(tileWidth, tileHeight, cPointLatLong, cZoom);
+		return new WMSGetMapFeatureUrlMaker(tileWidth, tileHeight, cPointLatLong, cZoom, cLayerItem);
 	}
 	
 	// Mag null zijn
@@ -49,15 +52,23 @@ public class WMSGetMapFeatureUrlMaker
 		int[] pixelOnTileCoordinates = ProjectionWM.getPixelCoordinatesOnTile(pixelCoordinates);
 		
 		// Eerste deel url kan gemaakt worden door WMSTileProvider
-		UrlTileProvider tileProvider = (UrlTileProvider) WMSTileProvider.getTileProvider(tileWidth, tileHeight);
+		UrlTileProvider tileProvider = (UrlTileProvider) WMSTileProvider.getTileProvider(
+			tileWidth, 
+			tileHeight, 
+			layerItem.getServiceUrl(), 
+			layerItem.getMinx(), 
+			layerItem.getMiny(), 
+			layerItem.getMaxx(), 
+			layerItem.getMaxy());
+			
 		URL tileUrl = tileProvider.getTileUrl(tileCoordinates[X], tileCoordinates[Y], zoomInt);
 		if (tileUrl == null) return null;
 		String url = tileUrl.toString();
 		//Log.i("HermLog", "GetMap url van tegel met pixel: " + url);
 		
 		// GetFeatureInfo in plaats van GetMap 
-		String regex = "(?i)&request=GetMap";
-		url = url.replaceAll(regex, "&request=GetFeatureInfo");
+		String regex = "(?i)" + URL_TO_BE_REPLACED_FORMAT;
+		url = url.replaceAll(regex, URL_REPLACEMENT_FORMAT);
 		//Log.i("HermLog", "GetFeatureMap url van tegel: " + url);
 		
 		// Voeg parameters toe aan url
