@@ -38,6 +38,7 @@ public class JsonToArrayList
 				layerItem.setMaxx(jObject.optDouble("miny"));
 				layerItem.setMiny(jObject.optDouble("maxx"));
 				layerItem.setMaxy(jObject.optDouble("maxy"));
+				layerItem.setVisibleByDefault(jObject.optBoolean("visibleByDefault"));
 				
 				layerList.add(layerItem);
 			}

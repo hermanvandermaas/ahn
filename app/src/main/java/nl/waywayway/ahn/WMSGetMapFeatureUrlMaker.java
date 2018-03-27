@@ -23,8 +23,9 @@ public class WMSGetMapFeatureUrlMaker
 		"&request=GetMap";
 	private static final String URL_REPLACEMENT_FORMAT =
 		"&request=GetFeatureInfo";
-	private static final String URL_AFFIX_FORMAT =
-		"&query_layers=ahn2_05m_ruw" +
+	private static final String URL_AFFIX_FORMAT_1 =
+		"&query_layers=";
+	private static final String URL_AFFIX_FORMAT_2 =
 		"&i=%d" +
 		"&j=%d" +
 		"&info_format=application/json";
@@ -72,8 +73,8 @@ public class WMSGetMapFeatureUrlMaker
 		//Log.i("HermLog", "GetFeatureMap url van tegel: " + url);
 		
 		// Voeg parameters toe aan url
-		url = url + URL_AFFIX_FORMAT;
-		//Log.i("HermLog", "GetFeatureMap url van tegel na toevoeging: " + url);
+		url = url + URL_AFFIX_FORMAT_1 + layerItem.getWMSGetMapFeatureInfoQueryLayer() + URL_AFFIX_FORMAT_2;
+		//Log.i("HermLog", "GetFeatureMap url van tegel na toevoegingen: \n" + url);
 		
 		url = String.format(
 			Locale.US, 
@@ -81,7 +82,7 @@ public class WMSGetMapFeatureUrlMaker
 			pixelOnTileCoordinates[X], 
 			pixelOnTileCoordinates[Y]);
 			
-		//Log.i("HermLog", "GetFeatureMap url: " + url);
+		Log.i("HermLog", "GetFeatureMap url compleet: \n" + url);
 			
 		try
 		{

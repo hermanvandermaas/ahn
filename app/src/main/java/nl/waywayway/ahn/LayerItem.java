@@ -9,7 +9,19 @@ public class LayerItem
 	private double miny;
 	private double maxx;
 	private double maxy;
+	private boolean visibleByDefault;
+	// layerObject komt niet uit json maar wordt programmatisch toegevoegd
 	private Object layerObject;
+
+	public void setVisibleByDefault(boolean visibleByDefault)
+	{
+		this.visibleByDefault = visibleByDefault;
+	}
+
+	public boolean isVisibleByDefault()
+	{
+		return visibleByDefault;
+	}
 
 	public void setLayerObject(Object layerObject)
 	{

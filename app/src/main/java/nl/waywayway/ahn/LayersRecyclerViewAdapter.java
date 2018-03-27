@@ -55,14 +55,15 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 							v.getParent().requestDisallowInterceptTouchEvent(true);
 							break;
 					}
-
-					// Transparantie aanpassen
+					
+					// Handle seekbar touch events
 					v.onTouchEvent(event);
+					
 					return true;
 				}
 			});
 
-		// Laag zichtbaar/onzichtbaar
+		// Transparantie aanpassen
 		customViewHolder.seekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
 			{
 
@@ -96,6 +97,13 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					else layer.setVisible(false);
 				}
 			});
+		
+		// Laag zichtbaar als gebruikersvoorkeur of standaardinstelling
+		if (layerItem.isVisibleByDefault())
+		{
+			customViewHolder.checkBoxView.setChecked(true);
+			customViewHolder.seekBarView.setProgress(100, false);
+		}
     }
 
     @Override
