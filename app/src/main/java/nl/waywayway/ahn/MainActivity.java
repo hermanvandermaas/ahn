@@ -42,17 +42,19 @@ TaskFragment.TaskCallbacks
 	private TaskFragment taskFragment;
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+		// Initialiseer
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
+		//testLayerSettings();
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 
@@ -60,7 +62,7 @@ TaskFragment.TaskCallbacks
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
 
-		// If the Fragment is non-null, then it is being retained
+		// If the Fragment is non-null, it is being retained
 		// over a configuration change.
 		if (taskFragment == null)
 		{
@@ -124,8 +126,6 @@ TaskFragment.TaskCallbacks
 				return super.onOptionsItemSelected(item);
 		}
 	}
-
-
 
 	@Override
 	public void onMapReady(GoogleMap googleMap)
@@ -399,5 +399,12 @@ TaskFragment.TaskCallbacks
 
 		Log.i("HermLog", "latLngToXYmeters() lat 0, lon 0, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(0, 0), 3);
+	}
+	
+	private void testLayerSettings()
+	{
+		LayerItem item = layerList.get(0);
+		LayersSaveAndRestore.getInstance(context, item.getID()).save(0, 23);
+		LayersSaveAndRestore.getInstance(context, item.getID()).restore();
 	}
 }

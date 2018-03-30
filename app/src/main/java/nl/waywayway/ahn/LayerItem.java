@@ -2,6 +2,7 @@ package nl.waywayway.ahn;
 
 public class LayerItem
 {
+	private String ID;
     private String title;
 	private String serviceUrl;
 	private String WMSGetMapFeatureInfoQueryLayer;
@@ -10,8 +11,29 @@ public class LayerItem
 	private double maxx;
 	private double maxy;
 	private boolean visibleByDefault;
+	private int opacityDefault;
 	// layerObject komt niet uit json maar wordt programmatisch toegevoegd
 	private Object layerObject;
+
+	public void setOpacityDefault(int opacityDefault)
+	{
+		this.opacityDefault = opacityDefault;
+	}
+
+	public int getOpacityDefault()
+	{
+		return opacityDefault;
+	}
+
+	public void setID(String iD)
+	{
+		ID = iD;
+	}
+
+	public String getID()
+	{
+		return ID;
+	}
 
 	public void setVisibleByDefault(boolean visibleByDefault)
 	{

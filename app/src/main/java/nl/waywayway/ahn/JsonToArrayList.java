@@ -31,6 +31,7 @@ public class JsonToArrayList
 				JSONObject jObject = jArray.optJSONObject(i);
 				LayerItem layerItem = new LayerItem();
 				
+				layerItem.setID(jObject.optString("ID"));
 				layerItem.setTitle(jObject.optString("title"));
 				layerItem.setServiceUrl(jObject.optString("serviceUrl"));
 				layerItem.setWMSGetMapFeatureInfoQueryLayer(jObject.optString("WMSGetMapFeatureInfoQueryLayer"));
@@ -39,6 +40,7 @@ public class JsonToArrayList
 				layerItem.setMiny(jObject.optDouble("maxx"));
 				layerItem.setMaxy(jObject.optDouble("maxy"));
 				layerItem.setVisibleByDefault(jObject.optBoolean("visibleByDefault"));
+				layerItem.setOpacityDefault(jObject.optInt("opacityDefault"));
 				
 				layerList.add(layerItem);
 			}
