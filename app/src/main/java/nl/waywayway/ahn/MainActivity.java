@@ -5,15 +5,15 @@ import android.content.*;
 import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
-import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
-import android.support.v7.content.res.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.google.android.gms.common.*;
+import com.google.android.gms.common.api.*;
+import com.google.android.gms.location.places.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import java.net.*;
@@ -22,13 +22,14 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.*;
-import android.widget.Toolbar.*;
+import android.widget.SearchView;
+import android.support.v4.view.*;
 
 public class MainActivity extends AppCompatActivity implements 
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
+GoogleApiClient.OnConnectionFailedListener,
 TaskFragment.TaskCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
@@ -36,6 +37,7 @@ TaskFragment.TaskCallbacks
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
+	private GoogleApiClient googleApiClient;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private ArrayList<LayerItem> layerList;
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
@@ -98,6 +100,13 @@ TaskFragment.TaskCallbacks
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
+		
+		// Associate searchable configuration with the SearchView
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		MenuItem menuItem = menu.findItem(R.id.action_search);
+		SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		
 		return true;
 	}
 
@@ -146,9 +155,21 @@ TaskFragment.TaskCallbacks
 
 		createLayers();
 		createLayerMenu();
+		createGoogleApiClient();
 
 		gMap.setOnMapClickListener(this);
     }
+
+	private void createGoogleApiClient()
+	{
+		
+		googleApiClient = new GoogleApiClient
+			.Builder(this)
+			.addApi(Places.GEO_DATA_API)
+			.addApi(Places.PLACE_DETECTION_API)
+			.enableAutoManage(this, this)
+			.build();
+	}
 
 	// Maak kaartlagen en zet in ArrayList
 	private void createLayers()
@@ -187,6 +208,13 @@ TaskFragment.TaskCallbacks
 		layoutParams.topMargin = getStatusBarHeight();
 		layersTitle.setLayoutParams(layoutParams);
 	}
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult p1)
+	{
+		Toast.makeText(context, "Geen verbinding met locatiezoeker, functie werkt momenteel niet", Toast.LENGTH_SHORT).show();
+	}
+	
 
 	// Check beschikbaarheid Play Services
 	protected void isPlayServicesAvailable()
@@ -291,6 +319,17 @@ TaskFragment.TaskCallbacks
 		progressbar.setVisibility(visibility);
 	}
 
+	@Override
+	public void onNewIntent(Intent intent)
+	{
+		setIntent(intent);
+		if(Intent.ACTION_SEARCH.equals(intent.getAction()))
+		{
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			//now you can display the results
+		}  
+	}
+	
 	@Override
 	protected void onDestroy()
 	{
