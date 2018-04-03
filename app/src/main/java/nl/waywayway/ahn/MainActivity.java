@@ -14,6 +14,7 @@ import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
 import com.google.android.gms.location.places.*;
+import com.google.android.gms.location.places.ui.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import java.net.*;
@@ -22,8 +23,6 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.widget.SearchView;
-import android.support.v4.view.*;
 
 public class MainActivity extends AppCompatActivity implements 
 GoogleMap.OnCameraIdleListener, 
@@ -44,7 +43,8 @@ TaskFragment.TaskCallbacks
 	private TaskFragment taskFragment;
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
-	
+	private View searchBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -55,6 +55,7 @@ TaskFragment.TaskCallbacks
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		searchBar = findViewById(R.id.place_autocomplete_fragment);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
 
@@ -88,11 +89,6 @@ TaskFragment.TaskCallbacks
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
-		//actionBar.setTitle(null);
-		//actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setHomeAsUpIndicator(AppCompatResources.getDrawable(context, R.drawable.ic_layers_black_24px));
-		// AppCompatResources.getDrawable(context, R.drawable.ic_menu_black_24dp)
-		//toolbar.setPadding(0, getStatusBarHeight(), 0, 0);
 	}
 
 	@Override
@@ -100,13 +96,6 @@ TaskFragment.TaskCallbacks
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-		
-		// Associate searchable configuration with the SearchView
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		MenuItem menuItem = menu.findItem(R.id.action_search);
-		SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		
 		return true;
 	}
 
@@ -128,7 +117,11 @@ TaskFragment.TaskCallbacks
                 return true;
 
 			case R.id.action_search:
-				// TODO 
+				if (searchBar.getVisibility() == View.VISIBLE)
+					showSearchBar(View.GONE);
+				else
+					showSearchBar(View.VISIBLE);
+					
 				return true;
 
 			default:
@@ -150,19 +143,53 @@ TaskFragment.TaskCallbacks
 		// Zoom in op Nederland bij eerste opstart app
 		if (savedInstanceStateGlobal == null)
 		{
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
+			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
 		}
 
 		createLayers();
 		createLayerMenu();
 		createGoogleApiClient();
+		createPlaceSearch();
 
 		gMap.setOnMapClickListener(this);
     }
 
+	private void createPlaceSearch()
+	{
+		PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+			getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+			
+		// Alleen in Nederland zoeken
+		AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+			.setCountry("NL")
+			.build();
+
+		autocompleteFragment.setFilter(typeFilter);
+
+		// Zoom naar gekozen Place
+		autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener()
+			{
+				@Override
+				public void onPlaceSelected(Place place)
+				{
+					showSearchBar(View.GONE);
+					gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(place.getViewport(), 0));
+					//Toast.makeText(context, "Place: " + place.getName(), Toast.LENGTH_SHORT).show();
+					//Log.i("HermLog", "Place: " + place.getName());
+				}
+
+				@Override
+				public void onError(Status status)
+				{
+					//Toast.makeText(context, "An error occurred: " + status, Toast.LENGTH_SHORT).show();
+					Log.i("HermLog", "PlaceSelectionListener fout: " + status);
+				}
+			});
+	}
+
 	private void createGoogleApiClient()
 	{
-		
+
 		googleApiClient = new GoogleApiClient
 			.Builder(this)
 			.addApi(Places.GEO_DATA_API)
@@ -177,17 +204,18 @@ TaskFragment.TaskCallbacks
 		for (LayerItem layerItem : layerList)
 		{
 			// Maak TileOverlay
-			TileOverlay tileOverlay = gMap.addTileOverlay(new TileOverlayOptions().tileProvider(
-				WMSTileProvider.getTileProvider(
-					256, 
-					256, 
-					layerItem.getServiceUrl(), 
-					layerItem.getMinx(), 
-					layerItem.getMiny(), 
-					layerItem.getMaxx(), 
-					layerItem.getMaxy()
+			TileOverlay tileOverlay = gMap.
+				addTileOverlay(new TileOverlayOptions().tileProvider(
+					WMSTileProvider.getTileProvider(
+						256, 
+						256, 
+						layerItem.getServiceUrl(), 
+						layerItem.getMinx(), 
+						layerItem.getMiny(), 
+						layerItem.getMaxx(), 
+						layerItem.getMaxy()
 				)));
-				
+
 			layerItem.setLayerObject(tileOverlay);
 		}
 	}
@@ -208,13 +236,13 @@ TaskFragment.TaskCallbacks
 		layoutParams.topMargin = getStatusBarHeight();
 		layersTitle.setLayoutParams(layoutParams);
 	}
-	
+
 	@Override
 	public void onConnectionFailed(ConnectionResult p1)
 	{
 		Toast.makeText(context, "Geen verbinding met locatiezoeker, functie werkt momenteel niet", Toast.LENGTH_SHORT).show();
 	}
-	
+
 
 	// Check beschikbaarheid Play Services
 	protected void isPlayServicesAvailable()
@@ -319,17 +347,24 @@ TaskFragment.TaskCallbacks
 		progressbar.setVisibility(visibility);
 	}
 
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showSearchBar(int visibility)
+	{
+		View searchBar = findViewById(R.id.place_autocomplete_fragment);
+		searchBar.setVisibility(visibility);
+	}
+	
 	@Override
 	public void onNewIntent(Intent intent)
 	{
 		setIntent(intent);
-		if(Intent.ACTION_SEARCH.equals(intent.getAction()))
+		if (Intent.ACTION_SEARCH.equals(intent.getAction()))
 		{
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			//now you can display the results
 		}  
 	}
-	
+
 	@Override
 	protected void onDestroy()
 	{
@@ -439,7 +474,7 @@ TaskFragment.TaskCallbacks
 		Log.i("HermLog", "latLngToXYmeters() lat 0, lon 0, zoom 3: ");
 		ProjectionWM.latLngToXYmeters(new LatLng(0, 0), 3);
 	}
-	
+
 	private void testLayerSettings()
 	{
 		LayerItem item = layerList.get(0);

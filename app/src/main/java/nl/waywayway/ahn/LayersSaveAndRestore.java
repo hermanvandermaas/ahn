@@ -34,7 +34,7 @@ public class LayersSaveAndRestore
 		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_FILENAME, context.MODE_PRIVATE);
 		SharedPreferences.Editor edit = pref.edit();
 		edit.putString(preferenceKey, Arrays.toString(array));
-		Log.i("HermLog", "save: " + Arrays.toString(array));
+		//Log.i("HermLog", "save: " + Arrays.toString(array));
 
 		return edit.commit();
 	}
@@ -66,7 +66,7 @@ public class LayersSaveAndRestore
 		for (int i = 0; i < jsonArray.length(); i++)
 			savedValues[i] = jsonArray.optInt(i);
 			
-		Log.i("HermLog", "restore: " + Arrays.toString(savedValues));
+		//Log.i("HermLog", "restore: " + Arrays.toString(savedValues));
 		
 		return savedValues;
 	}
