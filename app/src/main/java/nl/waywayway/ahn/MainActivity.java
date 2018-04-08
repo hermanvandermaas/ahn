@@ -1,10 +1,13 @@
 package nl.waywayway.ahn;
 
+import android.*;
 import android.app.*;
 import android.content.*;
+import android.content.pm.*;
 import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
+import android.support.v4.content.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
@@ -23,12 +26,17 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.location.*;
+import com.google.android.gms.location.*;
 
-public class MainActivity extends AppCompatActivity implements 
+public class MainActivity extends AppCompatActivity
+implements 
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
 GoogleApiClient.OnConnectionFailedListener,
+GoogleMap.OnMyLocationButtonClickListener,
+ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
@@ -44,6 +52,12 @@ TaskFragment.TaskCallbacks
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
 	private View searchBar;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private boolean permissionAsked = false;
+	private String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
+	private boolean myLocationIconVisible;
+	private boolean searchBarVisible = true;
+	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,6 +74,13 @@ TaskFragment.TaskCallbacks
 		//testLayerSettings();
 
 		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+
+		// Herstel savedInstanceState
+		if (savedInstanceState != null)
+		{
+			permissionAsked = savedInstanceState.getBoolean(PERMISSION_ASKED_STATE_KEY);
+			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
+		}
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
@@ -96,6 +117,11 @@ TaskFragment.TaskCallbacks
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
+		
+		// Toon icoon alleen als nodig
+		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
+		myLocationIcon.setVisible(myLocationIconVisible);
+			
 		return true;
 	}
 
@@ -116,12 +142,25 @@ TaskFragment.TaskCallbacks
 
                 return true;
 
+			case R.id.action_myposition:
+				zoomToCurrentLocation();
+
+				 return true;
+
 			case R.id.action_search:
 				if (searchBar.getVisibility() == View.VISIBLE)
+				{
 					showSearchBar(View.GONE);
+					searchBarVisible = false;
+					//setMapPadding();
+				}
 				else
+				{
 					showSearchBar(View.VISIBLE);
-					
+					searchBarVisible = true;
+					//setMapPadding();
+				}
+
 				return true;
 
 			default:
@@ -138,26 +177,113 @@ TaskFragment.TaskCallbacks
 		UiSettings uiSettings = googleMap.getUiSettings();
 		uiSettings.setCompassEnabled(false);
 		uiSettings.setRotateGesturesEnabled(false);
-		googleMap.setOnCameraIdleListener(this);
+		uiSettings.setMapToolbarEnabled(true);
+		//uiSettings.setTiltGesturesEnabled(true);
 
 		// Zoom in op Nederland bij eerste opstart app
 		if (savedInstanceStateGlobal == null)
-		{
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
-		}
 
 		createLayers();
 		createLayerMenu();
 		createGoogleApiClient();
 		createPlaceSearch();
 
+		googleMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
+		//gMap.setOnMyLocationButtonClickListener(this);
+        enableMyLocation();
     }
+
+	@Override
+    public boolean onMyLocationButtonClick()
+	{
+        //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+        return false;
+    }
+
+	private void zoomToCurrentLocation()
+	{
+		Location lastLocation = LocationServices.FusedLocationApi
+			.getLastLocation(googleApiClient);
+
+		if (lastLocation != null)
+		{
+			double lat = lastLocation.getLatitude();
+			double lon = lastLocation.getLongitude();
+			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
+		}
+		else
+			Toast.makeText(this, "Je locatie is nu niet beschikbaar", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+	{
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE)
+		{
+            return;
+        }
+
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION))
+		{
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation();
+        }
+    }
+
+	/**
+     * Enables the My Location layer if the fine location permission has been granted.
+     */
+    private void enableMyLocation()
+	{
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+			!= PackageManager.PERMISSION_GRANTED)
+		{
+			// Niet nog eens toestemming vragen na schermrotatie
+			if (permissionAsked) return;
+
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, false);
+			permissionAsked = true;
+        }
+		else if (gMap != null)
+		{
+            // Access to the location has been granted to the app.
+            gMap.setMyLocationEnabled(true);
+			//setMapPadding();
+			gMap.getUiSettings().setMyLocationButtonEnabled(false);
+			showMyLocationIcon(true);
+        }
+    }
+
+	private void setMapPadding()
+	{
+		final View toolbarAndSearchFragment = findViewById(R.id.toolbar_and_progressbar);
+
+		toolbarAndSearchFragment.post(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					toolbarAndSearchFragment.getHeight();
+					int paddingTop = toolbarAndSearchFragment.getHeight();
+					// setPadding: left, top, right, bottom
+					gMap.setPadding(0, paddingTop, 0, 0);
+					Log.i("HermLog", "paddingTop: " + paddingTop);
+				}
+			});
+	}
 
 	private void createPlaceSearch()
 	{
 		PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
 			getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+		if (!searchBarVisible) showSearchBar(View.GONE);
 			
 		// Alleen in Nederland zoeken
 		AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
@@ -173,6 +299,7 @@ TaskFragment.TaskCallbacks
 				public void onPlaceSelected(Place place)
 				{
 					showSearchBar(View.GONE);
+					searchBarVisible = false;
 					gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(place.getViewport(), 0));
 					//Toast.makeText(context, "Place: " + place.getName(), Toast.LENGTH_SHORT).show();
 					//Log.i("HermLog", "Place: " + place.getName());
@@ -194,6 +321,7 @@ TaskFragment.TaskCallbacks
 			.Builder(this)
 			.addApi(Places.GEO_DATA_API)
 			.addApi(Places.PLACE_DETECTION_API)
+			.addApi(LocationServices.API)
 			.enableAutoManage(this, this)
 			.build();
 	}
@@ -206,16 +334,17 @@ TaskFragment.TaskCallbacks
 			// Maak TileOverlay
 			TileOverlay tileOverlay = gMap.
 				addTileOverlay(new TileOverlayOptions().tileProvider(
-					WMSTileProvider.getTileProvider(
-						256, 
-						256, 
-						layerItem.getServiceUrl(), 
-						layerItem.getMinx(), 
-						layerItem.getMiny(), 
-						layerItem.getMaxx(), 
-						layerItem.getMaxy()
-				)));
+								   WMSTileProvider.getTileProvider(
+									   256, 
+									   256, 
+									   layerItem.getServiceUrl(), 
+									   layerItem.getMinx(), 
+									   layerItem.getMiny(), 
+									   layerItem.getMaxx(), 
+									   layerItem.getMaxy()
+								   )));
 
+			// Zet referentie naar kaartlaag in lijst
 			layerItem.setLayerObject(tileOverlay);
 		}
 	}
@@ -230,7 +359,7 @@ TaskFragment.TaskCallbacks
 		LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
 		recyclerView.setAdapter(adapter);
 
-		// Plaats titel van lagenmenu onder status bar
+		// Plaats titel van lagenmenu beneden status bar
 		TextView layersTitle = (TextView) findViewById(R.id.layers_title);
 		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
 		layoutParams.topMargin = getStatusBarHeight();
@@ -240,9 +369,8 @@ TaskFragment.TaskCallbacks
 	@Override
 	public void onConnectionFailed(ConnectionResult p1)
 	{
-		Toast.makeText(context, "Geen verbinding met locatiezoeker, functie werkt momenteel niet", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, "Locatiezoeker werkt momenteel niet", Toast.LENGTH_SHORT).show();
 	}
-
 
 	// Check beschikbaarheid Play Services
 	protected void isPlayServicesAvailable()
@@ -354,15 +482,20 @@ TaskFragment.TaskCallbacks
 		searchBar.setVisibility(visibility);
 	}
 	
-	@Override
-	public void onNewIntent(Intent intent)
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showMyLocationIcon(boolean showIcon)
 	{
-		setIntent(intent);
-		if (Intent.ACTION_SEARCH.equals(intent.getAction()))
-		{
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			//now you can display the results
-		}  
+		myLocationIconVisible = showIcon;
+		invalidateOptionsMenu();
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		outState.putBoolean(PERMISSION_ASKED_STATE_KEY, permissionAsked);
+		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
+
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
