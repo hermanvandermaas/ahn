@@ -69,7 +69,7 @@ TaskFragment.TaskCallbacks
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		searchBar = findViewById(R.id.place_autocomplete_fragment);
+		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
 
@@ -148,7 +148,7 @@ TaskFragment.TaskCallbacks
 				 return true;
 
 			case R.id.action_search:
-				if (searchBar.getVisibility() == View.VISIBLE)
+				if (searchBar.getVisibility() == View.VISIBLE )
 				{
 					showSearchBar(View.GONE);
 					searchBarVisible = false;
@@ -478,8 +478,8 @@ TaskFragment.TaskCallbacks
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showSearchBar(int visibility)
 	{
-		View searchBar = findViewById(R.id.card_place_autocomplete_fragment);
-		searchBar.setVisibility(visibility);
+		View searchBarCard = findViewById(R.id.card_place_autocomplete_fragment);
+		searchBarCard.setVisibility(visibility);
 	}
 	
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
