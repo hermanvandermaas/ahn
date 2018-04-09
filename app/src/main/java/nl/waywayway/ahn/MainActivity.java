@@ -478,7 +478,7 @@ TaskFragment.TaskCallbacks
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showSearchBar(int visibility)
 	{
-		View searchBar = findViewById(R.id.place_autocomplete_fragment);
+		View searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		searchBar.setVisibility(visibility);
 	}
 	
