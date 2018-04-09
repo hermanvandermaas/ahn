@@ -3,7 +3,7 @@
 
     <string name="app_name">AHN</string>
     <string name="hello_world">Hello world!</string>
-	<string name="google_maps_key">AIzaSyCno_hVSMtgIUeNod6t8WcmXvASzdjuazc</string>
+	
 	<string name="action_layers">Kaartlagen</string>
 	<string name="action_myposition">Zoom naar mijn locatie</string>
 	<string name="action_search">Zoek locatie</string>
