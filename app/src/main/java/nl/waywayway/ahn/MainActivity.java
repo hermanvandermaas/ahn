@@ -275,7 +275,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					int paddingTop = toolbarAndSearchFragment.getHeight();
 					// setPadding: left, top, right, bottom
 					gMap.setPadding(0, paddingTop, 0, 0);
-					Log.i("HermLog", "paddingTop: " + paddingTop);
+					//Log.i("HermLog", "paddingTop: " + paddingTop);
 				}
 			});
 	}
@@ -311,7 +311,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				public void onError(Status status)
 				{
 					//Toast.makeText(context, "An error occurred: " + status, Toast.LENGTH_SHORT).show();
-					Log.i("HermLog", "PlaceSelectionListener fout: " + status);
+					//Log.i("HermLog", "PlaceSelectionListener fout: " + status);
 				}
 			});
 	}
@@ -356,7 +356,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 							   )));
 
 		// Zet referentie naar kaartlaag in lijst
-		Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
+		//Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
 		
 		layerItem.setLayerObject(tileOverlay);
 		
@@ -396,7 +396,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		if (resultCode != ConnectionResult.SUCCESS)
 		{
-			Log.i("HermLog", "Play Services fout");
+			//Log.i("HermLog", "Play Services fout");
 			if (apiAvailability.isUserResolvableError(resultCode))
 			{
 				apiAvailability.getErrorDialog((Activity) context, resultCode, 9000).show();

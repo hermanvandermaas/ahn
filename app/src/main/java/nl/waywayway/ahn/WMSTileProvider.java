@@ -76,7 +76,7 @@ public class WMSTileProvider extends UrlTileProvider
 
 		try
 		{
-			Log.i("HermLog", "Url van tegel: " + new URL(s).toString());
+			//Log.i("HermLog", "Url van tegel: " + new URL(s).toString());
 			return new URL(s);
 		}
 		catch (MalformedURLException e)

@@ -88,8 +88,8 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 		{
 			boolean visible = layerItem.isVisibleByDefault();
 			int opacity = layerItem.getOpacityDefault();
-			Log.i("HermLog", "isVisibleByDefault: " + layerItem.isVisibleByDefault());
-			Log.i("HermLog", "opacityDefault: " + layerItem.getOpacityDefault());
+			//Log.i("HermLog", "isVisibleByDefault: " + layerItem.isVisibleByDefault());
+			//Log.i("HermLog", "opacityDefault: " + layerItem.getOpacityDefault());
 			if (visible && opacity > 0) callbacks.createLayer(layerItem);
 			customViewHolder.checkBoxView.setChecked(visible);
 			customViewHolder.seekBarView.setProgress(opacity);
@@ -101,7 +101,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 			if (visible && opacity > 0) callbacks.createLayer(layerItem);
 			customViewHolder.checkBoxView.setChecked(visible);
 			customViewHolder.seekBarView.setProgress(opacity);
-			Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible/opacity): " + layerItem.getTitle() + "/" + visible + "/" + opacity);
+			//Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible/opacity): " + layerItem.getTitle() + "/" + visible + "/" + opacity);
 		}	
 
 		// Transparantie aanpassen listener
@@ -160,7 +160,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 				{
 					TileOverlay layer = (TileOverlay) layerItem.getLayerObject();
-					Log.i("HermLog", "onCheckedChangeListener layer: " + layer);
+					//Log.i("HermLog", "onCheckedChangeListener layer: " + layer);
 
 					if (buttonView.isChecked())
 					{
