@@ -37,7 +37,8 @@ GoogleMap.OnMapClickListener,
 GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
-TaskFragment.TaskCallbacks
+TaskFragment.TaskCallbacks,
+LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private boolean dialogWasShowed = false;
@@ -184,7 +185,8 @@ TaskFragment.TaskCallbacks
 		if (savedInstanceStateGlobal == null)
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
 
-		createLayers();
+		// Kaartlagen worden in RecyclerView adapter toegevoegd
+		//createLayers();
 		createLayerMenu();
 		createGoogleApiClient();
 		createPlaceSearch();
@@ -331,22 +333,34 @@ TaskFragment.TaskCallbacks
 	{
 		for (LayerItem layerItem : layerList)
 		{
-			// Maak TileOverlay
-			TileOverlay tileOverlay = gMap.
-				addTileOverlay(new TileOverlayOptions().tileProvider(
-								   WMSTileProvider.getTileProvider(
-									   256, 
-									   256, 
-									   layerItem.getServiceUrl(), 
-									   layerItem.getMinx(), 
-									   layerItem.getMiny(), 
-									   layerItem.getMaxx(), 
-									   layerItem.getMaxy()
-								   )));
-
-			// Zet referentie naar kaartlaag in lijst
-			layerItem.setLayerObject(tileOverlay);
+			createLayer(layerItem);
 		}
+	}
+	
+	public TileOverlay createLayer(LayerItem layerItem)
+	{
+		// Maak TileOverlay, 
+		// zIndex is gelijk aan ID van de laag
+		// hoogste zIndex ligt bovenop
+		float zIndex = Float.parseFloat(layerItem.getID());
+		TileOverlay tileOverlay = gMap.
+			addTileOverlay(new TileOverlayOptions().zIndex(zIndex).tileProvider(
+							   WMSTileProvider.getTileProvider(
+								   256, 
+								   256, 
+								   layerItem.getServiceUrl(), 
+								   layerItem.getMinx(), 
+								   layerItem.getMiny(), 
+								   layerItem.getMaxx(), 
+								   layerItem.getMaxy()
+							   )));
+
+		// Zet referentie naar kaartlaag in lijst
+		Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
+		
+		layerItem.setLayerObject(tileOverlay);
+		
+		return tileOverlay;
 	}
 
 	// RecyclerView
