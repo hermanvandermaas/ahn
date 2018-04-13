@@ -118,11 +118,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-		
+
 		// Toon icoon alleen als nodig
 		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
 		myLocationIcon.setVisible(myLocationIconVisible);
-			
+
 		return true;
 	}
 
@@ -146,10 +146,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			case R.id.action_myposition:
 				zoomToCurrentLocation();
 
-				 return true;
+				return true;
 
 			case R.id.action_search:
-				if (searchBar.getVisibility() == View.VISIBLE )
+				if (searchBar.getVisibility() == View.VISIBLE)
 				{
 					showSearchBar(View.GONE);
 					searchBarVisible = false;
@@ -286,7 +286,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 		if (!searchBarVisible) showSearchBar(View.GONE);
-			
+
 		// Alleen in Nederland zoeken
 		AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
 			.setCountry("NL")
@@ -336,7 +336,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			createLayer(layerItem);
 		}
 	}
-	
+
 	public TileOverlay createLayer(LayerItem layerItem)
 	{
 		// Maak TileOverlay, 
@@ -357,9 +357,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		// Zet referentie naar kaartlaag in lijst
 		//Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
-		
+
 		layerItem.setLayerObject(tileOverlay);
-		
+
 		return tileOverlay;
 	}
 
@@ -474,12 +474,49 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		return networkInfo != null && networkInfo.isConnected();
 	}
 
+	// Hoogste zichtbare laag
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
+		LayerItem topVisibleLayer = getTopVisibleLayer();
+		if (topVisibleLayer == null)
+		{
+			Toast.makeText(context, "Maak een kaartlaag met hoogte zichtbaar in het lagenmenu", Toast.LENGTH_LONG).show();
+			return;
+		}
+
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, layerList.get(0)).makeUrl();
+		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, topVisibleLayer).makeUrl();
+		//Log.i("HermLog", "url: " + url);
 		URL[] urls = new URL[]{url};
+		taskFragment.setLayerInfo(topVisibleLayer.getShortTitle());
 		taskFragment.start(urls);
+	}
+
+	private LayerItem getTopVisibleLayer()
+	{
+		LayerItem returnLayerItem = null;
+
+		for (LayerItem layerItem : layerList)
+		{
+			if (layerItem.isQueryable() == false) continue;
+
+			int[] preferences = LayersSaveAndRestore.getInstance(context, layerItem.getID()).restore();
+
+			if (preferences == null)
+			{
+				boolean visible = layerItem.isVisibleByDefault();
+				int opacity = layerItem.getOpacityDefault();
+				if (visible && opacity > 0) returnLayerItem = layerItem;
+			}
+			else
+			{
+				boolean visible = preferences[0] == 1 ? true : false;
+				int opacity = preferences[1];
+				if (visible && opacity > 0) returnLayerItem = layerItem;
+			}
+		}
+
+		return returnLayerItem;
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
@@ -495,14 +532,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		View searchBarCard = findViewById(R.id.card_place_autocomplete_fragment);
 		searchBarCard.setVisibility(visibility);
 	}
-	
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showMyLocationIcon(boolean showIcon)
 	{
 		myLocationIconVisible = showIcon;
 		invalidateOptionsMenu();
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState)
 	{
@@ -561,7 +598,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	}
 
 	@Override
-	public void onPostExecute(String result)
+	public void onPostExecute(String result, String layerInfo)
 	{
 		//Log.i("HermLog", "onPostExecute() result: " + result);
 		showProgressBar(View.GONE);
@@ -576,7 +613,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			String affix = result.equals("n/a") ? "" : " meter NAP";
 			String info = result + affix;
 			Marker marker = markerList.get(0);
-			marker.setTitle("Hoogte");
+			marker.setTitle("Hoogte " + layerInfo);
 			marker.setSnippet(info);
 			marker.showInfoWindow();
 		}

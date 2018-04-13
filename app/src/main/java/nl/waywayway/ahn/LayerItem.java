@@ -4,6 +4,7 @@ public class LayerItem
 {
 	private String ID;
     private String title;
+	private String shortTitle;
 	private String serviceUrl;
 	private String WMSGetMapFeatureInfoQueryLayer;
 	private double minx;
@@ -12,8 +13,29 @@ public class LayerItem
 	private double maxy;
 	private boolean visibleByDefault;
 	private int opacityDefault;
+	private boolean queryable;
 	// layerObject komt niet uit json maar wordt programmatisch toegevoegd
 	private Object layerObject;
+
+	public void setShortTitle(String shortTitle)
+	{
+		this.shortTitle = shortTitle;
+	}
+
+	public String getShortTitle()
+	{
+		return shortTitle;
+	}
+
+	public void setQueryable(boolean queryable)
+	{
+		this.queryable = queryable;
+	}
+
+	public boolean isQueryable()
+	{
+		return queryable;
+	}
 
 	public void setOpacityDefault(int opacityDefault)
 	{

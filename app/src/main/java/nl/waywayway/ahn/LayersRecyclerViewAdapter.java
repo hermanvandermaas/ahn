@@ -124,7 +124,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
 					if (progress > 0)
 					{
-						if (layer == null)
+						if (layer == null && mCustomViewHolder.checkBoxView.isChecked())
 						{
 							layer = callbacks.createLayer(layerItem);
 							layerItem.setLayerObject(layer);
@@ -170,7 +170,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 							layerItem.setLayerObject(layer);
 						}
 
-						layer.setVisible(true);
+						if (layer != null) layer.setVisible(true);
 					}
 					else 
 					{

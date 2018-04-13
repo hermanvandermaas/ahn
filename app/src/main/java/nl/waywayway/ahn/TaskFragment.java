@@ -24,13 +24,24 @@ public class TaskFragment extends Fragment
 		public void onPreExecute();
 		public void onProgressUpdate(int percent);
 		public void onCancelled();
-		public void onPostExecute(String result);
+		public void onPostExecute(String result, String layerInfo);
 	}
 
 	private Context context;
 	private TaskCallbacks callbacks;
 	private DummyTask task;
 	private boolean running;
+	private String layerInfo;
+	
+	public void setLayerInfo(String layerInfo)
+	{
+		this.layerInfo = layerInfo;
+	}
+
+	public String getLayerInfo()
+	{
+		return layerInfo;
+	}
 
 	/**
 	 * Hold a reference to the parent Activity so we can report the task's current
@@ -183,7 +194,7 @@ public class TaskFragment extends Fragment
 			//Log.i("HermLog", "TaskFragment");
 
 			// Proxy the call to the Activity
-			callbacks.onPostExecute(result);
+			callbacks.onPostExecute(result, layerInfo);
 			running = false;
 		}
 

@@ -33,6 +33,7 @@ public class JsonToArrayList
 				
 				layerItem.setID(jObject.optString("ID"));
 				layerItem.setTitle(jObject.optString("title"));
+				layerItem.setShortTitle(jObject.optString("shortTitle"));
 				layerItem.setServiceUrl(jObject.optString("serviceUrl"));
 				layerItem.setWMSGetMapFeatureInfoQueryLayer(jObject.optString("WMSGetMapFeatureInfoQueryLayer"));
 				layerItem.setMinx(jObject.optDouble("minx"));
@@ -41,6 +42,7 @@ public class JsonToArrayList
 				layerItem.setMaxy(jObject.optDouble("maxy"));
 				layerItem.setVisibleByDefault(jObject.optBoolean("visibleByDefault"));
 				layerItem.setOpacityDefault(jObject.optInt("opacityDefault"));
+				layerItem.setQueryable(jObject.optBoolean("queryable"));
 				
 				layerList.add(layerItem);
 			}
