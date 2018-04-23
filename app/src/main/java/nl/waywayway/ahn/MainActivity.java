@@ -4,6 +4,7 @@ import android.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
+import android.location.*;
 import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
@@ -16,6 +17,7 @@ import android.view.*;
 import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
+import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.*;
 import com.google.android.gms.maps.*;
@@ -26,21 +28,19 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.location.*;
-import com.google.android.gms.location.*;
 
 public class MainActivity extends AppCompatActivity
 implements 
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
-GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
+	private static final String TAG_WELCOME_DIALOGFRAGMENT = "welcome_dialogfragment";
 	private boolean dialogWasShowed = false;
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
@@ -188,7 +188,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Kaartlagen worden in RecyclerView adapter toegevoegd
 		//createLayers();
 		createLayerMenu();
-		createGoogleApiClient();
 		createPlaceSearch();
 
 		googleMap.setOnCameraIdleListener(this);
@@ -316,18 +315,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			});
 	}
 
-	private void createGoogleApiClient()
-	{
-
-		googleApiClient = new GoogleApiClient
-			.Builder(this)
-			.addApi(Places.GEO_DATA_API)
-			.addApi(Places.PLACE_DETECTION_API)
-			.addApi(LocationServices.API)
-			.enableAutoManage(this, this)
-			.build();
-	}
-
 	// Maak kaartlagen en zet in ArrayList
 	private void createLayers()
 	{
@@ -378,12 +365,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
 		layoutParams.topMargin = getStatusBarHeight();
 		layersTitle.setLayoutParams(layoutParams);
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult p1)
-	{
-		Toast.makeText(context, "Locatiezoeker werkt momenteel niet", Toast.LENGTH_SHORT).show();
 	}
 
 	// Check beschikbaarheid Play Services
@@ -519,6 +500,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		return returnLayerItem;
 	}
 
+	public void showWelcomeDialog()
+	{
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		WelcomeDialogFragment dialogFragment = (WelcomeDialogFragment) fragmentManager.findFragmentByTag(TAG_WELCOME_DIALOGFRAGMENT);
+
+		if (dialogFragment == null)
+		{
+			WelcomeDialogFragment newFragment = new WelcomeDialogFragment();
+			newFragment.show(fragmentManager, "dialog");
+		}
+	}
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBar(int visibility)
 	{
@@ -572,6 +565,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onStart();
 		Log.i("HermLog", "onStart()");
+
+		showWelcomeDialog();
 	}
 
 	/*********************************/

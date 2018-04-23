@@ -4,6 +4,8 @@
     <string name="app_name">AHN</string>
     <string name="hello_world">Hello world!</string>
 	
+	<string name="welcome_dialog_title">Welkom!</string>
+	
 	<string name="action_layers">Kaartlagen</string>
 	<string name="action_myposition">Zoom naar mijn locatie</string>
 	<string name="action_search">Zoek locatie</string>
