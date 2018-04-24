@@ -69,7 +69,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Initialiseer
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerLayout = findViewById(R.id.drawer_layout);
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
@@ -108,7 +108,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// Maak toolbar
 	private void makeToolbar()
 	{
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
 	}
@@ -309,8 +309,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onError(Status status)
 				{
-					//Toast.makeText(context, "An error occurred: " + status, Toast.LENGTH_SHORT).show();
-					//Log.i("HermLog", "PlaceSelectionListener fout: " + status);
+					Log.i("HermLog", "PlaceSelectionListener error: " + status);
 				}
 			});
 	}
