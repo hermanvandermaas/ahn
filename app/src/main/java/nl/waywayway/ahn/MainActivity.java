@@ -42,7 +42,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_WELCOME_DIALOGFRAGMENT = "welcome_dialogfragment";
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
-	private boolean dialogWasShowed = false;
+	private boolean dialogPlayServicesWasShowed = false;
+	private boolean dialogWelcomeWasShowed = false;
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
@@ -56,7 +57,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private View searchBar;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
-	private String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
+	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
+	private static final String WELCOME_DIALOG_SHOWED_STATE_KEY = "welcome_dialog_showed_state_key";
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
@@ -82,6 +84,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		{
 			permissionAsked = savedInstanceState.getBoolean(PERMISSION_ASKED_STATE_KEY);
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
+			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 		}
 
 		// Handler voor worker fragment
@@ -228,10 +231,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		WelcomeDialogFragment dialogFragment = (WelcomeDialogFragment) fragmentManager.findFragmentByTag(TAG_WELCOME_DIALOGFRAGMENT);
 
-		if (dialogFragment == null)
+		if (dialogFragment == null && !dialogWelcomeWasShowed)
 		{
 			WelcomeDialogFragment newFragment = new WelcomeDialogFragment();
 			newFragment.show(fragmentManager, "dialog");
+			dialogWelcomeWasShowed = true;
 		}
 	}
 
@@ -402,7 +406,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// Check beschikbaarheid Play Services
 	protected void isPlayServicesAvailable()
 	{
-		if (dialogWasShowed) return;
+		if (dialogPlayServicesWasShowed) return;
 
 		GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
 		int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
@@ -413,7 +417,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			if (apiAvailability.isUserResolvableError(resultCode))
 			{
 				apiAvailability.getErrorDialog((Activity) context, resultCode, 9000).show();
-				dialogWasShowed = true;
+				dialogPlayServicesWasShowed = true;
 			}
 		}
 	}
@@ -558,6 +562,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		outState.putBoolean(PERMISSION_ASKED_STATE_KEY, permissionAsked);
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
+		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 
 		super.onSaveInstanceState(outState);
 	}
