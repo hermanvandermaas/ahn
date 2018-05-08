@@ -87,13 +87,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 		}
-		
+
 		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
 		{
 			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
 			notConnectedMessageWasShowed = true;
 		}
-		
+
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
@@ -405,6 +405,19 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	}
 
 	@Override
+	public void onBackPressed()
+	{
+		if (drawerLayout.isDrawerOpen(Gravity.RIGHT))
+		{
+			drawerLayout.closeDrawer(Gravity.RIGHT);
+		}
+		else
+		{
+			super.onBackPressed();
+		}
+	}
+
+	@Override
 	public void onConnectionFailed(ConnectionResult p1)
 	{
 		Toast.makeText(context, "Locatiezoeker werkt momenteel niet", Toast.LENGTH_SHORT).show();
@@ -571,7 +584,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
 		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
-		
+
 		super.onSaveInstanceState(outState);
 	}
 
@@ -598,7 +611,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onStart();
 		Log.i("HermLog", "onStart()");
-		
+
 		showWelcomeDialog();
 	}
 
