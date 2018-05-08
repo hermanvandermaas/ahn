@@ -25,7 +25,8 @@
 		<item name="android:textSize">16sp</item>
 	</style>
 	
-	<style name="text_body" parent="TextAppearance.AppCompat.Body2">
+	<style name="text_body" parent="TextAppearance.AppCompat.Body1">
+		<item name="android:textColorPrimary">@color/primary_dark</item>
 		<!--<item name="android:textSize">16sp</item>-->
 	</style>
 	
@@ -47,6 +48,9 @@
 		<item name="android:paddingBottom">12dp</item>
 	</style>
 	
+	<style name="welcome_dialog_image" parent="ThemeOverlay.AppCompat.Light">
+		<item name="android:layout_marginTop">20dp</item>
+	</style>
 	
 	<style name="welcome_dialog_container" parent="ThemeOverlay.AppCompat.Light">
 		<item name="android:paddingTop">24dp</item>
@@ -55,7 +59,7 @@
 	</style>
 	
 	<style name="welcome_dialog_checkbox" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:layout_marginTop">24dp</item>
+		<item name="android:layout_marginTop">4dp</item>
 		
 	</style>
 	

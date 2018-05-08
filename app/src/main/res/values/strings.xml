@@ -14,5 +14,5 @@
 	
 	<string name="welcome_dialog_title">Welkom</string>
 	<string name="welcome_dialog_subtitle">Goed om te weten</string>
-	<string name="welcome_dialog_body_text">Zoom ver in voor de hoogtekaart.</string>
+	<string name="welcome_dialog_body_text">• Zoom ver in voor de hoogtekaart\n• Of vind een locatie in de zoekbalk\n• AHN 3 is nog niet voor heel Nederland beschikbaar\n</string>
 </resources>
