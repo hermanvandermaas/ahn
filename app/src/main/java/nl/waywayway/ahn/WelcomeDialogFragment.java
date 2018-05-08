@@ -25,7 +25,7 @@ public class WelcomeDialogFragment extends DialogFragment
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
         builder
-			.setTitle(R.string.welcome_dialog_title)
+			.setTitle(R.string.welcome_dialog_subtitle)
 			.setView(inflater.inflate(R.layout.welcome_dialog_fragment, null))
 			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id)

@@ -47,4 +47,16 @@
 		<item name="android:paddingBottom">12dp</item>
 	</style>
 	
+	
+	<style name="welcome_dialog_container" parent="ThemeOverlay.AppCompat.Light">
+		<item name="android:paddingTop">24dp</item>
+		<item name="android:paddingLeft">24dp</item>
+		<item name="android:paddingRight">24dp</item>
+	</style>
+	
+	<style name="welcome_dialog_checkbox" parent="ThemeOverlay.AppCompat.Light">
+		<item name="android:layout_marginTop">24dp</item>
+		
+	</style>
+	
 </resources>

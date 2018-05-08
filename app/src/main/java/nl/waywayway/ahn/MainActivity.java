@@ -44,6 +44,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private boolean dialogPlayServicesWasShowed = false;
 	private boolean dialogWelcomeWasShowed = false;
+	private boolean notConnectedMessageWasShowed = false;
 	private Context context;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
@@ -59,6 +60,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     private boolean permissionAsked = false;
 	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
 	private static final String WELCOME_DIALOG_SHOWED_STATE_KEY = "welcome_dialog_showed_state_key";
+	private static final String NOT_CONNECTED_STATE_KEY = "not_connected_state_key";
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
@@ -77,16 +79,21 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
 
-		if (!isNetworkConnected()) Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
-
 		// Herstel savedInstanceState
 		if (savedInstanceState != null)
 		{
 			permissionAsked = savedInstanceState.getBoolean(PERMISSION_ASKED_STATE_KEY);
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
 			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
+			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 		}
-
+		
+		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
+		{
+			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+			notConnectedMessageWasShowed = true;
+		}
+		
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
@@ -563,7 +570,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(PERMISSION_ASKED_STATE_KEY, permissionAsked);
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
 		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
-
+		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
+		
 		super.onSaveInstanceState(outState);
 	}
 
