@@ -42,6 +42,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_WELCOME_DIALOGFRAGMENT = "welcome_dialogfragment";
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
+	private static final String PREFERENCES_FILENAME = "ahn_preferences";
+	private static final String PREFERENCES_KEY_WELCOME_DIALOG_SHOWED = "dialog_showed";
 	private boolean dialogPlayServicesWasShowed = false;
 	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
@@ -235,10 +237,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	public void showWelcomeDialog()
 	{
+		SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILENAME, context.MODE_PRIVATE);
+		boolean prefDefault = false;
+		boolean doNotShowDialogAgain = sharedPref.getBoolean(PREFERENCES_KEY_WELCOME_DIALOG_SHOWED, prefDefault);
+		//Log.i("HermLog", "doNotShowDialogAgain: " + doNotShowDialogAgain);
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		WelcomeDialogFragment dialogFragment = (WelcomeDialogFragment) fragmentManager.findFragmentByTag(TAG_WELCOME_DIALOGFRAGMENT);
 
-		if (dialogFragment == null && !dialogWelcomeWasShowed)
+		if (dialogFragment == null && !dialogWelcomeWasShowed && !doNotShowDialogAgain)
 		{
 			WelcomeDialogFragment newFragment = new WelcomeDialogFragment();
 			newFragment.show(fragmentManager, "dialog");

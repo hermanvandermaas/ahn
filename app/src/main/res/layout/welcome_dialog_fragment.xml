@@ -35,6 +35,13 @@
 			android:layout_height="wrap_content"
 			style="@style/text_body"
 			android:text="@string/welcome_dialog_body_text" />
+		
+		<CheckBox 
+			android:id="@+id/welcome_dialog_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="@style/welcome_dialog_checkbox"
+			android:text="@string/welcome_dialog_checkbox" />
 
 	</LinearLayout>
 </LinearLayout>
