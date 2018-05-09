@@ -49,7 +49,7 @@
 	</style>
 	
 	<style name="welcome_dialog_image" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:layout_marginTop">20dp</item>
+		<item name="android:layout_marginTop">12dp</item>
 	</style>
 	
 	<style name="welcome_dialog_container" parent="ThemeOverlay.AppCompat.Light">
