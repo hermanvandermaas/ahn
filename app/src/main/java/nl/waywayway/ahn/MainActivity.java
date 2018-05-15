@@ -246,21 +246,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private void makeImage()
 	{
-		/*FragmentManager fm = getSupportFragmentManager();
-		MapFragment fragment = fm.findFragmentById(R.id.map);
-		gMap.sn
-		if (fragment != null)
-		{
-			View view = fragment.getView();
-			ViewToImage.getInstance().viewToImage(view);
-		}*/
-		
 		gMap.snapshot(new GoogleMap.SnapshotReadyCallback()
 			{
 				@Override
 				public void onSnapshotReady(Bitmap bitmap) {
-					//Toast.makeText(context, "Snapshot", Toast.LENGTH_SHORT).show();
-					//Log.i("HermLog", "context.getCacheDir() + SHARE_IMAGE_PATH: " + context.getCacheDir() + SHARE_IMAGE_PATH);
 					
 					File file = new File(context.getCacheDir() + SHARE_IMAGE_PATH);
 					FileOutputStream fileOut = null;
