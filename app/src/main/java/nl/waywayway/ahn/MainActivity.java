@@ -4,6 +4,7 @@ import android.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
+import android.graphics.*;
 import android.location.*;
 import android.net.*;
 import android.os.*;
@@ -22,6 +23,7 @@ import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -44,6 +46,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private static final String PREFERENCES_FILENAME = "ahn_preferences";
 	private static final String PREFERENCES_KEY_WELCOME_DIALOG_SHOWED = "dialog_showed";
+	private static final String FILES_AUTHORITY = "nl.waywayway.ahn.fileprovider";
+	private static final String SHARE_IMAGE_PATH = "/hoogte.png";
 	private boolean dialogPlayServicesWasShowed = false;
 	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
@@ -161,6 +165,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 				return true;
 
+			case R.id.action_share_map:
+				makeImage();
+
+				return true;
+
 			case R.id.action_search:
 				if (searchBar.getVisibility() == View.VISIBLE)
 				{
@@ -209,7 +218,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
     }
-
+	
 	@Override
     public boolean onMyLocationButtonClick()
 	{
@@ -233,6 +242,78 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 		else
 			Toast.makeText(this, "Je locatie is nu niet beschikbaar", Toast.LENGTH_SHORT).show();
+	}
+
+	private void makeImage()
+	{
+		/*FragmentManager fm = getSupportFragmentManager();
+		MapFragment fragment = fm.findFragmentById(R.id.map);
+		gMap.sn
+		if (fragment != null)
+		{
+			View view = fragment.getView();
+			ViewToImage.getInstance().viewToImage(view);
+		}*/
+		
+		gMap.snapshot(new GoogleMap.SnapshotReadyCallback()
+			{
+				@Override
+				public void onSnapshotReady(Bitmap bitmap) {
+					Toast.makeText(context, "Snapshot", Toast.LENGTH_SHORT).show();
+					
+					Log.i("HermLog", "context.getCacheDir() + SHARE_IMAGE_PATH: " + context.getCacheDir() + SHARE_IMAGE_PATH);
+					
+					File file = new File(context.getCacheDir() + SHARE_IMAGE_PATH);
+					FileOutputStream fileOut = null;
+					
+					try
+					{
+						fileOut = new FileOutputStream(file);
+					}
+					catch (FileNotFoundException e)
+					{
+						e.printStackTrace();
+					}
+					
+					if (fileOut != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
+					
+					try
+					{
+						fileOut.close();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+
+					shareImage(file);
+				}
+			});
+	}
+	
+	// Deel afbeelding via andere app
+	private void shareImage(File imageFile)
+	{
+		
+		if (imageFile == null)
+		{
+			Toast.makeText(context, "Geen afbeelding om te delen", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		Uri uriToImage = FileProvider.getUriForFile(context, FILES_AUTHORITY, imageFile);
+	
+		Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
+			.setStream(uriToImage)
+			.getIntent();
+
+		shareIntent.setData(uriToImage);
+		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			
+		if (shareIntent.resolveActivity(getPackageManager()) != null)
+		{
+			startActivity(shareIntent);
+		}
 	}
 
 	public void showWelcomeDialog()

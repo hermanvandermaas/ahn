@@ -19,6 +19,14 @@
 		app:showAsAction="always"
 		android:visibility="gone" />
 	<item
+		android:id="@+id/action_share_map"
+		android:title="@string/action_share_map"
+		android:icon="@drawable/baseline_share_24px"
+		android:orderInCategory="17"
+		app:showAsAction="always"
+		android:visibility="visible" />
+	
+	<item
 		android:id="@+id/action_layer_menu"
 		android:title="@string/action_layers"
 		android:icon="@drawable/ic_layers_black_24px"
