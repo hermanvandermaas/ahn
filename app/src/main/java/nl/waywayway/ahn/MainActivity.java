@@ -80,7 +80,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Initialiseer
 		context = this;
 		savedInstanceStateGlobal = savedInstanceState;
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerLayout = findViewById(R.id.drawer_layout);
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
@@ -336,9 +336,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
         }
     }
 
-	/**
-     * Enables the My Location layer if the fine location permission has been granted.
-     */
     private void enableMyLocation()
 	{
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -427,15 +424,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			.build();
 	}
 
-	// Maak kaartlagen en zet in ArrayList
-	private void createLayers()
-	{
-		for (LayerItem layerItem : layerList)
-		{
-			createLayer(layerItem);
-		}
-	}
-
 	public TileOverlay createLayer(LayerItem layerItem)
 	{
 		// Maak TileOverlay, 
@@ -465,7 +453,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// RecyclerView
 	private void createLayerMenu()
 	{
-		RecyclerView recyclerView = (RecyclerView) findViewById(R.id.layers_recycler_view);
+		RecyclerView recyclerView = findViewById(R.id.layers_recycler_view);
 		//Log.i("HermLog", "recyclerView: " + recyclerView);
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 		recyclerView.setLayoutManager(linearLayoutManager);
@@ -473,7 +461,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		recyclerView.setAdapter(adapter);
 
 		// Plaats titel van lagenmenu beneden status bar
-		TextView layersTitle = (TextView) findViewById(R.id.layers_title);
+		TextView layersTitle = findViewById(R.id.layers_title);
 		LinearLayout.LayoutParams layoutParams =  (LinearLayout.LayoutParams) layersTitle.getLayoutParams();
 		layoutParams.topMargin = getStatusBarHeight();
 		layersTitle.setLayoutParams(layoutParams);
@@ -515,14 +503,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				dialogPlayServicesWasShowed = true;
 			}
 		}
-	}
-
-	private void setTransparentStatusBar()
-	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-		{
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
 	}
 
 	private int getStatusBarHeight()
@@ -586,7 +566,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		return networkInfo != null && networkInfo.isConnected();
 	}
 
-	// Hoogste zichtbare laag
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		LayerItem topVisibleLayer = getTopVisibleLayer();
@@ -603,7 +582,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.setLayerInfo(topVisibleLayer.getShortTitle());
 		taskFragment.start(urls);
 	}
-
+	
+	// Hoogste zichtbare laag
 	private LayerItem getTopVisibleLayer()
 	{
 		LayerItem returnLayerItem = null;
@@ -668,14 +648,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onDestroy();
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		Log.i("HermLog", "onDestroy()");
+		//Log.i("HermLog", "onDestroy()");
 	}
 
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		Log.i("HermLog", "onResume()");
+		//Log.i("HermLog", "onResume()");
 
 		// Check beschikbaarheid Google Play services
 		isPlayServicesAvailable();

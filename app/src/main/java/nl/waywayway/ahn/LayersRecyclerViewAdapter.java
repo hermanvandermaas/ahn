@@ -200,8 +200,8 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
         public CustomViewHolder(View view)
 		{
             super(view);
-            this.checkBoxView = (CheckBox) view.findViewById(R.id.layer_checkbox);
-			this.seekBarView = (SeekBar) view.findViewById(R.id.layer_seekbar);
+            this.checkBoxView = view.findViewById(R.id.layer_checkbox);
+			this.seekBarView = view.findViewById(R.id.layer_seekbar);
         }
     }
 }
