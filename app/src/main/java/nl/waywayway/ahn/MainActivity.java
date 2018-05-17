@@ -62,6 +62,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
 	private View searchBar;
+	private View legend;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
 	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
@@ -69,7 +70,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private static final String NOT_CONNECTED_STATE_KEY = "not_connected_state_key";
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
+	private boolean legendVisible = false;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
+	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +85,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		savedInstanceStateGlobal = savedInstanceState;
 		drawerLayout = findViewById(R.id.drawer_layout);
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
+		legend = findViewById(R.id.legend_scrollview);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
 
@@ -92,6 +96,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
 			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
+			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
+		}
+		
+		if (legendVisible)
+		{
+			showLegend(View.VISIBLE);
+			legendVisible = true;
 		}
 
 		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
@@ -164,7 +175,21 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				zoomToCurrentLocation();
 
 				return true;
+				
+			case R.id.action_legend:
+				if (legend.getVisibility() == View.VISIBLE)
+				{
+					showLegend(View.INVISIBLE);
+					legendVisible = false;
+				}
+				else
+				{
+					showLegend(View.VISIBLE);
+					legendVisible = true;
+				}
 
+				return true;
+				
 			case R.id.action_share_map:
 				makeImage();
 
@@ -175,13 +200,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				{
 					showSearchBar(View.GONE);
 					searchBarVisible = false;
-					//setMapPadding();
 				}
 				else
 				{
 					showSearchBar(View.VISIBLE);
 					searchBarVisible = true;
-					//setMapPadding();
 				}
 
 				return true;
@@ -631,6 +654,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		myLocationIconVisible = showIcon;
 		invalidateOptionsMenu();
 	}
+	
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showLegend(int visibility)
+	{
+		View legend = findViewById(R.id.legend_scrollview);
+		legend.setVisibility(visibility);
+	}
+	
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState)
@@ -639,6 +670,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
 		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
+		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -665,7 +697,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onStart()
 	{
 		super.onStart();
-		Log.i("HermLog", "onStart()");
+		//Log.i("HermLog", "onStart()");
 
 		showWelcomeDialog();
 	}

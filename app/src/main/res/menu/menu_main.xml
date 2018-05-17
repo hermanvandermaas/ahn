@@ -16,15 +16,22 @@
 		android:title="@string/action_myposition"
 		android:icon="@drawable/ic_my_location_black_24px"
 		android:orderInCategory="15"
-		app:showAsAction="always"
+		app:showAsAction="ifRoom"
 		android:visibility="gone" />
 	<item
 		android:id="@+id/action_share_map"
 		android:title="@string/action_share_map"
 		android:icon="@drawable/baseline_share_24px"
 		android:orderInCategory="17"
-		app:showAsAction="always"
+		app:showAsAction="ifRoom"
 		android:visibility="visible" />
+	
+	<item
+		android:id="@+id/action_legend"
+		android:title="@string/action_legend"
+		android:icon="@drawable/baseline_format_list_bulleted_24px"
+		android:orderInCategory="18"
+		app:showAsAction="always" />
 	
 	<item
 		android:id="@+id/action_layer_menu"
