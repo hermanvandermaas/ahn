@@ -15,6 +15,7 @@ import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
+import android.view.animation.*;
 import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import nl.waywayway.ahn.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -181,11 +183,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				{
 					showLegend(View.INVISIBLE);
 					legendVisible = false;
+					Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.legend_slide_down);
+					legend.startAnimation(slideDown);
 				}
 				else
 				{
 					showLegend(View.VISIBLE);
 					legendVisible = true;
+					Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.legend_slide_up);
+					legend.startAnimation(slideUp);
 				}
 
 				return true;
