@@ -142,20 +142,20 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 
 		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeRightGestureListener()
-		{
-			@Override
-			public void onSwipeRight()
 			{
-				if (legend.getVisibility() == View.VISIBLE)
+				@Override
+				public void onSwipeRight()
 				{
-					showLegend(View.INVISIBLE);
-					legendVisible = false;
-					Animation slideRight = AnimationUtils.loadAnimation(context, R.anim.legend_slide_right);
-					legend.startAnimation(slideRight);
+					if (legend.getVisibility() == View.VISIBLE)
+					{
+						showLegend(View.INVISIBLE);
+						legendVisible = false;
+						Animation slideRight = AnimationUtils.loadAnimation(context, R.anim.legend_slide_right);
+						legend.startAnimation(slideRight);
+					}
 				}
-			}
-		});
-		
+			});
+
 		legend.setOnTouchListener(new OnTouchListener()
 			{
 				@Override
@@ -164,7 +164,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					swipeRightGestureDetector.onTouchEvent(motionEvent);
 					return false;
 				}
-		});
+			});
 	}
 
 	// Maak toolbar
@@ -535,6 +535,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (drawerLayout.isDrawerOpen(Gravity.RIGHT))
 		{
 			drawerLayout.closeDrawer(Gravity.RIGHT);
+		}
+		else if (legend.getVisibility() == View.VISIBLE)
+		{
+			showLegend(View.INVISIBLE);
+			legendVisible = false;
+			Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.legend_slide_right);
+			legend.startAnimation(slideRight);
 		}
 		else
 		{
