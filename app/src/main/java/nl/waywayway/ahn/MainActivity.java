@@ -15,6 +15,7 @@ import android.support.v7.app.*;
 import android.support.v7.widget.*;
 import android.util.*;
 import android.view.*;
+import android.view.View.*;
 import android.view.animation.*;
 import android.widget.*;
 import com.google.android.gms.common.*;
@@ -27,11 +28,11 @@ import com.google.android.gms.maps.model.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import nl.waywayway.ahn.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.view.*;
 
 public class MainActivity extends AppCompatActivity
 implements 
@@ -65,6 +66,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private DrawerLayout drawerLayout;
 	private View searchBar;
 	private View legend;
+	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
 	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
@@ -100,12 +102,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 		}
-		
-		if (legendVisible)
-		{
-			showLegend(View.VISIBLE);
-			legendVisible = true;
-		}
+
+		initializeLegend();
 
 		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
 		{
@@ -134,6 +132,40 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		makeToolbar();
 		//setTransparentStatusBar();
     }
+
+	private void initializeLegend()
+	{
+		if (legendVisible)
+		{
+			showLegend(View.VISIBLE);
+			legendVisible = true;
+		}
+
+		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeRightGestureListener()
+		{
+			@Override
+			public void onSwipeRight()
+			{
+				if (legend.getVisibility() == View.VISIBLE)
+				{
+					showLegend(View.INVISIBLE);
+					legendVisible = false;
+					Animation slideRight = AnimationUtils.loadAnimation(context, R.anim.legend_slide_right);
+					legend.startAnimation(slideRight);
+				}
+			}
+		});
+		
+		legend.setOnTouchListener(new OnTouchListener()
+			{
+				@Override
+				public boolean onTouch(View view, MotionEvent motionEvent)
+				{
+					swipeRightGestureDetector.onTouchEvent(motionEvent);
+					return false;
+				}
+		});
+	}
 
 	// Maak toolbar
 	private void makeToolbar()
@@ -177,25 +209,25 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				zoomToCurrentLocation();
 
 				return true;
-				
+
 			case R.id.action_legend:
 				if (legend.getVisibility() == View.VISIBLE)
 				{
 					showLegend(View.INVISIBLE);
 					legendVisible = false;
-					Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.legend_slide_down);
-					legend.startAnimation(slideDown);
+					Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.legend_slide_right);
+					legend.startAnimation(slideRight);
 				}
 				else
 				{
 					showLegend(View.VISIBLE);
 					legendVisible = true;
-					Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.legend_slide_up);
-					legend.startAnimation(slideUp);
+					Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.legend_slide_left);
+					legend.startAnimation(slideLeft);
 				}
 
 				return true;
-				
+
 			case R.id.action_share_map:
 				makeImage();
 
@@ -247,7 +279,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
     }
-	
+
 	@Override
     public boolean onMyLocationButtonClick()
 	{
@@ -278,11 +310,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		gMap.snapshot(new GoogleMap.SnapshotReadyCallback()
 			{
 				@Override
-				public void onSnapshotReady(Bitmap bitmap) {
-					
+				public void onSnapshotReady(Bitmap bitmap)
+				{
+
 					File file = new File(context.getCacheDir() + SHARE_IMAGE_PATH);
 					FileOutputStream fileOut = null;
-					
+
 					try
 					{
 						fileOut = new FileOutputStream(file);
@@ -291,9 +324,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					{
 						e.printStackTrace();
 					}
-					
+
 					if (fileOut != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
-					
+
 					try
 					{
 						fileOut.close();
@@ -307,26 +340,26 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 			});
 	}
-	
+
 	// Deel afbeelding via andere app
 	private void shareImage(File imageFile)
 	{
-		
+
 		if (imageFile == null)
 		{
 			Toast.makeText(context, "Geen afbeelding om te delen", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
+
 		Uri uriToImage = FileProvider.getUriForFile(context, FILES_AUTHORITY, imageFile);
-	
+
 		Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
 			.setStream(uriToImage)
 			.getIntent();
 
 		shareIntent.setData(uriToImage);
 		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			
+
 		if (shareIntent.resolveActivity(getPackageManager()) != null)
 		{
 			startActivity(shareIntent);
@@ -611,7 +644,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.setLayerInfo(topVisibleLayer.getShortTitle());
 		taskFragment.start(urls);
 	}
-	
+
 	// Hoogste zichtbare laag
 	private LayerItem getTopVisibleLayer()
 	{
@@ -660,14 +693,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		myLocationIconVisible = showIcon;
 		invalidateOptionsMenu();
 	}
-	
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showLegend(int visibility)
 	{
 		View legend = findViewById(R.id.legend_scrollview);
 		legend.setVisibility(visibility);
 	}
-	
+
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState)
