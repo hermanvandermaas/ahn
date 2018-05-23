@@ -34,7 +34,7 @@ class OnBoardingAdapter extends PagerAdapter
 	{
         View itemView = LayoutInflater.from(context).inflate(R.layout.item_onboarding, container, false);
 
-        OnBoardingItem item=onBoardingItems.get(position);
+        OnBoardingItem item = onBoardingItems.get(position);
 
         ImageView imageView = itemView.findViewById(R.id.iv_onboard);
         imageView.setImageResource(item.getImageID());

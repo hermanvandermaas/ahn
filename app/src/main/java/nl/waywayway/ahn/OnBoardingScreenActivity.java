@@ -174,4 +174,17 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 
         dots[0].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.selected_item_dot));
     }
+
+	@Override
+	public void onBackPressed()
+	{
+		if (onboardPager.getCurrentItem() == 0)
+		{
+			super.onBackPressed();
+		}
+		else
+		{
+			onboardPager.setCurrentItem(onboardPager.getCurrentItem() - 1);
+		}
+	}
 }
