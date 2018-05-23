@@ -46,7 +46,6 @@ TaskFragment.TaskCallbacks,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
-	private static final String PREFERENCES_FILENAME = "ahn_preferences";
 	private static final String FILES_AUTHORITY = "nl.waywayway.ahn.fileprovider";
 	private static final String SHARE_IMAGE_PATH = "/hoogte.png";
 	private boolean dialogPlayServicesWasShowed = false;
@@ -80,7 +79,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_main);
 
 		// Initialiseer
 		context = this;
@@ -689,6 +688,20 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		legend.setVisibility(visibility);
 	}
 
+	private void showOnboardingScreenAtFirstRun()
+	{
+		SharedPreferences sharedPref = context.getSharedPreferences(getResources().getString(R.string.SHARED_PREFERENCES_FILENAME), context.MODE_PRIVATE);
+		boolean prefDefault = true;
+		boolean showOnBoardingScreen = sharedPref.getBoolean(getResources().getString(R.string.PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN), prefDefault);
+
+		if (showOnBoardingScreen)
+		{
+			// Start activity
+			Intent mIntent = new Intent(context, OnBoardingScreenActivity.class);
+			context.startActivity(mIntent);
+			this.finish();
+		}
+	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState)
@@ -716,8 +729,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		super.onResume();
 		//Log.i("HermLog", "onResume()");
 
-		// Check beschikbaarheid Google Play services
 		isPlayServicesAvailable();
+		showOnboardingScreenAtFirstRun();
 	}
 
 	@Override
