@@ -1,14 +1,15 @@
 package nl.waywayway.ahn;
 
+import android.content.*;
 import android.os.*;
 import android.support.v4.content.*;
 import android.support.v4.view.*;
 import android.support.v7.app.*;
+import android.util.*;
 import android.view.*;
 import android.view.animation.*;
 import android.widget.*;
 import java.util.*;
-import android.content.*;
 
 public class OnBoardingScreenActivity extends AppCompatActivity
 {
@@ -19,8 +20,12 @@ public class OnBoardingScreenActivity extends AppCompatActivity
     private ViewPager onboardPager;
     private OnBoardingAdapter adapter;
     private Button btnGetStarted;
-    private int previousPos=0;
-    private ArrayList<OnBoardingItem> onBoardItems=new ArrayList<>();
+	private int currentPos = 0;
+    private int previousPos = 0;
+    private ArrayList<OnBoardingItem> onBoardItems = new ArrayList<>();
+	private static final String CURRENT_POS_KEY = "current_pos_key";
+
+	private String PREVIOUS_POS_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,7 +38,22 @@ public class OnBoardingScreenActivity extends AppCompatActivity
         onboardPager = findViewById(R.id.pager_introduction);
         pagerIndicator = findViewById(R.id.viewPagerCountDots);
 
-        loadData();
+		// Herstel savedInstanceState
+		if (savedInstanceState != null)
+		{
+			currentPos = savedInstanceState.getInt(CURRENT_POS_KEY);
+			previousPos = savedInstanceState.getInt(PREVIOUS_POS_KEY);
+			Log.i("HermLog", "currentPos restored: " + currentPos);
+		}
+		
+        initializeViewPager();
+		initializeButton();
+        setUiPageViewController();
+    }
+	
+	private void initializeViewPager()
+	{
+		loadData();
 
         adapter = new OnBoardingAdapter(this, onBoardItems);
         onboardPager.setAdapter(adapter);
@@ -47,21 +67,20 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 				@Override
 				public void onPageSelected(int position)
 				{
-					// Change the current position
+					//Log.i("HermLog", "onPageSelected()");
+
+					// Zet volgende stip op geselecteerd
 					for (int i = 0; i < dotsCount; i++)
 					{
 						dots[i].setImageDrawable(ContextCompat.getDrawable(OnBoardingScreenActivity.this, R.drawable.non_selected_item_dot));
 					}
 
 					dots[position].setImageDrawable(ContextCompat.getDrawable(OnBoardingScreenActivity.this, R.drawable.selected_item_dot));
-
-					int pos=position + 1;
-
-					if (pos == dotsCount && previousPos == (dotsCount - 1))
-						show_animation();
-					else if (pos == (dotsCount - 1) && previousPos == dotsCount)
-						hide_animation();
-
+					// positie beginnend met 1
+					int pos = position + 1;
+					// positie beginnend met 0
+					currentPos = position;
+					setButtonVisibility(pos);
 					previousPos = pos;
 				}
 
@@ -70,17 +89,30 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 				{
 				}
 			});
-
-        btnGetStarted.setOnClickListener(new View.OnClickListener() {
+	}
+	
+	private void initializeButton()
+	{
+		btnGetStarted.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v)
 				{
 					Toast.makeText(context, "Redirect to wherever you want", Toast.LENGTH_LONG).show();
 				}
 			});
-
-        setUiPageViewController();
-    }
+	}
+	
+	private void setButtonVisibility(int pos)
+	{
+		Log.i("HermLog", "pos: " + pos);
+		Log.i("HermLog", "dotscount: " + dotsCount);
+		Log.i("HermLog", "previousPos: " + previousPos);
+		
+		if (pos == dotsCount && previousPos == (dotsCount - 1))
+			show_animation();
+		else if (pos == (dotsCount - 1) && previousPos == dotsCount)
+			hide_animation();
+	}
 
     // Load data into the viewpager
     public void loadData()
@@ -155,6 +187,8 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 
     private void setUiPageViewController()
 	{
+		//Log.i("HermLog", "setUiPageViewController()");
+		
         dotsCount = adapter.getCount();
         dots = new ImageView[dotsCount];
 
@@ -186,5 +220,21 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 		{
 			onboardPager.setCurrentItem(onboardPager.getCurrentItem() - 1);
 		}
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		outState.putInt(CURRENT_POS_KEY, currentPos);
+		outState.putInt(PREVIOUS_POS_KEY, previousPos);
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onStart()
+	{
+		if ((currentPos + 1) == dotsCount) show_animation();
+		//setButtonVisibility(currentPos + 1);
+		super.onStart();
 	}
 }

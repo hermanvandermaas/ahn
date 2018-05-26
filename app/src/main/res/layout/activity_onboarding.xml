@@ -23,18 +23,18 @@
         android:orientation="horizontal" />
 
     <LinearLayout
+		android:id="@+id/ll_footer"
+		android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:id="@+id/ll_footer"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
         android:orientation="vertical">
 
         <Button
             android:id="@+id/btn_get_started"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
+			android:layout_width="match_parent"
             android:layout_height="50dp"
+            style="?android:attr/borderlessButtonStyle"
             android:background="@color/primary"
             android:text="@string/ob_get_started"
             android:textAllCaps="false"

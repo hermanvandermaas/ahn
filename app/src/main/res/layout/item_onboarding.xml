@@ -6,54 +6,60 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:id="@+id/iv_onboard"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/ob_banner_height"
-        android:gravity="center"
-        android:scaleType="fitXY"
-        android:src="@drawable/onboard_page1" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		android:layout_weight="2"
+		android:gravity="bottom">
+		
+		<ImageView
+			android:id="@+id/iv_onboard"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:maxHeight="@dimen/ob_banner_height"
+			android:layout_marginTop="0dp"
+			android:layout_marginLeft="@dimen/activity_horizontal_margin"
+			android:layout_marginRight="@dimen/activity_horizontal_margin"
+			android:paddingTop="8dp"
+			android:paddingBottom="30dp"
+			android:gravity="center"
+			android:scaleType="fitCenter"
+			android:adjustViewBounds="true"
+			android:src="@drawable/onboard_page1" />
 
-    <RelativeLayout
-        android:layout_below="@+id/iv_onboard"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+	</LinearLayout>
 
-        <LinearLayout
-            android:layout_centerVertical="true"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:gravity="top"
+		android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingLeft="@dimen/ob_desc_padding"
-                android:paddingRight="@dimen/ob_desc_padding"
-                android:text="@string/ob_header1"
-                android:textAllCaps="true"
-                android:textColor="@color/ob_header"
-                android:textSize="@dimen/ob_header_text_size" />
+		<TextView
+			android:id="@+id/tv_header"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:paddingLeft="@dimen/ob_desc_padding"
+			android:paddingRight="@dimen/ob_desc_padding"
+			android:text="@string/ob_header1"
+			android:textAllCaps="true"
+			android:textColor="@color/ob_header"
+			android:textSize="@dimen/ob_header_text_size" />
 
-            <TextView
-                android:id="@+id/tv_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:paddingLeft="@dimen/ob_desc_padding"
-                android:paddingRight="@dimen/ob_desc_padding"
-                android:text="@string/ob_desc1"
-                android:textColor="@color/ob_desc"
-                android:textSize="@dimen/ob_desc_text_size" />
+		<TextView
+			android:id="@+id/tv_desc"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="20dp"
+			android:gravity="center"
+			android:paddingLeft="@dimen/ob_desc_padding"
+			android:paddingRight="@dimen/ob_desc_padding"
+			android:text="@string/ob_desc1"
+			android:textColor="@color/ob_desc"
+			android:textSize="@dimen/ob_desc_text_size" />
 
-        </LinearLayout>
-    </RelativeLayout>
+	</LinearLayout>
 </LinearLayout>
