@@ -89,6 +89,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		legend = findViewById(R.id.legend_scrollview);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
+		
+		showOnboardingScreenAtFirstRun();
 
 		// Herstel savedInstanceState
 		if (savedInstanceState != null)
@@ -101,12 +103,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 
 		initializeLegend();
-
-		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
-		{
-			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
-			notConnectedMessageWasShowed = true;
-		}
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
@@ -130,6 +126,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//setTransparentStatusBar();
     }
 
+	private void showNotConnectedMessage()
+	{
+		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
+		{
+			Toast.makeText(context, getResources().getString(R.string.not_connected_message), Toast.LENGTH_SHORT).show();
+			notConnectedMessageWasShowed = true;
+		}
+	}
+	
 	private void initializeLegend()
 	{
 		if (legendVisible)
@@ -299,7 +304,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
 		}
 		else
-			Toast.makeText(this, "Je locatie is nu niet beschikbaar", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
 	private void makeImage()
@@ -344,7 +349,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		if (imageFile == null)
 		{
-			Toast.makeText(context, "Geen afbeelding om te delen", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, getResources().getString(R.string.no_image_for_sharing_available_message), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -427,7 +432,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		// Alleen in Nederland zoeken
 		AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-			.setCountry("NL")
+			.setCountry(getResources().getString(R.string.country_code))
 			.build();
 
 		autocompleteFragment.setFilter(typeFilter);
@@ -532,7 +537,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onConnectionFailed(ConnectionResult p1)
 	{
-		Toast.makeText(context, "Locatiezoeker werkt momenteel niet", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, getResources().getString(R.string.place_search_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
 	// Check beschikbaarheid Play Services
@@ -596,7 +601,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Vraag hoogte op voor punt
 		if (!isNetworkConnected())
 		{
-			Toast.makeText(context, "Geen netwerkverbinding: sommige functies werken niet", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, getResources().getString(R.string.not_connected_message), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -620,7 +625,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		LayerItem topVisibleLayer = getTopVisibleLayer();
 		if (topVisibleLayer == null)
 		{
-			Toast.makeText(context, "Maak een kaartlaag met hoogte zichtbaar in het lagenmenu", Toast.LENGTH_LONG).show();
+			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -727,17 +732,17 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onResume()
 	{
 		super.onResume();
-		//Log.i("HermLog", "onResume()");
+		Log.i("HermLog", "onResume()");
 
 		isPlayServicesAvailable();
-		showOnboardingScreenAtFirstRun();
 	}
 
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
-		//Log.i("HermLog", "onStart()");
+		Log.i("HermLog", "onStart()");
+		showNotConnectedMessage();
 	}
 
 	/*********************************/

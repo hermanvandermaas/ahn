@@ -1,5 +1,6 @@
 package nl.waywayway.ahn;
 
+import android.app.*;
 import android.content.*;
 import android.os.*;
 import android.support.v4.content.*;
@@ -97,7 +98,16 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 				@Override
 				public void onClick(View v)
 				{
-					Toast.makeText(context, "Redirect to wherever you want", Toast.LENGTH_LONG).show();
+					// Onboarding niet nog eens tonen
+					SharedPreferences pref = context.getSharedPreferences(getResources().getString(R.string.SHARED_PREFERENCES_FILENAME), context.MODE_PRIVATE);
+					SharedPreferences.Editor edit = pref.edit();
+					edit.putBoolean(getResources().getString(R.string.PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN), false);
+					edit.commit();
+					
+					// Start activity
+					Intent intent = new Intent(context, MainActivity.class);
+					context.startActivity(intent);
+					((Activity) context).finish();
 				}
 			});
 	}
