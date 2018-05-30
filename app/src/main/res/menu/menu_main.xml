@@ -23,8 +23,7 @@
 		android:title="@string/action_share_map"
 		android:icon="@drawable/baseline_share_24px"
 		android:orderInCategory="17"
-		app:showAsAction="ifRoom"
-		android:visibility="visible" />
+		app:showAsAction="ifRoom" />
 	
 	<item
 		android:id="@+id/action_legend"

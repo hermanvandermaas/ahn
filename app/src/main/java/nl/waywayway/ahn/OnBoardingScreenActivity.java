@@ -127,9 +127,9 @@ public class OnBoardingScreenActivity extends AppCompatActivity
     // Load data into the viewpager
     public void loadData()
     {
-        int[] header = {R.string.ob_header1, R.string.ob_header2, R.string.ob_header3};
-        int[] desc = {R.string.ob_desc1, R.string.ob_desc2, R.string.ob_desc3};
-        int[] imageId = {R.drawable.onboard_page1, R.drawable.onboard_page2, R.drawable.onboard_page3};
+        int[] header = {R.string.ob_header1, R.string.ob_header2, R.string.ob_header3, R.string.ob_header4};
+        int[] desc = {R.string.ob_desc1, R.string.ob_desc2, R.string.ob_desc3, R.string.ob_desc4};
+        int[] imageId = {R.drawable.onboard_page1, R.drawable.onboard_page2, R.drawable.onboard_page3, R.drawable.onboard_page4};
 
         for (int i=0; i < imageId.length; i++)
         {
