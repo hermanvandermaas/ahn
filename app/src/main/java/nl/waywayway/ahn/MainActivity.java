@@ -360,6 +360,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			.getIntent();
 
 		shareIntent.setData(uriToImage);
+		shareIntent.setType(getResources().getString(R.string.share_image_mime_type));
 		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
 		if (shareIntent.resolveActivity(getPackageManager()) != null)

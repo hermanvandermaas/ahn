@@ -17,6 +17,8 @@
 	<string name="SHARED_PREFERENCES_FILENAME">ahn_shared_preferences_filename</string>
 	<string name="PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN">preferences_key_show_onboarding_screen</string>
 	
+	<string name="share_image_mime_type">image/png</string>
+	
 	<string name="not_connected_message">Geen netwerkverbinding: sommige functies werken niet</string>
 	<string name="device_location_not_available_message">Je locatie is nu niet beschikbaar</string>
 	<string name="no_image_for_sharing_available_message">Geen afbeelding om te delen</string>
