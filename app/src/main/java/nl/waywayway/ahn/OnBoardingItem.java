@@ -1,39 +1,44 @@
 package nl.waywayway.ahn;
 
-/**
- * Created by Jaison
- */
+// POJO voor een item in ViewPager
 
 public class OnBoardingItem
 {
-    int imageID;
-    String title;
-    String description;
+    private int imageID;
+    private String title;
+    private String description;
 
-    public OnBoardingItem() {
+    public OnBoardingItem()
+	{
     }
 
-    public int getImageID() {
+    public int getImageID()
+	{
         return imageID;
     }
 
-    public void setImageID(int imageID) {
+    public void setImageID(int imageID)
+	{
         this.imageID = imageID;
     }
 
-    public String getTitle() {
+    public String getTitle()
+	{
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title)
+	{
         this.title = title;
     }
 
-    public String getDescription() {
+    public String getDescription()
+	{
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description)
+	{
         this.description = description;
     }
 }

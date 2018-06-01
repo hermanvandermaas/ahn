@@ -732,7 +732,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onResume()
 	{
 		super.onResume();
-		Log.i("HermLog", "onResume()");
+		//Log.i("HermLog", "onResume()");
 
 		isPlayServicesAvailable();
 	}
@@ -741,7 +741,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onStart()
 	{
 		super.onStart();
-		Log.i("HermLog", "onStart()");
+		//Log.i("HermLog", "onStart()");
 		showNotConnectedMessage();
 	}
 
@@ -764,7 +764,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onCancelled()
 	{
-		Log.i("HermLog", "onCancelled()");
+		//Log.i("HermLog", "onCancelled()");
 		showProgressBar(View.GONE);
 	}
 

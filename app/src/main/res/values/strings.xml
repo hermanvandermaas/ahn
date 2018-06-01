@@ -14,10 +14,7 @@
     <string name="location_permission_denied">Je locatie is noodzakelijk voor deze app. Als je je locatie permanent niet hebt toegestaan, kun je dit herstellen via Systeeminstellingen &gt; Apps &gt; \'AHN\'.</string>
     <string name="permission_required_toast">Je locatie is noodzakelijk voor deze app.</string>
 	
-	<string name="welcome_dialog_body_text">• Zoom ver in voor de hoogtekaart\n• Of vind een locatie in de zoekbalk\n• AHN 3 is nog niet voor heel Nederland beschikbaar\n</string>
-	<string name="welcome_dialog_checkbox">Niet meer laten zien</string>
-	
-	<string name="SHARED_PREFERENCES_FILENAME">shared_preferences_filename</string>
+	<string name="SHARED_PREFERENCES_FILENAME">ahn_shared_preferences_filename</string>
 	<string name="PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN">preferences_key_show_onboarding_screen</string>
 	
 	<string name="not_connected_message">Geen netwerkverbinding: sommige functies werken niet</string>
@@ -30,7 +27,7 @@
 	<string name="ob_get_started">START</string>
 		
     <string name="ob_header1">BEKIJK DE HOOGTEKAART</string>
-	<string name="ob_desc1">Zoom ver in om de hoogtekaart van het AHN in beeld te krijgen</string>
+	<string name="ob_desc1">Zoom ver in om de hoogtekaart in beeld te krijgen</string>
     <string name="ob_header2">VIND EEN LOCATIE</string>
 	<string name="ob_desc2">Begin te typen in de zoekbalk of zoom naar je huidige locatie</string>
     <string name="ob_header3">BEKIJK DE HOOGTE VAN EEN PUNT</string>

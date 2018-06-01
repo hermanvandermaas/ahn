@@ -26,8 +26,6 @@ public class OnBoardingScreenActivity extends AppCompatActivity
     private ArrayList<OnBoardingItem> onBoardItems = new ArrayList<>();
 	private static final String CURRENT_POS_KEY = "current_pos_key";
 
-	private String PREVIOUS_POS_KEY;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
 	{
@@ -43,15 +41,14 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 		if (savedInstanceState != null)
 		{
 			currentPos = savedInstanceState.getInt(CURRENT_POS_KEY);
-			previousPos = savedInstanceState.getInt(PREVIOUS_POS_KEY);
-			Log.i("HermLog", "currentPos restored: " + currentPos);
+			//Log.i("HermLog", "currentPos restored: " + currentPos);
 		}
-		
+
         initializeViewPager();
 		initializeButton();
         setUiPageViewController();
     }
-	
+
 	private void initializeViewPager()
 	{
 		loadData();
@@ -91,7 +88,7 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 				}
 			});
 	}
-	
+
 	private void initializeButton()
 	{
 		btnGetStarted.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +100,7 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 					SharedPreferences.Editor edit = pref.edit();
 					edit.putBoolean(getResources().getString(R.string.PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN), false);
 					edit.commit();
-					
+
 					// Start activity
 					Intent intent = new Intent(context, MainActivity.class);
 					context.startActivity(intent);
@@ -111,13 +108,13 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 				}
 			});
 	}
-	
+
 	private void setButtonVisibility(int pos)
 	{
-		Log.i("HermLog", "pos: " + pos);
-		Log.i("HermLog", "dotscount: " + dotsCount);
-		Log.i("HermLog", "previousPos: " + previousPos);
-		
+		//Log.i("HermLog", "pos: " + pos);
+		//Log.i("HermLog", "dotscount: " + dotsCount);
+		//Log.i("HermLog", "previousPos: " + previousPos);
+
 		if (pos == dotsCount && previousPos == (dotsCount - 1))
 			show_animation();
 		else if (pos == (dotsCount - 1) && previousPos == dotsCount)
@@ -198,7 +195,7 @@ public class OnBoardingScreenActivity extends AppCompatActivity
     private void setUiPageViewController()
 	{
 		//Log.i("HermLog", "setUiPageViewController()");
-		
+
         dotsCount = adapter.getCount();
         dots = new ImageView[dotsCount];
 
@@ -231,12 +228,11 @@ public class OnBoardingScreenActivity extends AppCompatActivity
 			onboardPager.setCurrentItem(onboardPager.getCurrentItem() - 1);
 		}
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState)
 	{
 		outState.putInt(CURRENT_POS_KEY, currentPos);
-		outState.putInt(PREVIOUS_POS_KEY, previousPos);
 		super.onSaveInstanceState(outState);
 	}
 

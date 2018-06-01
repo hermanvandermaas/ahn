@@ -5,9 +5,6 @@ import android.widget.*;
 
 public class SwipeRightGestureListener extends GestureDetector.SimpleOnGestureListener
 {
-	private static final int SWIPE_THRESHOLD = 200;
-	private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-	
 	@Override
 	public boolean onDown(MotionEvent event)
 	{
@@ -56,8 +53,6 @@ public class SwipeRightGestureListener extends GestureDetector.SimpleOnGestureLi
 		{
 			exception.printStackTrace();
 		}
-		
-		
 		
 		return result;
 	}

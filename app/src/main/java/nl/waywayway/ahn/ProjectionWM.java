@@ -135,6 +135,7 @@ public class ProjectionWM
 		return mapSize;
 	}
 	
+	// Afkappen op minimum- of maximumwaarde
 	public static double clip(double n, double minValue, double maxValue)
 	{
 		double value = Math.min(Math.max(n, minValue), maxValue);

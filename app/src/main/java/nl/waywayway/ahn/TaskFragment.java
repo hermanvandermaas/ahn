@@ -158,7 +158,7 @@ public class TaskFragment extends Fragment
 
 			if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
 			{
-				Log.i("HermLog", "doInBackground: fout");
+				//Log.i("HermLog", "doInBackground: fout");
 				return "Download niet gelukt";
 			}
 			else

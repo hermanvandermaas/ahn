@@ -9,7 +9,6 @@ import org.json.*;
 
 public class LayersSaveAndRestore
 {
-	private static final String PREFERENCES_FILENAME = "ahn_preferences";
 	private Context context;
 	private String preferenceKey;
 
@@ -31,7 +30,7 @@ public class LayersSaveAndRestore
 	{
 		int[] array = new int[]{visible, opacity};
 		
-		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_FILENAME, context.MODE_PRIVATE);
+		SharedPreferences pref = context.getSharedPreferences(context.getResources().getString(R.string.SHARED_PREFERENCES_FILENAME), context.MODE_PRIVATE);
 		SharedPreferences.Editor edit = pref.edit();
 		edit.putString(preferenceKey, Arrays.toString(array));
 		//Log.i("HermLog", "save: " + Arrays.toString(array));
@@ -43,7 +42,7 @@ public class LayersSaveAndRestore
 	// kan null zijn
 	public int[] restore()
 	{
-		SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILENAME, context.MODE_PRIVATE);
+		SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.SHARED_PREFERENCES_FILENAME), context.MODE_PRIVATE);
 		String prefDefault = "";
 		String savedString = sharedPref.getString(preferenceKey, prefDefault);
 		
