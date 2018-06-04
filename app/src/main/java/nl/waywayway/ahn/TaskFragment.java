@@ -158,6 +158,12 @@ public class TaskFragment extends Fragment
 
 			for (URL url : urls)
 			{
+				if (url == null)
+				{
+					hoogtes.add(context.getResources().getString(R.string.not_available_UI));
+					continue;
+				}
+
 				DownloadJsonString downloader = new DownloadJsonString(url);
 				String jsonstring = downloader.download();
 
@@ -171,7 +177,7 @@ public class TaskFragment extends Fragment
 					String hoogteAfgerond;
 					//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
 					Double hoogte = parseResult(jsonstring);
-					
+
 					if (hoogte == null || hoogte > 10000d || hoogte < -10000d)
 					{
 						hoogteAfgerond = context.getResources().getString(R.string.not_available_UI);
@@ -181,7 +187,7 @@ public class TaskFragment extends Fragment
 						hoogteAfgerond = String.format("%.2f", hoogte);
 						if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
 					}
-					
+
 					hoogtes.add(hoogteAfgerond);
 				}
 			}

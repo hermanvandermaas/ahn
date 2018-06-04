@@ -113,7 +113,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment == null)
 		{
 			taskFragment = new TaskFragment();
-			fm.beginTransaction().add(taskFragment,TAG_TASK_FRAGMENT).commit();
+			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
 		if (taskFragment.isRunning()) taskFragment.cancel();
@@ -780,7 +780,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo)
 	{
-		Log.i("HermLog", "onPostExecute() result: " + result.toString() + ", layerInfo: " + layerInfo.toString());
 		showProgressBar(View.GONE);
 
 		// Toon hoogte bij marker
@@ -790,8 +789,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 		else
 		{
+
 			String snippet = "";
-			
+
 			for (int i = 0; i < result.size(); i++)
 			{
 				String affix = result.get(i).equals(getResources().getString(R.string.not_available_UI)) ? "" : " " + getResources().getString(R.string.unit_of_measurement_UI);
@@ -799,7 +799,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				String line = layerInfo.get(i) + ": " + result.get(i) + affix + newLine;
 				snippet = snippet + line;
 			}
-			
+
 			Marker marker = markerList.get(0);
 			marker.setTitle("Hoogte");
 			marker.setSnippet(snippet);
