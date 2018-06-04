@@ -19,11 +19,15 @@
 	
 	<string name="share_image_mime_type">image/png</string>
 	
+	<string name="not_available_UI">n/a</string>
+	<string name="unit_of_measurement_UI">meter NAP</string>
+	
 	<string name="not_connected_message">Geen netwerkverbinding: sommige functies werken niet</string>
 	<string name="device_location_not_available_message">Je locatie is nu niet beschikbaar</string>
 	<string name="no_image_for_sharing_available_message">Geen afbeelding om te delen</string>
 	<string name="place_search_not_available_message">Locatiezoeker nu niet beschikbaar</string>
 	<string name="make_layer_with_altitude_visible_message">Maak een kaartlaag met hoogte zichtbaar in het lagenmenu</string>
+	<string name="download_error_message">Download niet gelukt</string>
 	
 	<!-- onboarding slideshow -->
 	<string name="ob_get_started">START</string>

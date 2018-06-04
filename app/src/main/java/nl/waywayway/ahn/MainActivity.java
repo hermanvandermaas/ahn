@@ -89,7 +89,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		legend = findViewById(R.id.legend_scrollview);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		//testLayerSettings();
-		
+
 		showOnboardingScreenAtFirstRun();
 
 		// Herstel savedInstanceState
@@ -113,7 +113,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment == null)
 		{
 			taskFragment = new TaskFragment();
-			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
+			fm.beginTransaction().add(taskFragment,TAG_TASK_FRAGMENT).commit();
 		}
 
 		if (taskFragment.isRunning()) taskFragment.cancel();
@@ -134,7 +134,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			notConnectedMessageWasShowed = true;
 		}
 	}
-	
+
 	private void initializeLegend()
 	{
 		if (legendVisible)
@@ -278,6 +278,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		googleMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
+		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
     }
@@ -606,6 +607,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			return;
 		}
 
+		// Download van data wordt uitgevoerd in TaskFragment instance
+		// verwerking van data in de marker infowindow wordt gedaan in
+		// Task Callback Methods in MainActivity
 		getElevationFromLatLong(pointLatLong);
 
 		//testProjection();
@@ -623,18 +627,22 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
-		LayerItem topVisibleLayer = getTopVisibleLayer();
-		if (topVisibleLayer == null)
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		ArrayList<URL> urls = new ArrayList<URL>();
+		ArrayList<String> shortTitles = new ArrayList<String>();
+
+		for (LayerItem layerItem : layerList)
 		{
-			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
-			return;
+			if (layerItem.isQueryable())
+			{
+				URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, layerItem).makeUrl();
+				//Log.i("HermLog", "url: " + url);
+				urls.add(url);
+				shortTitles.add(layerItem.getShortTitle());
+			}
 		}
 
-		if (taskFragment.isRunning()) taskFragment.cancel();
-		URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, topVisibleLayer).makeUrl();
-		//Log.i("HermLog", "url: " + url);
-		URL[] urls = new URL[]{url};
-		taskFragment.setLayerInfo(topVisibleLayer.getShortTitle());
+		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
 
@@ -770,23 +778,31 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	}
 
 	@Override
-	public void onPostExecute(String result, String layerInfo)
+	public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo)
 	{
-		//Log.i("HermLog", "onPostExecute() result: " + result);
+		Log.i("HermLog", "onPostExecute() result: " + result.toString() + ", layerInfo: " + layerInfo.toString());
 		showProgressBar(View.GONE);
 
 		// Toon hoogte bij marker
-		if (result.equals("Download niet gelukt"))
+		if (result == null)
 		{
-			Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, getResources().getString(R.string.download_error_message), Toast.LENGTH_SHORT).show();
 		}
 		else
 		{
-			String affix = result.equals("n/a") ? "" : " meter NAP";
-			String info = result + affix;
+			String snippet = "";
+			
+			for (int i = 0; i < result.size(); i++)
+			{
+				String affix = result.get(i).equals(getResources().getString(R.string.not_available_UI)) ? "" : " " + getResources().getString(R.string.unit_of_measurement_UI);
+				String newLine = (i == (result.size() - 1)) ? "" : "\n";
+				String line = layerInfo.get(i) + ": " + result.get(i) + affix + newLine;
+				snippet = snippet + line;
+			}
+			
 			Marker marker = markerList.get(0);
-			marker.setTitle("Hoogte " + layerInfo);
-			marker.setSnippet(info);
+			marker.setTitle("Hoogte");
+			marker.setSnippet(snippet);
 			marker.showInfoWindow();
 		}
 	}

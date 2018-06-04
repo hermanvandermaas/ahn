@@ -1,5 +1,6 @@
 package nl.waywayway.ahn;
 
+import android.app.*;
 import android.content.*;
 import android.os.*;
 import android.support.v4.app.*;
@@ -7,6 +8,8 @@ import android.util.*;
 import java.net.*;
 import java.util.*;
 import org.json.*;
+
+import android.support.v4.app.Fragment;
 
 /**
  * TaskFragment manages a single background task and retains itself across
@@ -24,23 +27,23 @@ public class TaskFragment extends Fragment
 		public void onPreExecute();
 		public void onProgressUpdate(int percent);
 		public void onCancelled();
-		public void onPostExecute(String result, String layerInfo);
+		public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo);
 	}
 
 	private Context context;
 	private TaskCallbacks callbacks;
 	private DummyTask task;
 	private boolean running;
-	private String layerInfo;
-	
-	public void setLayerInfo(String layerInfo)
+	ArrayList<String> layerInfoList = new ArrayList<String>();
+
+	public void setLayerInfoList(ArrayList<String> layerInfoList)
 	{
-		this.layerInfo = layerInfo;
+		this.layerInfoList = layerInfoList;
 	}
 
-	public String getLayerInfo()
+	public ArrayList<String> getLayerInfoList()
 	{
-		return layerInfo;
+		return layerInfoList;
 	}
 
 	/**
@@ -92,14 +95,12 @@ public class TaskFragment extends Fragment
 	/**
 	 * Start the background task.
 	 */
-	// parameter false: eerste download
-	// parameter true: extra data downoaden bij endless scrolling
-	public void start(URL[] urls)
+	public void start(ArrayList<URL> urls)
 	{
 		if (!running)
 		{
 			task = new DummyTask();
-			task.execute(urls);
+			task.execute(urls.toArray(new URL[0]));
 			running = true;
 		}
 	}
@@ -129,7 +130,7 @@ public class TaskFragment extends Fragment
 	 * A dummy task that performs some (dumb) background work and proxies progress
 	 * updates and results back to the Activity.
 	 */
-	private class DummyTask extends AsyncTask<URL, Integer, String>
+	private class DummyTask extends AsyncTask<URL, Integer, ArrayList<String>>
 	{
 		public DummyTask()
 		{}
@@ -147,30 +148,45 @@ public class TaskFragment extends Fragment
 		 * background thread, as this could result in a race condition.
 		 */
 		@Override
-		protected String doInBackground(URL... urls)
+		protected ArrayList<String> doInBackground(URL... urls)
 		{
 			//Log.i("HermLog", "doInBackground");
 			//Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
+			//if (urls[0] == null) return "n/a";
 
-			if (urls[0] == null) return "n/a";
-			DownloadJsonString downloader = new DownloadJsonString(urls[0]);
-			String jsonstring = downloader.download();
+			ArrayList<String> hoogtes = new ArrayList<String>();
 
-			if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
+			for (URL url : urls)
 			{
-				//Log.i("HermLog", "doInBackground: fout");
-				return "Download niet gelukt";
-			}
-			else
-			{
-				//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
-				Double hoogte = parseResult(jsonstring);
-				if (hoogte == null || hoogte > 10000d || hoogte < -10000d) return "n/a";
-				String hoogteAfgerond = String.format("%.2f", hoogte);
-				if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
+				DownloadJsonString downloader = new DownloadJsonString(url);
+				String jsonstring = downloader.download();
 
-				return hoogteAfgerond;
+				if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
+				{
+					//Log.i("HermLog", "doInBackground: fout");
+					return null;
+				}
+				else
+				{
+					String hoogteAfgerond;
+					//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
+					Double hoogte = parseResult(jsonstring);
+					
+					if (hoogte == null || hoogte > 10000d || hoogte < -10000d)
+					{
+						hoogteAfgerond = context.getResources().getString(R.string.not_available_UI);
+					}
+					else
+					{
+						hoogteAfgerond = String.format("%.2f", hoogte);
+						if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
+					}
+					
+					hoogtes.add(hoogteAfgerond);
+				}
 			}
+
+			return hoogtes;
 		}
 
 		@Override
@@ -189,12 +205,12 @@ public class TaskFragment extends Fragment
 		}
 
 		@Override
-		protected void onPostExecute(String result)
+		protected void onPostExecute(ArrayList<String> result)
 		{	
 			//Log.i("HermLog", "TaskFragment");
 
 			// Proxy the call to the Activity
-			callbacks.onPostExecute(result, layerInfo);
+			callbacks.onPostExecute(result, layerInfoList);
 			running = false;
 		}
 
@@ -209,7 +225,7 @@ public class TaskFragment extends Fragment
 				JSONArray jArray = new JSONObject(result).optJSONArray("features");
 
 				if (jArray.length() == 0) return null;
-				
+
 				double hoogte = jArray
 					.optJSONObject(0)
 					.optJSONObject("properties")
