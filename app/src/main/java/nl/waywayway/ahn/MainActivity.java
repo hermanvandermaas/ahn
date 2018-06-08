@@ -46,8 +46,8 @@ TaskFragment.TaskCallbacks,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
-	private static final String FILES_AUTHORITY = "nl.waywayway.ahn.fileprovider";
-	private static final String SHARE_IMAGE_PATH = "/hoogte.png";
+	private static final String FILES_AUTHORITY = "";
+	
 	private boolean dialogPlayServicesWasShowed = false;
 	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
@@ -88,7 +88,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		legend = findViewById(R.id.legend_scrollview);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
-		//testLayerSettings();
 
 		showOnboardingScreenAtFirstRun();
 
@@ -172,9 +171,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// Maak toolbar
 	private void makeToolbar()
 	{
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		ActionBar actionBar = getSupportActionBar();
+		getSupportActionBar();
 	}
 
 	@Override
@@ -231,7 +230,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 
 			case R.id.action_share_map:
-				makeImage();
+				ShareImage shareImage = new ShareImage(gMap, context);
+				shareImage.share();
 
 				return true;
 
@@ -308,68 +308,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
-	private void makeImage()
-	{
-		gMap.snapshot(new GoogleMap.SnapshotReadyCallback()
-			{
-				@Override
-				public void onSnapshotReady(Bitmap bitmap)
-				{
-
-					File file = new File(context.getCacheDir() + SHARE_IMAGE_PATH);
-					FileOutputStream fileOut = null;
-
-					try
-					{
-						fileOut = new FileOutputStream(file);
-					}
-					catch (FileNotFoundException e)
-					{
-						e.printStackTrace();
-					}
-
-					if (fileOut != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
-
-					try
-					{
-						fileOut.close();
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-
-					shareImage(file);
-				}
-			});
-	}
-
-	// Deel afbeelding via andere app
-	private void shareImage(File imageFile)
-	{
-
-		if (imageFile == null)
-		{
-			Toast.makeText(context, getResources().getString(R.string.no_image_for_sharing_available_message), Toast.LENGTH_SHORT).show();
-			return;
-		}
-
-		Uri uriToImage = FileProvider.getUriForFile(context, FILES_AUTHORITY, imageFile);
-
-		Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
-			.setStream(uriToImage)
-			.getIntent();
-
-		shareIntent.setData(uriToImage);
-		shareIntent.setType(getResources().getString(R.string.share_image_mime_type));
-		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-		if (shareIntent.resolveActivity(getPackageManager()) != null)
-		{
-			startActivity(shareIntent);
-		}
-	}
-
 	@Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
 	{
@@ -406,24 +344,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			showMyLocationIcon(true);
         }
     }
-
-	private void setMapPadding()
-	{
-		final View toolbarAndSearchFragment = findViewById(R.id.toolbar_and_progressbar);
-
-		toolbarAndSearchFragment.post(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					toolbarAndSearchFragment.getHeight();
-					int paddingTop = toolbarAndSearchFragment.getHeight();
-					// setPadding: left, top, right, bottom
-					gMap.setPadding(0, paddingTop, 0, 0);
-					//Log.i("HermLog", "paddingTop: " + paddingTop);
-				}
-			});
-	}
 
 	private void createPlaceSearch()
 	{

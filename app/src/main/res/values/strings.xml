@@ -18,6 +18,8 @@
 	<string name="PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN">preferences_key_show_onboarding_screen</string>
 	
 	<string name="share_image_mime_type">image/png</string>
+	<string name="share_image_path">/hoogte.png</string>
+	<string name="files_authority">nl.waywayway.ahn.fileprovider</string>
 	
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
