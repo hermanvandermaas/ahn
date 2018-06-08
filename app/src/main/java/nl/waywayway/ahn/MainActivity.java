@@ -46,8 +46,6 @@ TaskFragment.TaskCallbacks,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
-	private static final String FILES_AUTHORITY = "";
-	
 	private boolean dialogPlayServicesWasShowed = false;
 	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
@@ -124,15 +122,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		makeToolbar();
 		//setTransparentStatusBar();
     }
-
-	private void showNotConnectedMessage()
-	{
-		if (!isNetworkConnected() && !notConnectedMessageWasShowed)
-		{
-			Toast.makeText(context, getResources().getString(R.string.not_connected_message), Toast.LENGTH_SHORT).show();
-			notConnectedMessageWasShowed = true;
-		}
-	}
 
 	private void initializeLegend()
 	{
@@ -521,9 +510,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
 
 		// Vraag hoogte op voor punt
-		if (!isNetworkConnected())
+		if (!ConnectionUtils.isNetworkConnected(context))
 		{
-			Toast.makeText(context, getResources().getString(R.string.not_connected_message), Toast.LENGTH_SHORT).show();
+			ConnectionUtils.showMessage(context, getResources().getString(R.string.not_connected_message));
 			return;
 		}
 
@@ -535,16 +524,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
-
-	// Netwerkverbinding ja/nee
-	private boolean isNetworkConnected()
-	{
-		ConnectivityManager connMgr = (ConnectivityManager)
-			getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		return networkInfo != null && networkInfo.isConnected();
-	}
-
+	
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
@@ -566,34 +546,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.start(urls);
 	}
 
-	// Hoogste zichtbare laag
-	private LayerItem getTopVisibleLayer()
-	{
-		LayerItem returnLayerItem = null;
-
-		for (LayerItem layerItem : layerList)
-		{
-			if (layerItem.isQueryable() == false) continue;
-
-			int[] preferences = LayersSaveAndRestore.getInstance(context, layerItem.getID()).restore();
-
-			if (preferences == null)
-			{
-				boolean visible = layerItem.isVisibleByDefault();
-				int opacity = layerItem.getOpacityDefault();
-				if (visible && opacity > 0) returnLayerItem = layerItem;
-			}
-			else
-			{
-				boolean visible = preferences[0] == 1 ? true : false;
-				int opacity = preferences[1];
-				if (visible && opacity > 0) returnLayerItem = layerItem;
-			}
-		}
-
-		return returnLayerItem;
-	}
-
+	
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBar(int visibility)
 	{
@@ -671,7 +624,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onStart();
 		//Log.i("HermLog", "onStart()");
-		showNotConnectedMessage();
+		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
 	}
 
 	/*********************************/
@@ -725,52 +678,5 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			marker.setSnippet(snippet);
 			marker.showInfoWindow();
 		}
-	}
-
-	private void testProjection()
-	{
-		int[] test;
-
-		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon -180, zoom 3: ");
-		test = ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, -180), 3);
-		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-
-		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon -180, zoom 3: ");
-		test = ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, -180), 3);
-		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-
-		Log.i("HermLog", "latLngToXYpixels() lat -85.05112878, lon 179.99999999, zoom 3: ");
-		test = ProjectionWM.latLngToXYpixels(new LatLng(-85.05112878, 179.99999999), 3);
-		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-
-		Log.i("HermLog", "latLngToXYpixels() lat 0, lon 0, zoom 3: ");
-		test = ProjectionWM.latLngToXYpixels(new LatLng(0, 0), 3);
-		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-
-		Log.i("HermLog", "latLngToXYpixels() lat 85.05112878, lon 179.99999999, zoom 3: ");
-		test = ProjectionWM.latLngToXYpixels(new LatLng(85.05112878, 179.99999999), 3);
-		Log.i("HermLog", "getTileCoordinates(): " + Arrays.toString(ProjectionWM.getTileCoordinates(test)));
-
-		Log.i("HermLog", "latLngToXYmeters() lat -85.05112878, lon -180, zoom 3: ");
-		ProjectionWM.latLngToXYmeters(new LatLng(-85.05112878, -180), 3);
-
-		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon -180, zoom 3: ");
-		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, -180), 3);
-
-		Log.i("HermLog", "latLngToXYmeters() lat -85.05112878, lon 179.99999999, zoom 3: ");
-		ProjectionWM.latLngToXYmeters(new LatLng(-85.05112878, 179.99999999), 3);
-
-		Log.i("HermLog", "latLngToXYmeters() lat 85.05112878, lon 179.99999999, zoom 3: ");
-		ProjectionWM.latLngToXYmeters(new LatLng(85.05112878, 179.99999999), 3);
-
-		Log.i("HermLog", "latLngToXYmeters() lat 0, lon 0, zoom 3: ");
-		ProjectionWM.latLngToXYmeters(new LatLng(0, 0), 3);
-	}
-
-	private void testLayerSettings()
-	{
-		LayerItem item = layerList.get(0);
-		LayersSaveAndRestore.getInstance(context, item.getID()).save(0, 23);
-		LayersSaveAndRestore.getInstance(context, item.getID()).restore();
 	}
 }
