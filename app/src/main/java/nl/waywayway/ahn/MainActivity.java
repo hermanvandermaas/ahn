@@ -4,12 +4,11 @@ import android.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.*;
 import android.location.*;
-import android.net.*;
 import android.os.*;
 import android.support.v4.app.*;
 import android.support.v4.content.*;
+import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
@@ -25,20 +24,18 @@ import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.support.v4.view.*;
 
 public class MainActivity extends AppCompatActivity
 implements 
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
+GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
@@ -53,9 +50,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private GoogleApiClient googleApiClient;
+	private LocationProvider locationProvider;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private ArrayList<LayerItem> layerList;
 	private final LatLngBounds nederland = new LatLngBounds(new LatLng(50.75, 3.2), new LatLng(53.7, 7.22));
+	private LatLng amersfoort = new LatLng(52.155240, 5.387218);
 	private TaskFragment taskFragment;
 	private float zoomLevel;
 	private DrawerLayout drawerLayout;
@@ -100,6 +99,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 
 		initializeLegend();
+		createGoogleApiClient();
+		locationProvider = initializeZoomToLocation();
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
@@ -196,7 +197,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
                 return true;
 
 			case R.id.action_myposition:
-				zoomToCurrentLocation();
+				zoomToLocation(locationProvider.getCurrentLocation(), 15);
 
 				return true;
 
@@ -255,14 +256,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		uiSettings.setMapToolbarEnabled(true);
 		//uiSettings.setTiltGesturesEnabled(true);
 
-		// Zoom in op Nederland bij eerste opstart app
-		if (savedInstanceStateGlobal == null)
-			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nederland.getCenter(), 7));
-
 		// Kaartlagen worden in RecyclerView adapter toegevoegd
 		//createLayers();
 		createLayerMenu();
-		createGoogleApiClient();
 		createPlaceSearch();
 
 		googleMap.setOnCameraIdleListener(this);
@@ -272,6 +268,39 @@ LayersRecyclerViewAdapter.AdapterCallbacks
         enableMyLocation();
     }
 
+	private LocationProvider initializeZoomToLocation()
+	{
+		
+		
+		LocationProvider locationProvider = new LocationProvider(context)
+		{
+			@Override
+			public void handleLocation(Location location, float zoom)
+			{
+				Log.i("HermLog", "handleLocation");
+				if (this.getCurrentLocation() != null) showMyLocationIcon(true);
+				zoomToLocation(location, zoom);
+			}
+
+			@Override
+			public void locationUnavailable(LatLng standardLocation, float zoom)
+			{
+				Log.i("HermLog", "locationUnavailable");
+				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+				gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
+			}
+
+			@Override
+			public void onConnected(Bundle bundle)
+			{
+				Log.i("HermLog", "onConnected");
+				zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
+			}
+		};
+		
+		return locationProvider;
+	}
+	
 	@Override
     public boolean onMyLocationButtonClick()
 	{
@@ -282,16 +311,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
         return false;
     }
 
-	private void zoomToCurrentLocation()
+	private void zoomToLocation(Location lastLocation, float zoom)
 	{
-		Location lastLocation = LocationServices.FusedLocationApi
-			.getLastLocation(googleApiClient);
-
 		if (lastLocation != null)
 		{
 			double lat = lastLocation.getLatitude();
 			double lon = lastLocation.getLongitude();
-			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
+			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
 		}
 		else
 			Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
@@ -330,7 +356,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
             gMap.setMyLocationEnabled(true);
 			//setMapPadding();
 			gMap.getUiSettings().setMyLocationButtonEnabled(false);
-			showMyLocationIcon(true);
         }
     }
 
@@ -372,14 +397,27 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private void createGoogleApiClient()
 	{
-
 		googleApiClient = new GoogleApiClient
 			.Builder(this)
 			.addApi(Places.GEO_DATA_API)
 			.addApi(Places.PLACE_DETECTION_API)
-			.addApi(LocationServices.API)
 			.enableAutoManage(this, this)
 			.build();
+	}
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult p1)
+	{
+	}
+
+	@Override
+	public void onConnected(Bundle p1)
+	{
+	}
+
+	@Override
+	public void onConnectionSuspended(int p1)
+	{
 	}
 
 	public TileOverlay createLayer(LayerItem layerItem)
@@ -443,12 +481,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		{
 			super.onBackPressed();
 		}
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult p1)
-	{
-		Toast.makeText(context, getResources().getString(R.string.place_search_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
 	// Check beschikbaarheid Play Services
@@ -524,7 +556,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
-	
+
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
@@ -546,7 +578,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.start(urls);
 	}
 
-	
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBar(int visibility)
 	{
@@ -625,6 +657,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		super.onStart();
 		//Log.i("HermLog", "onStart()");
 		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
+		if (savedInstanceStateGlobal == null) locationProvider.connect();
+	}
+	
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		if (googleApiClient.isConnected()) locationProvider.disconnect();
 	}
 
 	/*********************************/

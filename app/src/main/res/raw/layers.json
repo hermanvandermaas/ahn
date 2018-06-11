@@ -11,7 +11,7 @@
 			"miny": 6573443.017669047,
 			"maxx": 807808.8874921346,
 			"maxy": 7082066.659439815,
-			"visibleByDefault": "true",
+			"visibleByDefault": "false",
 			"opacityDefault": 100,
 			"queryable": "true"
 		},
@@ -25,7 +25,7 @@
 			"miny": 6573443.017669047,
 			"maxx": 807808.8874921346,
 			"maxy": 7082066.659439815,
-			"visibleByDefault": "false",
+			"visibleByDefault": "true",
 			"opacityDefault": 100,
 			"queryable": "true"
 		}
