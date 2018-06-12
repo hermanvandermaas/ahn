@@ -270,8 +270,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private LocationProvider initializeZoomToLocation()
 	{
-		
-		
 		LocationProvider locationProvider = new LocationProvider(context)
 		{
 			@Override
@@ -336,6 +334,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
             // Enable the my location layer if the permission has been granted.
             enableMyLocation();
         }
+		else
+		{
+			// geen toestemming, zoom naar standaard locatie
+			locationProvider.locationUnavailable(amersfoort, 15);
+		}
     }
 
     private void enableMyLocation()
@@ -356,6 +359,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
             gMap.setMyLocationEnabled(true);
 			//setMapPadding();
 			gMap.getUiSettings().setMyLocationButtonEnabled(false);
+			
+			// Zoom naar huidige of standaardlocatie bij eerste opstart app
+			if (savedInstanceStateGlobal == null) locationProvider.connect();
         }
     }
 
@@ -657,7 +663,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		super.onStart();
 		//Log.i("HermLog", "onStart()");
 		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
-		if (savedInstanceStateGlobal == null) locationProvider.connect();
 	}
 	
 	@Override

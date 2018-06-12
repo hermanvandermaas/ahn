@@ -109,7 +109,7 @@ GoogleApiClient.OnConnectionFailedListener
 	{
 		googleApiClient.disconnect();
 	}
-
+	
 	// Methods bedoeld om te overschrijven bij intantiatie
 	@Override
 	public void onConnected(Bundle bundle)
