@@ -14,7 +14,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 	// Interface voor aanroepen methods in Activity
 	public interface AdapterCallbacks
 	{
-		public TileOverlay createLayer(LayerItem layerItem);
+		public TileOverlay createLayer(LayerItem layerItem, int opacity);
 	}
 
     private List<LayerItem> layerList;
@@ -101,7 +101,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 		}
 		
 		// Voeg laag toe
-		if (visible && opacity > 0) callbacks.createLayer(layerItem);
+		if (visible && opacity > 0) callbacks.createLayer(layerItem, opacity);
 		customViewHolder.checkBoxView.setChecked(visible);
 		customViewHolder.seekBarView.setProgress(opacity);
 		
@@ -121,7 +121,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 				public void onStartTrackingTouch(SeekBar seekBar)
 				{}       
 
-				// Onzichtbare laag verwijderen, voorkomt downloaden van onzichtbare laag
+				// Onzichtbare laag verwijderen, voorkomt onnodig downloaden van onzichtbare laag
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
 				{
@@ -131,7 +131,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					{
 						if (layer == null && mCustomViewHolder.checkBoxView.isChecked())
 						{
-							layer = callbacks.createLayer(layerItem);
+							layer = callbacks.createLayer(layerItem, progress);
 							layerItem.setLayerObject(layer);
 						}
 					}
@@ -171,9 +171,11 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
 					if (buttonView.isChecked())
 					{
-						if (layer == null && mCustomViewHolder.seekBarView.getProgress() > 0)
+						int progress = mCustomViewHolder.seekBarView.getProgress();
+						
+						if (layer == null && progress > 0)
 						{
-							layer = mCallbacks.createLayer(layerItem);
+							layer = mCallbacks.createLayer(layerItem, progress);
 							layerItem.setLayerObject(layer);
 						}
 

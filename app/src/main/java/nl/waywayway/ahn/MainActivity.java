@@ -426,7 +426,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 	}
 
-	public TileOverlay createLayer(LayerItem layerItem)
+	@Override
+	public TileOverlay createLayer(LayerItem layerItem, int opacity)
 	{
 		// Maak TileOverlay, 
 		// zIndex is gelijk aan ID van de laag
@@ -443,6 +444,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 								   layerItem.getMaxx(), 
 								   layerItem.getMaxy()
 							   )));
+							   
+		tileOverlay.setTransparency(1f - opacity / 100f);
 
 		// Zet referentie naar kaartlaag in lijst
 		//Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
