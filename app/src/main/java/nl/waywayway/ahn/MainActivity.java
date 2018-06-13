@@ -295,10 +295,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
 			}
 		};
-		
+
 		return locationProvider;
 	}
-	
+
 	@Override
     public boolean onMyLocationButtonClick()
 	{
@@ -359,7 +359,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
             gMap.setMyLocationEnabled(true);
 			//setMapPadding();
 			gMap.getUiSettings().setMyLocationButtonEnabled(false);
-			
+
 			// Zoom naar huidige of standaardlocatie bij eerste opstart app
 			if (savedInstanceStateGlobal == null) locationProvider.connect();
         }
@@ -410,7 +410,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			.enableAutoManage(this, this)
 			.build();
 	}
-	
+
 	@Override
 	public void onConnectionFailed(ConnectionResult p1)
 	{
@@ -566,20 +566,19 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private void getElevationFromLatLong(LatLng pointLatLong)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
+
+		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
 		ArrayList<URL> urls = new ArrayList<URL>();
 		ArrayList<String> shortTitles = new ArrayList<String>();
 
-		for (LayerItem layerItem : layerList)
+		for (LayerItem layerItem : visibleLayers)
 		{
-			if (layerItem.isQueryable())
-			{
-				URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, layerItem).makeUrl();
-				//Log.i("HermLog", "url: " + url);
-				urls.add(url);
-				shortTitles.add(layerItem.getShortTitle());
-			}
+			URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, pointLatLong, zoomLevel, layerItem).makeUrl();
+			//Log.i("HermLog", "url: " + url);
+			urls.add(url);
+			shortTitles.add(layerItem.getShortTitle());
 		}
-		
+
 		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
@@ -664,7 +663,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//Log.i("HermLog", "onStart()");
 		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
 	}
-	
+
 	@Override
 	protected void onStop()
 	{
