@@ -23,6 +23,7 @@
 	
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
+	<string name="opacity_seekbar_description">Zichtbaar</string>
 	
 	<string name="not_connected_message">Geen netwerkverbinding: sommige functies werken niet</string>
 	<string name="device_location_not_available_message">Je locatie is nu niet beschikbaar</string>

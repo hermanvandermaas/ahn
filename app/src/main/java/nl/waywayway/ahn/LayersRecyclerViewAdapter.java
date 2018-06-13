@@ -53,7 +53,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
         //Set text views
         customViewHolder.checkBoxView.setText(layerItem.getTitle());
-
+		
 		// NavigationView (drawer), niet laten meeschuiven met SeekBar
 		customViewHolder.seekBarView.setOnTouchListener(new View.OnTouchListener() 
 			{
@@ -79,30 +79,35 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					return true;
 				}
 			});
-
+		
 		// Voeg (deels) zichtbare lagen toe aan kaart
 		// Zichtbaarheid en dekkendheid laag instellen uit SharedPreference of default
 		int[] preferences = LayersSaveAndRestore.getInstance(context, layerItem.getID()).restore();
-
+		boolean visible;
+		int opacity;
+		
 		if (preferences == null)
 		{
-			boolean visible = layerItem.isVisibleByDefault();
-			int opacity = layerItem.getOpacityDefault();
+			visible = layerItem.isVisibleByDefault();
+			opacity = layerItem.getOpacityDefault();
 			//Log.i("HermLog", "isVisibleByDefault: " + layerItem.isVisibleByDefault());
 			//Log.i("HermLog", "opacityDefault: " + layerItem.getOpacityDefault());
-			if (visible && opacity > 0) callbacks.createLayer(layerItem);
-			customViewHolder.checkBoxView.setChecked(visible);
-			customViewHolder.seekBarView.setProgress(opacity);
 		}
 		else
 		{
-			boolean visible = preferences[0] == 1 ? true : false;
-			int opacity = preferences[1];
-			if (visible && opacity > 0) callbacks.createLayer(layerItem);
-			customViewHolder.checkBoxView.setChecked(visible);
-			customViewHolder.seekBarView.setProgress(opacity);
+			visible = preferences[0] == 1 ? true : false;
+			opacity = preferences[1];
 			//Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible/opacity): " + layerItem.getTitle() + "/" + visible + "/" + opacity);
-		}	
+		}
+		
+		// Voeg laag toe
+		if (visible && opacity > 0) callbacks.createLayer(layerItem);
+		customViewHolder.checkBoxView.setChecked(visible);
+		customViewHolder.seekBarView.setProgress(opacity);
+		
+		// Instellen percentage dekkendheid in tekstlabel bij SeekBar
+		String description = context.getResources().getString(R.string.opacity_seekbar_description);
+		customViewHolder.seekBarLabelView.setText(description + " " + opacity + "%");
 
 		// Transparantie aanpassen listener
 		customViewHolder.seekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
@@ -147,7 +152,9 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					int visible = mCustomViewHolder.checkBoxView.isChecked() ? 1 : 0;
 					LayersSaveAndRestore.getInstance(context, layerItem.getID()).save(visible, progress);
 
-
+					// Aanpassen percentage dekkendheid in tekst label bij SeekBar
+					String description = context.getResources().getString(R.string.opacity_seekbar_description);
+					mCustomViewHolder.seekBarLabelView.setText(description + " " + progress + "%");
 				}
 			});
 
@@ -196,12 +203,14 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 	{
         protected CheckBox checkBoxView;
 		protected SeekBar seekBarView;
+		protected TextView seekBarLabelView;
 
         public CustomViewHolder(View view)
 		{
             super(view);
             this.checkBoxView = view.findViewById(R.id.layer_checkbox);
 			this.seekBarView = view.findViewById(R.id.layer_seekbar);
+			this.seekBarLabelView = view.findViewById(R.id.seekbar_label);
         }
     }
 }

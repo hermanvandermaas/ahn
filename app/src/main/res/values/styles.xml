@@ -48,6 +48,13 @@
 		<item name="android:paddingBottom">12dp</item>
 	</style>
 	
+	<style name="seekbar_label" parent="TextAppearance.AppCompat.Caption">
+		<item name="android:textColor">@color/primary_dark</item>
+		<item name="android:textSize">12sp</item>
+		<item name="android:paddingBottom">16dp</item>
+		<item name="android:paddingLeft">16dp</item>
+	</style>
+	
 	<style name="welcome_dialog_image" parent="ThemeOverlay.AppCompat.Light">
 		<item name="android:layout_marginTop">12dp</item>
 	</style>

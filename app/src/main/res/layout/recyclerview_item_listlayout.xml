@@ -21,6 +21,15 @@
 		android:progress="100"
 		android:layout_below="@id/layer_checkbox" />
 	
+	<TextView
+		android:id="@+id/seekbar_label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		style="@style/seekbar_label"
+		android:layout_below="@id/layer_seekbar"
+		android:layout_gravity="left"
+		android:text="@string/opacity_seekbar_description" />
+	
 	<View
 		android:layout_width="match_parent"
 		android:layout_height="1dp"
