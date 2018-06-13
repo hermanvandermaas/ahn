@@ -224,6 +224,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				shareImage.share();
 
 				return true;
+				
+			case R.id.action_info:
+
+				return true;
 
 			case R.id.action_search:
 				if (searchBar.getVisibility() == View.VISIBLE)

@@ -7,6 +7,7 @@
 	<string name="action_layers">Kaartlagen</string>
 	<string name="action_legend">Legenda</string>
 	<string name="action_myposition">Zoom naar mijn locatie</string>
+	<string name="action_info">Informatie</string>
 	<string name="action_search">Zoek locatie</string>
 	<string name="action_share_map">Deel kaart</string>
 	
