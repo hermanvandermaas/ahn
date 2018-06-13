@@ -46,7 +46,7 @@ GoogleApiClient.OnConnectionFailedListener
 	// timeOut in seconden
 	public void zoomToCurrentOrStandardLocation(final LatLng standardLocation, int timeOut, final float zoom)
 	{
-		Log.i("HermLog", "zoomToCurrentOrStandardLocation");
+		//Log.i("HermLog", "zoomToCurrentOrStandardLocation");
 		Location currentLocation = getCurrentLocation();
 
 		if (currentLocation != null)
@@ -68,7 +68,7 @@ GoogleApiClient.OnConnectionFailedListener
 				@Override
 				public void run()
 				{
-					Log.i("HermLog", "expiredRunnable");
+					//Log.i("HermLog", "expiredRunnable");
 					LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, thisInstance);
 					locationUnavailable(standardLocation, zoom);
 				}
@@ -84,7 +84,7 @@ GoogleApiClient.OnConnectionFailedListener
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		Log.i("HermLog", "onLocationChanged");
+		//Log.i("HermLog", "onLocationChanged");
 		LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
 		handler.removeCallbacksAndMessages(null);
         handleLocation(location, zoom);
@@ -92,7 +92,7 @@ GoogleApiClient.OnConnectionFailedListener
 
 	public Location getCurrentLocation()
 	{
-		Log.i("HermLog", "getCurrentLocation");
+		//Log.i("HermLog", "getCurrentLocation");
 		// Vraag huidige locatie op
 		Location lastLocation = LocationServices.FusedLocationApi
 			.getLastLocation(googleApiClient);

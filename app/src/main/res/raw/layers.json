@@ -12,7 +12,7 @@
 			"maxx": 807808.8874921346,
 			"maxy": 7082066.659439815,
 			"visibleByDefault": "false",
-			"opacityDefault": 100,
+			"opacityDefault": 90,
 			"queryable": "true"
 		},
 		{
@@ -26,7 +26,7 @@
 			"maxx": 807808.8874921346,
 			"maxy": 7082066.659439815,
 			"visibleByDefault": "true",
-			"opacityDefault": 90,
+			"opacityDefault": 100,
 			"queryable": "true"
 		}
 	]

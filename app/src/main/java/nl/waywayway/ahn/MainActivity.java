@@ -275,7 +275,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			@Override
 			public void handleLocation(Location location, float zoom)
 			{
-				Log.i("HermLog", "handleLocation");
+				//Log.i("HermLog", "handleLocation");
 				if (this.getCurrentLocation() != null) showMyLocationIcon(true);
 				zoomToLocation(location, zoom);
 			}
@@ -283,7 +283,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			@Override
 			public void locationUnavailable(LatLng standardLocation, float zoom)
 			{
-				Log.i("HermLog", "locationUnavailable");
+				//Log.i("HermLog", "locationUnavailable");
 				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 				gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
 			}
@@ -291,7 +291,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			@Override
 			public void onConnected(Bundle bundle)
 			{
-				Log.i("HermLog", "onConnected");
+				//Log.i("HermLog", "onConnected");
 				zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
 			}
 		};
@@ -579,7 +579,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				shortTitles.add(layerItem.getShortTitle());
 			}
 		}
-
+		
 		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
