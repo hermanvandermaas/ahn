@@ -542,13 +542,19 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private void putMarker(LatLng pointLatLong)
 	{
-		//Log.i("HermLog", "markerList size(): " + markerList.size());
-
 		// Verwijder huidige marker van kaart en uit de lijst met markers
 		if (markerList.size() > 0)
 		{
 			markerList.get(0).remove();
 			markerList.remove(0);
+		}
+		
+		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
+		
+		if (visibleLayers.size() == 0)
+		{
+			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
+			return;
 		}
 
 		// Plaats nieuwe marker op kaart en in de lijst
@@ -564,17 +570,16 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Download van data wordt uitgevoerd in TaskFragment instance
 		// verwerking van data in de marker infowindow wordt gedaan in
 		// Task Callback Methods in MainActivity
-		getElevationFromLatLong(pointLatLong);
+		getElevationFromLatLong(pointLatLong, visibleLayers);
 
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
 
-	private void getElevationFromLatLong(LatLng pointLatLong)
+	private void getElevationFromLatLong(LatLng pointLatLong, ArrayList<LayerItem> visibleLayers)
 	{
 		if (taskFragment.isRunning()) taskFragment.cancel();
 
-		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
 		ArrayList<URL> urls = new ArrayList<URL>();
 		ArrayList<String> shortTitles = new ArrayList<String>();
 
