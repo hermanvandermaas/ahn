@@ -226,7 +226,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 				
 			case R.id.action_info:
-
+				Intent intent = new Intent(context, InformationActivity.class);
+				context.startActivity(intent);
+				
 				return true;
 
 			case R.id.action_search:

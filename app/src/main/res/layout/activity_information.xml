@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/coordinator_info"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="true">
+
+	<android.support.design.widget.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/toolbar_info"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:theme="@style/white_toolbar"
+			app:popupTheme="@style/overflow_menu"
+			app:layout_scrollFlags="scroll|enterAlways" />
+			
+	</android.support.design.widget.AppBarLayout>
+
+	<android.support.v4.widget.NestedScrollView
+		android:id="@+id/nestedscrollview_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal">
+
+			<LinearLayout
+				style="@style/activity_info_max_width"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_centerHorizontal="true">
+
+				<TextView
+					android:id="@+id/title_detail"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:paddingTop="24dp"
+					android:paddingLeft="8dp"
+					android:paddingRight="8dp"
+					android:paddingBottom="8dp"
+					android:textIsSelectable="true"
+					android:text="Tekst"
+					android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+				<TextView
+					android:id="@+id/pubdate_detail"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:maxLines="1"
+					android:paddingLeft="8dp"
+					android:paddingRight="8dp"
+					android:paddingBottom="16dp"
+					android:textIsSelectable="true"
+					android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+				<TextView
+					android:id="@+id/content_detail"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:paddingTop="16dp"
+					android:paddingLeft="8dp"
+					android:paddingRight="8dp"
+					android:paddingBottom="16dp"
+					android:textIsSelectable="true"
+					android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+				<TextView
+					android:id="@+id/creator_detail"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:maxLines="1"
+					android:paddingLeft="8dp"
+					android:paddingRight="8dp"
+					android:paddingBottom="16dp"
+					android:textIsSelectable="true"
+					android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+			</LinearLayout>
+		</LinearLayout>
+	</android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
+

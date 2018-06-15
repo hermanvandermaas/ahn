@@ -5,17 +5,29 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 	</style>
+	
+	<style name="activity_info_max_width">
+		<item name="android:layout_width">match_parent</item>
+	</style>
 
-	<style name="transparent_toolbar" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+	<style name="transparent_toolbar" parent="Theme.AppCompat.Light">
 		<item name="background">@android:color/transparent</item>
-		<!-- Used to for the title of the Toolbar -->
+		<!-- Used for the title of the Toolbar -->
 		<item name="android:textColorPrimary">@color/primary_dark</item>
-		<!-- Used to for the title of the Toolbar when parent is Theme.AppCompat.Light -->
+		<!-- Used for the title of the Toolbar when parent is Theme.AppCompat.Light -->
 		<item name="android:textColorPrimaryInverse">@color/primary_dark</item>
 		<!-- Used to color the text of the action menu icons -->
 		<item name="android:textColorSecondary">@color/primary_dark</item>
 		<!-- Used to color the overflow menu icon -->
 		<item name="actionMenuTextColor">@color/primary_dark</item>
+	</style>
+	
+	<style name="white_toolbar" parent="Theme.AppCompat.Light">
+		<item name="android:background">@color/white</item>
+		<!-- Used for the title of the Toolbar -->
+		<item name="android:textColorPrimary">@color/black</item>
+		<item name="colorControlNormal">@color/black</item>
+		<item name="colorPrimary">@color/white</item>
 	</style>
 	
 	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">
@@ -54,21 +66,4 @@
 		<item name="android:paddingBottom">16dp</item>
 		<item name="android:paddingLeft">16dp</item>
 	</style>
-	
-	<style name="welcome_dialog_image" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:layout_marginTop">12dp</item>
-	</style>
-	
-	<style name="welcome_dialog_container" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:paddingTop">24dp</item>
-		<item name="android:paddingLeft">24dp</item>
-		<item name="android:paddingRight">24dp</item>
-	</style>
-	
-	<style name="welcome_dialog_checkbox" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:layout_marginTop">0dp</item>
-	</style>
-	
-	
-	
 </resources>

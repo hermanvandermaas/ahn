@@ -32,6 +32,14 @@
         </activity>
 		
 		<activity
+            android:name=".InformationActivity"
+			android:launchMode="singleTop">
+			<meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.waywayway.ahn.MainActivity" />
+        </activity>
+		
+		<activity
             android:name=".OnBoardingScreenActivity">
         </activity>
 
