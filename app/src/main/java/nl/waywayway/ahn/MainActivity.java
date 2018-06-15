@@ -47,6 +47,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
 	private Context context;
+	private Toolbar toolbar;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
 	private GoogleApiClient googleApiClient;
@@ -161,7 +162,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// Maak toolbar
 	private void makeToolbar()
 	{
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar();
 	}
@@ -175,7 +176,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Toon icoon alleen als nodig
 		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
 		myLocationIcon.setVisible(myLocationIconVisible);
-
+		
 		return true;
 	}
 
@@ -658,14 +659,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onDestroy();
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		//Log.i("HermLog", "onDestroy()");
+		Log.i("HermLog", "onDestroy()");
 	}
 
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		//Log.i("HermLog", "onResume()");
+		Log.i("HermLog", "onResume()");
 
 		isPlayServicesAvailable();
 	}
@@ -674,8 +675,16 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onStart()
 	{
 		super.onStart();
-		//Log.i("HermLog", "onStart()");
+		Log.i("HermLog", "onStart()");
 		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		Log.i("HermLog", "onPause()");
+		//toolbar.getMenu().close();
 	}
 
 	@Override
