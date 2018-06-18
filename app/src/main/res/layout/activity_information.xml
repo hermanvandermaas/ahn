@@ -41,50 +41,61 @@
 				android:layout_centerHorizontal="true">
 
 				<TextView
-					android:id="@+id/title_detail"
-					android:layout_height="wrap_content"
-					android:layout_width="match_parent"
-					android:paddingTop="24dp"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:paddingBottom="8dp"
-					android:textIsSelectable="true"
-					android:text="Tekst"
-					android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+					style="@style/activity_info_text_title"
+					android:text="@string/hoogtekaart_title" />
 
 				<TextView
-					android:id="@+id/pubdate_detail"
-					android:layout_height="wrap_content"
-					android:layout_width="match_parent"
-					android:maxLines="1"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:paddingBottom="16dp"
-					android:textIsSelectable="true"
-					android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+					style="@style/activity_info_text_body"
+					android:text="@string/hoogtekaart_body" />
+				
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/hoogte_weergeven_title" />
 
 				<TextView
-					android:id="@+id/content_detail"
-					android:layout_height="wrap_content"
-					android:layout_width="match_parent"
-					android:paddingTop="16dp"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:paddingBottom="16dp"
-					android:textIsSelectable="true"
-					android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+					style="@style/activity_info_text_body"
+					android:text="@string/hoogte_weergeven_body" />
+				
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/kaartlagen_title" />
 
 				<TextView
-					android:id="@+id/creator_detail"
-					android:layout_height="wrap_content"
-					android:layout_width="match_parent"
-					android:maxLines="1"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:paddingBottom="16dp"
-					android:textIsSelectable="true"
-					android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+					style="@style/activity_info_text_body"
+					android:text="@string/kaartlagen_body" />
+				
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/kaart_delen_title" />
 
+				<TextView
+					style="@style/activity_info_text_body"
+					android:text="@string/kaart_delen_body" />
+				
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/over_ahn_title" />
+
+				<TextView
+					style="@style/activity_info_text_body"
+					android:text="@string/over_ahn_body" />
+				
+				<ImageView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:maxWidth="@dimen/ahn3kaart_max_width"
+					android:gravity="center_horizontal"
+					android:scaleType="fitCenter"
+					android:src="@drawable/ahn3jarenkaart"
+					android:adjustViewBounds="true" />
+				
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/bronvermelding_title" />
+
+				<TextView
+					style="@style/activity_info_text_body"
+					android:text="@string/bronvermelding_body" />
 			</LinearLayout>
 		</LinearLayout>
 	</android.support.v4.widget.NestedScrollView>

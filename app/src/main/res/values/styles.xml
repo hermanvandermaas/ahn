@@ -5,7 +5,7 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 	</style>
-	
+
 	<style name="activity_info_max_width">
 		<item name="android:layout_width">match_parent</item>
 	</style>
@@ -21,48 +21,69 @@
 		<!-- Used to color the overflow menu icon -->
 		<item name="actionMenuTextColor">@color/primary_dark</item>
 	</style>
-	
+
 	<style name="white_toolbar" parent="Theme.AppCompat.Light">
 		<item name="android:background">@color/white</item>
 		<!-- Used for the title of the Toolbar -->
 		<item name="android:textColorPrimary">@color/black</item>
 		<item name="colorControlNormal">@color/black</item>
 	</style>
-	
+
 	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">
 	</style>
-	
+
 	<style name="text_title" parent="TextAppearance.AppCompat.Title">
 		<item name="android:textSize">16sp</item>
 	</style>
-	
+
 	<style name="text_body" parent="TextAppearance.AppCompat.Body1">
 		<item name="android:textColorPrimary">@color/primary_dark</item>
 		<!--<item name="android:textSize">16sp</item>-->
 	</style>
-	
+
 	<style name="navigation_drawer" parent="ThemeOverlay.AppCompat.Light">
 	</style>
-	
+
 	<style name="layers_menu_title" parent="ThemeOverlay.AppCompat.Light">
 		<item name="android:textSize">16sp</item>
 		<item name="android:paddingBottom">16dp</item>
 	</style>
-	
+
 	<style name="layer_checkbox" parent="ThemeOverlay.AppCompat.Light">
 		<item name="android:layout_marginTop">12dp</item>
 		<item name="android:paddingBottom">4dp</item>
 	</style>
-	
+
 	<style name="layer_seekbar" parent="ThemeOverlay.AppCompat.Light">
 		<item name="android:layout_marginTop">8dp</item>
 		<item name="android:paddingBottom">12dp</item>
 	</style>
-	
+
 	<style name="seekbar_label" parent="TextAppearance.AppCompat.Caption">
 		<item name="android:textColor">@color/primary_dark</item>
 		<item name="android:textSize">12sp</item>
 		<item name="android:paddingBottom">16dp</item>
 		<item name="android:paddingLeft">16dp</item>
 	</style>
+
+	<style name="activity_info_text_title" parent="TextAppearance.AppCompat.Headline">
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:paddingTop">8dp</item>
+		<item name="android:paddingLeft">16dp</item>
+		<item name="android:paddingRight">16dp</item>
+		<item name="android:paddingBottom">0dp</item>
+		<item name="android:textIsSelectable">true</item>
+	</style>
+	
+	<style name="activity_info_text_body" parent="TextAppearance.AppCompat.Body1">
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:paddingTop">8dp</item>
+		<item name="android:paddingLeft">16dp</item>
+		<item name="android:paddingRight">16dp</item>
+		<item name="android:paddingBottom">0dp</item>
+		<item name="android:textIsSelectable">true</item>
+	</style>
+
 </resources>
