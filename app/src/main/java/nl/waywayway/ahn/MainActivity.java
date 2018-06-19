@@ -101,7 +101,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		initializeLegend();
 		createGoogleApiClient();
-		locationProvider = initializeZoomToLocation();
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
@@ -283,6 +282,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			public void handleLocation(Location location, float zoom)
 			{
 				//Log.i("HermLog", "handleLocation");
+				//Log.i("HermLog", "handleLocation, this.getCurrentLocation(): " + this.getCurrentLocation());
 				if (this.getCurrentLocation() != null) showMyLocationIcon(true);
 				zoomToLocation(location, zoom);
 			}
@@ -325,7 +325,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
 		}
 		else
-			Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+			locationProvider.connect();
+			//Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -350,6 +351,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
     private void enableMyLocation()
 	{
+		//Log.i("HermLog", "enableMyLocation()");
+		
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 			!= PackageManager.PERMISSION_GRANTED)
 		{
@@ -368,7 +371,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			gMap.getUiSettings().setMyLocationButtonEnabled(false);
 
 			// Zoom naar huidige of standaardlocatie bij eerste opstart app
-			if (savedInstanceStateGlobal == null) locationProvider.connect();
+			//if (savedInstanceStateGlobal == null) 
+			locationProvider.connect();
         }
     }
 
@@ -659,23 +663,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onDestroy();
 		if (taskFragment.isRunning()) taskFragment.cancel();
-		Log.i("HermLog", "onDestroy()");
+		//Log.i("HermLog", "onDestroy()");
 	}
 
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		Log.i("HermLog", "onResume()");
+		//Log.i("HermLog", "onResume()");
 
 		isPlayServicesAvailable();
+		locationProvider = initializeZoomToLocation();
 	}
 
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
-		Log.i("HermLog", "onStart()");
+		//Log.i("HermLog", "onStart()");
 		notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
 	}
 
@@ -683,7 +688,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onPause()
 	{
 		super.onPause();
-		Log.i("HermLog", "onPause()");
+		//Log.i("HermLog", "onPause()");
 		//toolbar.getMenu().close();
 	}
 

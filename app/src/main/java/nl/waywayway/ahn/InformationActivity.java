@@ -14,7 +14,6 @@ public class InformationActivity extends AppCompatActivity
 
 		// Maak toolbar
 		makeToolBar();
-		
 	}
 
 	private void makeToolBar()

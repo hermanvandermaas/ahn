@@ -102,6 +102,7 @@ GoogleApiClient.OnConnectionFailedListener
 	
 	public void connect()
 	{
+		//Log.i("HermLog", "LocationProvider.connect()");
 		googleApiClient.connect();
 	}
 	
