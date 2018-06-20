@@ -173,8 +173,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 
 		// Toon icoon alleen als nodig
+		/*
 		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
 		myLocationIcon.setVisible(myLocationIconVisible);
+		*/
 		
 		return true;
 	}
@@ -182,10 +184,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-
 		switch (item.getItemId())
 		{
 			case R.id.action_layer_menu:
@@ -197,8 +195,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
                 return true;
 
 			case R.id.action_myposition:
-				zoomToLocation(locationProvider.getCurrentLocation(), 15);
-
+				permissionAsked = false;
+				locationProvider = initializeZoomToLocation(false);
+				enableMyLocation(true);
+				
 				return true;
 
 			case R.id.action_legend:
@@ -253,6 +253,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onMapReady(GoogleMap googleMap)
 	{
+		//Log.i("HermLog", "onMapReady()");
 		gMap = googleMap;
 
 		// Instellingen basiskaart
@@ -271,37 +272,48 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		gMap.setOnMapClickListener(this);
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		//gMap.setOnMyLocationButtonClickListener(this);
-        enableMyLocation();
+        enableMyLocation(false);
     }
 
-	private LocationProvider initializeZoomToLocation()
+	private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable)
 	{
 		LocationProvider locationProvider = new LocationProvider(context)
 		{
 			@Override
 			public void handleLocation(Location location, float zoom)
 			{
-				//Log.i("HermLog", "handleLocation");
 				//Log.i("HermLog", "handleLocation, this.getCurrentLocation(): " + this.getCurrentLocation());
-				if (this.getCurrentLocation() != null) showMyLocationIcon(true);
+				//if (this.getCurrentLocation() != null) showMyLocationIcon(true);
 				zoomToLocation(location, zoom);
 			}
 
 			@Override
-			public void locationUnavailable(LatLng standardLocation, float zoom)
+			public void locationUnavailableZoomToStandardLocation(LatLng standardLocation, float zoom)
 			{
 				//Log.i("HermLog", "locationUnavailable");
 				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 				gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
+			}
+			
+			@Override
+			public void locationUnavailable()
+			{
+				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onConnected(Bundle bundle)
 			{
 				//Log.i("HermLog", "onConnected");
-				zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
+				
+				if (isZoomToStandardIfLocationNotAvailable())
+					zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
+				else
+					zoomToCurrentLocation(1, 15);
 			}
 		};
+		
+		locationProvider.setZoomToStandardIfLocationNotAvailable(zoomToStandardIfLocationNotAvailable);
 
 		return locationProvider;
 	}
@@ -324,9 +336,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			double lon = lastLocation.getLongitude();
 			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
 		}
-		else
-			locationProvider.connect();
-			//Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -340,16 +349,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
         if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION))
 		{
             // Enable the my location layer if the permission has been granted.
-            enableMyLocation();
+            enableMyLocation(true);
         }
 		else
 		{
 			// geen toestemming, zoom naar standaard locatie
-			locationProvider.locationUnavailable(amersfoort, 15);
+			locationProvider.locationUnavailableZoomToStandardLocation(amersfoort, 15);
 		}
     }
 
-    private void enableMyLocation()
+	// Blauwe stip op huidige locatie, my location layer
+	// zoomAction: moet ingezoomd worden of niet
+    private void enableMyLocation(boolean zoomAction)
 	{
 		//Log.i("HermLog", "enableMyLocation()");
 		
@@ -371,8 +382,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			gMap.getUiSettings().setMyLocationButtonEnabled(false);
 
 			// Zoom naar huidige of standaardlocatie bij eerste opstart app
-			//if (savedInstanceStateGlobal == null) 
-			locationProvider.connect();
+			// of bij menukeuze 'Zoom naar mijn locatie'
+			//Log.i("HermLog", "savedInstanceStateGlobal: " + savedInstanceStateGlobal);
+			if (savedInstanceStateGlobal == null || zoomAction) locationProvider.connect();
+			//|| !locationProvider.isZoomToStandardIfLocationNotAvailable())
         }
     }
 
@@ -537,7 +550,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     public void onCameraIdle()
 	{
 		zoomLevel = gMap.getCameraPosition().zoom;
-		Log.i("HermLog", "Zoom: " + zoomLevel);
+		//Log.i("HermLog", "Zoom: " + zoomLevel);
     }
 
 	@Override
@@ -663,6 +676,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onDestroy();
 		if (taskFragment.isRunning()) taskFragment.cancel();
+		//toolbar.getMenu().close();
+		//closeOptionsMenu();
 		//Log.i("HermLog", "onDestroy()");
 	}
 
@@ -673,7 +688,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//Log.i("HermLog", "onResume()");
 
 		isPlayServicesAvailable();
-		locationProvider = initializeZoomToLocation();
+		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
 	}
 
 	@Override
@@ -689,14 +704,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		super.onPause();
 		//Log.i("HermLog", "onPause()");
-		//toolbar.getMenu().close();
 	}
 
 	@Override
 	protected void onStop()
 	{
 		super.onStop();
-		if (googleApiClient.isConnected()) locationProvider.disconnect();
+		if (locationProvider.isConnected()) locationProvider.disconnect();
 	}
 
 	/*********************************/

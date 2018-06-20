@@ -21,7 +21,8 @@ GoogleApiClient.OnConnectionFailedListener
 	private float zoom;
 	private LocationProvider thisInstance;
 	private Context context;
-	Handler handler;
+	private Handler handler;
+	private boolean zoomToStandardIfLocationNotAvailable = false;
 
 	public LocationProvider(Context context)
 	{
@@ -70,10 +71,49 @@ GoogleApiClient.OnConnectionFailedListener
 				{
 					//Log.i("HermLog", "expiredRunnable");
 					LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, thisInstance);
-					locationUnavailable(standardLocation, zoom);
+					locationUnavailableZoomToStandardLocation(standardLocation, zoom);
 				}
 			};
 			
+			handler = new Handler();
+			handler.postDelayed(expiredRunnable, 1000 * timeOut);
+		}
+
+		//Toast.makeText(this, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+	}
+	
+	// Zoom in op huidige locatie
+	// timeOut in seconden
+	public void zoomToCurrentLocation(int timeOut, final float zoom)
+	{
+		//Log.i("HermLog", "zoomToCurrentLocation");
+		Location currentLocation = getCurrentLocation();
+
+		if (currentLocation != null)
+		{
+			handleLocation(currentLocation, zoom);
+		}
+		else
+		{
+			// wacht x seconden op locatie
+			LocationRequest locationRequest = LocationRequest.create()
+				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+				.setNumUpdates(1)
+				.setExpirationDuration(1000 * timeOut);
+
+			LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
+			Runnable expiredRunnable = new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Log.i("HermLog", "expiredRunnable");
+					LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, thisInstance);
+					locationUnavailable();
+				}
+			};
+
 			handler = new Handler();
 			handler.postDelayed(expiredRunnable, 1000 * timeOut);
 		}
@@ -111,6 +151,11 @@ GoogleApiClient.OnConnectionFailedListener
 		googleApiClient.disconnect();
 	}
 	
+	public boolean isConnected()
+	{
+		return googleApiClient.isConnected();
+	}
+	
 	// Methods bedoeld om te overschrijven bij intantiatie
 	@Override
 	public void onConnected(Bundle bundle)
@@ -127,6 +172,20 @@ GoogleApiClient.OnConnectionFailedListener
 	public void handleLocation(Location location, float zoom)
 	{}
 
-	public void locationUnavailable(LatLng standardLocation, float zoom)
+	public void locationUnavailableZoomToStandardLocation(LatLng standardLocation, float zoom)
 	{}
+	
+	public void locationUnavailable()
+	{}
+	
+	// Getters en setters
+	public void setZoomToStandardIfLocationNotAvailable(boolean zoomToStandardIfLocationNotAvailable)
+	{
+		this.zoomToStandardIfLocationNotAvailable = zoomToStandardIfLocationNotAvailable;
+	}
+
+	public boolean isZoomToStandardIfLocationNotAvailable()
+	{
+		return zoomToStandardIfLocationNotAvailable;
+	}
 }

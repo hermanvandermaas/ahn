@@ -26,8 +26,8 @@
 	<style name="white_toolbar" parent="Theme.AppCompat.Light">
 		<item name="android:background">@color/white</item>
 		<!-- Used for the title of the Toolbar -->
-		<item name="android:textColorPrimary">@color/primary</item>
-		<item name="colorControlNormal">@color/primary</item>
+		<item name="android:textColorPrimary">@color/rood</item>
+		<item name="colorControlNormal">@color/rood</item>
 	</style>
 
 	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">

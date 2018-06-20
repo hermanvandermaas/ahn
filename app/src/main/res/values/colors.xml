@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="primary">#FF6230</color>
+	<color name="primary">#FFFFFF</color>
     <color name="primary_dark">#212121</color>
     <color name="accent">#FF9F00</color>
 	<color name="primary_text">#212121</color>
+	<color name="rood">#FF6230</color>
 	<color name="overflow_background">#FFFFFF</color>
 	<color name="overflow_text">#212121</color>
 	<color name="image_background">#000000</color>
