@@ -108,7 +108,7 @@ GoogleApiClient.OnConnectionFailedListener
 				@Override
 				public void run()
 				{
-					Log.i("HermLog", "expiredRunnable");
+					//Log.i("HermLog", "expiredRunnable");
 					LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, thisInstance);
 					locationUnavailable();
 				}
