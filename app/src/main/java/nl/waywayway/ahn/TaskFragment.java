@@ -155,6 +155,8 @@ public class TaskFragment extends Fragment
 			//if (urls[0] == null) return "n/a";
 
 			ArrayList<String> hoogtes = new ArrayList<String>();
+			int i = 0;
+			String ahn1ShortTitle = context.getResources().getString(R.string.ahn1_short_title);
 
 			for (URL url : urls)
 			{
@@ -184,12 +186,20 @@ public class TaskFragment extends Fragment
 					}
 					else
 					{
+						// AHN1 is in centimeters dus delen door 100
+						if (layerInfoList.get(i).equals(ahn1ShortTitle))
+						{
+							hoogte = hoogte / 100d;
+						}
+						
 						hoogteAfgerond = String.format("%.2f", hoogte);
 						if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
 					}
 
 					hoogtes.add(hoogteAfgerond);
 				}
+				
+				i++;
 			}
 
 			return hoogtes;

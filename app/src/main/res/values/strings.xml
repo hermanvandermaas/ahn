@@ -26,6 +26,7 @@
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
 	<string name="opacity_seekbar_description">Zichtbaar</string>
+	<string name="ahn1_short_title">AHN 1 - maaiveld</string>
 	
 	<string name="not_connected_message">Geen netwerkverbinding: sommige functies werken niet</string>
 	<string name="device_location_not_available_message">Je locatie is nu niet beschikbaar</string>
@@ -36,7 +37,6 @@
 	
 	<!-- onboarding slideshow -->
 	<string name="ob_get_started">START</string>
-		
     <string name="ob_header1">BEKIJK DE HOOGTEKAART</string>
 	<string name="ob_desc1">Zoom ver in om de hoogtekaart in beeld te krijgen</string>
     <string name="ob_header2">VIND EEN LOCATIE</string>
