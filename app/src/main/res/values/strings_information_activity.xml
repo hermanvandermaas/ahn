@@ -13,15 +13,23 @@
 	<string name="kaart_delen_title">Kaart opslaan of delen</string>
 	<string name="kaart_delen_body">Je kunt een kaart delen via \'Deel kaart\' in het menu. De kaart opslaan kan ook op deze manier. Je moet de kaart dan delen met een andere app op je apparaat die bestanden kan opslaan, een File Manager app.</string>
 	
-	<string name="over_ahn_title">Over AHN</string>
-	<string name="over_ahn_body">Het Actueel Hoogtebestand Nederland is een digitale kaart van Nederland met gedetailleerde en precieze hoogtegegevens: acht hoogtemetingen per vierkante meter. AHN is een samenwerking van de provincies, de Rijksoverheid en de waterschappen. Voor meer informatie, zie www.ahn.nl. Er zijn drie hoogtebestanden, gemeten in de volgende jaren:
+	<string name="maaiveld_of_objecten_title">Maaiveld of objecten</string>
+	<string name="maaiveld_of_objecten_body">Er zijn twee soorten hoogtekaarten:
 		\n
-		\nAHN 3: 2014-2019
-		\nAHN 2: 2008-2012
-		\nAHN 1: 1996-2003
+		\n• Maaiveld (Digital Terrain Model, DTM)
+		\n• Maaiveld met objecten zoals huizen en bomen (Digital Surface Model, DSM)
+		\n
+		\nHet verschil is te zien in onderstaande afbeelding.</string>
+
+	<string name="over_ahn_title">Over AHN</string>
+	<string name="over_ahn_body">Het Actueel Hoogtebestand Nederland is een digitale kaart van Nederland met gedetailleerde en precieze hoogtegegevens: acht hoogtemetingen per vierkante meter. AHN is een samenwerking van de provincies, de Rijksoverheid en de waterschappen. Voor meer informatie, zie <a href="http://www.ahn.nl/">www.ahn.nl</a>. Er zijn drie hoogtebestanden, gemeten in de volgende jaren:
+		\n
+		\n• AHN 3: 2014-2019
+		\n• AHN 2: 2008-2012
+		\n• AHN 1: 1996-2003
 		\n
 		\nHet AHN 3 wordt momenteel ingemeten en is nog niet landsdekkend. Op onderstaande kaart staat de planning voor beschikbaarheid.</string>
 		
 	<string name="bronvermelding_title">Bronvermelding</string>
-	<string name="bronvermelding_body">De hoogtekaarten in deze app zijn afkomstig van www.nationaalgeoregister.nl. Deze gegevens zijn zonder beperkingen beschikbaar gesteld als open data.\n\n</string>
+	<string name="bronvermelding_body">De hoogtekaarten in deze app zijn afkomstig van <a href="http://nationaalgeoregister.nl/">www.nationaalgeoregister.nl</a>. Deze gegevens zijn zonder beperkingen beschikbaar gesteld als open data.\n\n</string>
 </resources>

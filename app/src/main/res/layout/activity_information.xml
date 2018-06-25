@@ -74,9 +74,29 @@
 				
 				<TextView
 					style="@style/activity_info_text_title"
+					android:text="@string/maaiveld_of_objecten_title" />
+
+				<TextView
+					style="@style/activity_info_text_body"
+					android:text="@string/maaiveld_of_objecten_body" />
+				
+				<ImageView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:paddingTop="20dp"
+					android:paddingBottom="16dp"
+					android:maxHeight="@dimen/maaiveld_of_objecten_afbeelding_max_height"
+					android:gravity="center_horizontal"
+					android:scaleType="fitCenter"
+					android:src="@drawable/dtm_dsm"
+					android:adjustViewBounds="true" />
+				 
+				<TextView
+					style="@style/activity_info_text_title"
 					android:text="@string/over_ahn_title" />
 
 				<TextView
+					android:id="@+id/activity_info_over_ahn"
 					style="@style/activity_info_text_body"
 					android:text="@string/over_ahn_body" />
 				
@@ -96,6 +116,7 @@
 					android:text="@string/bronvermelding_title" />
 
 				<TextView
+					android:id="@+id/activity_info_bronvermelding"
 					style="@style/activity_info_text_body"
 					android:text="@string/bronvermelding_body" />
 			</LinearLayout>

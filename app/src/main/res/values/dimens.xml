@@ -17,5 +17,6 @@
 	
 	<!-- informatiescherm -->
     <dimen name="ahn3kaart_max_height">300dp</dimen>
+	<dimen name="maaiveld_of_objecten_afbeelding_max_height">300dp</dimen>
 	
 </resources>
