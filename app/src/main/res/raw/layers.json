@@ -16,6 +16,20 @@
 			"queryable": "true"
 		},
 		{
+			"ID": "95",
+			"title": "Actueel Hoogtebestand Nederland 3 - maaiveld",
+			"shortTitle": "AHN 3 - maaiveld",
+			"serviceUrl": "https://geodata.nationaalgeoregister.nl/ahn3/ows?service=WMS&version=1.3.0&request=GetMap&layers=ahn3_05m_dtm&styles=ahn3:ahn3_05m_detail&bbox=%f,%f,%f,%f&width=%d&height=%d&crs=EPSG:3857&format=image/png&transparent=true",
+			"WMSGetMapFeatureInfoQueryLayer": "ahn3_05m_dtm",
+			"minx": 361403.7366878665,
+			"miny": 6573443.017669047,
+			"maxx": 807808.8874921346,
+			"maxy": 7082066.659439815,
+			"visibleByDefault": "false",
+			"opacityDefault": 100,
+			"queryable": "true"
+		},
+		{
 			"ID": "90",
 			"title": "Actueel Hoogtebestand Nederland 2 - objecten",
 			"shortTitle": "AHN 2 - objecten",
@@ -30,6 +44,20 @@
 			"queryable": "true"
 		},
 		{
+			"ID": "85",
+			"title": "Actueel Hoogtebestand Nederland 2 - maaiveld",
+			"shortTitle": "AHN 2 - maaiveld",
+			"serviceUrl": "https://geodata.nationaalgeoregister.nl/ahn2/ows?service=WMS&version=1.3.0&request=GetMap&layers=ahn2_05m_int&styles=ahn2:ahn2_05m_detail&bbox=%f,%f,%f,%f&width=%d&height=%d&crs=EPSG:3857&format=image/png&transparent=true",
+			"WMSGetMapFeatureInfoQueryLayer": "ahn2_05m_int",
+			"minx": 361403.7366878665,
+			"miny": 6573443.017669047,
+			"maxx": 807808.8874921346,
+			"maxy": 7082066.659439815,
+			"visibleByDefault": "false",
+			"opacityDefault": 67,
+			"queryable": "true"
+		},
+		{
 			"ID": "80",
 			"title": "Actueel Hoogtebestand Nederland 1 - maaiveld",
 			"shortTitle": "AHN 1 - maaiveld",
@@ -40,7 +68,7 @@
 			"maxx": 807808.8874921346,
 			"maxy": 7082066.659439815,
 			"visibleByDefault": "false",
-			"opacityDefault": 100,
+			"opacityDefault": 95,
 			"queryable": "true"
 		}
 	]
