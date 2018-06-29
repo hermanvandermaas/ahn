@@ -132,7 +132,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			legendVisible = true;
 		}
 
-		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeRightGestureListener()
+		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeGestureListener()
 			{
 				@Override
 				public void onSwipeRight()

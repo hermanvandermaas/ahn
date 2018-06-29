@@ -1,13 +1,12 @@
 package nl.waywayway.ahn;
 
 import android.content.*;
+import android.support.v4.view.*;
 import android.support.v7.widget.*;
-import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.google.android.gms.maps.model.*;
 import java.util.*;
-import nl.waywayway.ahn.LayersRecyclerViewAdapter.*;
 
 public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecyclerViewAdapter.CustomViewHolder>
 {
@@ -20,6 +19,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
     private List<LayerItem> layerList;
     private Context context;
 	private LayersRecyclerViewAdapter.AdapterCallbacks callbacks;
+	GestureDetectorCompat swipeUpOrDownGestureDetector;
 
     public LayersRecyclerViewAdapter(Context context, List<LayerItem> layerList)
 	{
@@ -53,39 +53,16 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
         //Set text views
         customViewHolder.checkBoxView.setText(layerItem.getTitle());
-		
+
 		// NavigationView (drawer), niet laten meeschuiven met SeekBar
-		customViewHolder.seekBarView.setOnTouchListener(new View.OnTouchListener() 
-			{
-				@Override
-				public boolean onTouch(View v, MotionEvent event) 
-				{
-					int action = event.getAction();
+		customViewHolder.seekBarView.setOnTouchListener(new SeekBarTouchListener(context));
 
-					switch (action) 
-					{
-						case MotionEvent.ACTION_DOWN:
-							v.getParent().requestDisallowInterceptTouchEvent(true);
-							break;
-
-						case MotionEvent.ACTION_UP:
-							v.getParent().requestDisallowInterceptTouchEvent(true);
-							break;
-					}
-
-					// Handle seekbar touch events
-					v.onTouchEvent(event);
-
-					return true;
-				}
-			});
-		
 		// Voeg (deels) zichtbare lagen toe aan kaart
 		// Zichtbaarheid en dekkendheid laag instellen uit SharedPreference of default
 		int[] preferences = LayersSaveAndRestore.getInstance(context, layerItem.getID()).restore();
 		boolean visible;
 		int opacity;
-		
+
 		if (preferences == null)
 		{
 			visible = layerItem.isVisibleByDefault();
@@ -99,12 +76,12 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 			opacity = preferences[1];
 			//Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible/opacity): " + layerItem.getTitle() + "/" + visible + "/" + opacity);
 		}
-		
+
 		// Voeg laag toe
 		if (visible && opacity > 0) callbacks.createLayer(layerItem, opacity);
 		customViewHolder.checkBoxView.setChecked(visible);
 		customViewHolder.seekBarView.setProgress(opacity);
-		
+
 		// Instellen percentage dekkendheid in tekstlabel bij SeekBar
 		String description = context.getResources().getString(R.string.opacity_seekbar_description);
 		customViewHolder.seekBarLabelView.setText(description + " " + opacity + "%");
@@ -172,7 +149,7 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					if (buttonView.isChecked())
 					{
 						int progress = mCustomViewHolder.seekBarView.getProgress();
-						
+
 						if (layer == null && progress > 0)
 						{
 							layer = mCallbacks.createLayer(layerItem, progress);

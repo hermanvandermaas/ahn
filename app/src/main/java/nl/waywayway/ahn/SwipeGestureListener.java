@@ -3,7 +3,7 @@ package nl.waywayway.ahn;
 import android.view.*;
 import android.widget.*;
 
-public class SwipeRightGestureListener extends GestureDetector.SimpleOnGestureListener
+public class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener
 {
 	@Override
 	public boolean onDown(MotionEvent event)
