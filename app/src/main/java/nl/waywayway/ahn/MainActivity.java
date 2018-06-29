@@ -165,7 +165,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		setSupportActionBar(toolbar);
 		getSupportActionBar();
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
