@@ -86,6 +86,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		legend = findViewById(R.id.legend_scrollview);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
+		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
 
 		showOnboardingScreenAtFirstRun();
 
