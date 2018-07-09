@@ -70,6 +70,20 @@
 			"visibleByDefault": "false",
 			"opacityDefault": 95,
 			"queryable": "true"
+		},
+		{
+			"ID": "70",
+			"title": "Luchtfoto - meest recent Kadaster",
+			"shortTitle": "Luchtfoto recent",
+			"serviceUrl": "https://geodata.nationaalgeoregister.nl/luchtfoto/rgb/wms?service=WMS&version=1.3.0&request=GetMap&layers=Actueel_ortho25&styles=&bbox=%f,%f,%f,%f&width=%d&height=%d&crs=EPSG:3857&format=image/png&transparent=true",
+			"WMSGetMapFeatureInfoQueryLayer": "",
+			"minx": 361403.7366878665,
+			"miny": 6573443.017669047,
+			"maxx": 807808.8874921346,
+			"maxy": 7082066.659439815,
+			"visibleByDefault": "false",
+			"opacityDefault": 100,
+			"queryable": "false"
 		}
 	]
 }
