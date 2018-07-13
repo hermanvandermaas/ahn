@@ -11,7 +11,7 @@
 	<string name="kaartlagen_body">De verschillende kaartlagen kun je aan- en uitzetten in het lagenmenu. Hier kun je per laag ook de transparantie instellen. Tip: veeg vanaf de rechter schermrand naar links voor het menu.</string>
 	
 	<string name="kaart_delen_title">Kaart opslaan of delen</string>
-	<string name="kaart_delen_body">Je kunt een kaart delen via \'Deel kaart\' in het menu. De kaart opslaan kan ook op deze manier. Je moet de kaart dan delen met een andere app op je apparaat die bestanden kan opslaan, een File Manager app.</string>
+	<string name="kaart_delen_body">Je kunt een kaart delen via \'Deel kaart\' in het menu. De kaart opslaan kan ook op deze manier. Je moet de kaart dan delen met een andere app op je apparaat die bestanden kan opslaan, een <a href="http://play.google.com/store/search?q=file manager&amp;c=apps">File Manager app</a>.</string>
 	
 	<string name="maaiveld_of_objecten_title">Maaiveld of objecten</string>
 	<string name="maaiveld_of_objecten_body">Er zijn twee soorten hoogtekaarten:

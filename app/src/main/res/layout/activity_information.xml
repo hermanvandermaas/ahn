@@ -69,6 +69,7 @@
 					android:text="@string/kaart_delen_title" />
 
 				<TextView
+					android:id="@+id/activity_info_kaart_delen"
 					style="@style/activity_info_text_body"
 					android:text="@string/kaart_delen_body" />
 				

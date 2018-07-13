@@ -29,6 +29,10 @@ public class InformationActivity extends AppCompatActivity
 		
 		TextView textView2 = findViewById(R.id.activity_info_bronvermelding);
 		textView2.setMovementMethod(LinkMovementMethod.getInstance());
+		
+		TextView textView3 = findViewById(R.id.activity_info_kaart_delen);
+		textView3.setMovementMethod(LinkMovementMethod.getInstance());
+		
 	}
 
 	private void makeToolBar()
