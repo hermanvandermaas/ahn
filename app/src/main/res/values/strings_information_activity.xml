@@ -2,7 +2,7 @@
 
 <resources>
 	<string name="hoogtekaart_title">Hoogtekaart</string>
-	<string name="hoogtekaart_body">De hoogtekaart verschijnt als je ver genoeg bent ingezoomd. Als je weer uitzoomt, verdwijnt de hoogtekaart weer. Dit komt doordat de hoogtekaart alleen voor kleinere schaal beschikbaar is.</string>
+	<string name="hoogtekaart_body">De hoogtekaart verschijnt als je ver genoeg bent ingezoomd. Als je weer uitzoomt, verdwijnt de hoogtekaart weer. Dit komt doordat de hoogtekaart alleen voor grotere schaalniveaus (verder ingezoomd) beschikbaar is.</string>
 	
 	<string name="hoogte_weergeven_title">Hoogte weergeven</string>
 	<string name="hoogte_weergeven_body">Tik op de kaart om de hoogte op die plek te tonen. Als je meerdere lagen hebt geselecteerd, zie je van iedere geselecteerde laag de hoogte. Zo kun je bijvoorbeeld zien of die plek is gedaald of gestegen in de loop van de tijd.</string>
