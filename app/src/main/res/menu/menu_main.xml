@@ -16,35 +16,42 @@
 		android:id="@+id/action_myposition"
 		android:title="@string/action_myposition"
 		android:icon="@drawable/ic_my_location_black_24px"
-		android:orderInCategory="15"
+		android:orderInCategory="20"
 		app:showAsAction="ifRoom" />
 	
 	<item
 		android:id="@+id/action_info"
 		android:title="@string/action_info"
 		android:icon="@drawable/baseline_info_24px"
-		android:orderInCategory="16"
+		android:orderInCategory="30"
 		app:showAsAction="ifRoom" />
 	
 	<item
 		android:id="@+id/action_share_map"
 		android:title="@string/action_share_map"
 		android:icon="@drawable/baseline_share_24px"
-		android:orderInCategory="17"
+		android:orderInCategory="40"
 		app:showAsAction="ifRoom" />
 	
 	<item
 		android:id="@+id/action_legend"
 		android:title="@string/action_legend"
 		android:icon="@drawable/baseline_format_list_bulleted_24px"
-		android:orderInCategory="18"
+		android:orderInCategory="50"
 		app:showAsAction="always" />
 	
 	<item
 		android:id="@+id/action_layer_menu"
 		android:title="@string/action_layers"
 		android:icon="@drawable/ic_layers_black_24px"
-		android:orderInCategory="20"
+		android:orderInCategory="60"
 		app:showAsAction="always" />
+	
+	<item
+		android:id="@+id/action_elevation_profile"
+		android:title="@string/action_elevation_profile"
+		android:icon="@drawable/baseline_timeline_24px"
+		android:orderInCategory="70"
+		app:showAsAction="ifRoom" />
 	
 </menu>

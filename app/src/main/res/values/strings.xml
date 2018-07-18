@@ -11,6 +11,7 @@
 	<string name="action_info">Informatie</string>
 	<string name="action_search">Zoek locatie</string>
 	<string name="action_share_map">Deel kaart</string>
+	<string name="action_elevation_profile">Maak hoogteprofiel</string>
 	
 	<string name="permission_rationale_location">Toegang tot je huidige locatie wordt gevraagd om op de kaart snel naar je huidige locatie te kunnen zoomen.</string>
     <string name="location_permission_denied">Je locatie is noodzakelijk voor deze app. Als je je locatie permanent niet hebt toegestaan, kun je dit herstellen via Systeeminstellingen &gt; Apps &gt; \'AHN\'.</string>

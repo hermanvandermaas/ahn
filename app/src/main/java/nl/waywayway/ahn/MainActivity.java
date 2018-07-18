@@ -61,6 +61,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private DrawerLayout drawerLayout;
 	private View searchBar;
 	private View legend;
+	private View elevationProfileMenu;
 	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
@@ -70,8 +71,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
 	private boolean legendVisible = false;
+	private boolean elevationProfileMenuVisible = false;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
+	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -85,6 +88,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		drawerLayout = findViewById(R.id.drawer_layout);
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		legend = findViewById(R.id.legend_scrollview);
+		elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
 
@@ -98,9 +102,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
+			elevationProfileMenuVisible = savedInstanceState.getBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY);
 		}
 
 		initializeLegend();
+		initializeElevationProfileMenu();
 		createGoogleApiClient();
 
 		// Handler voor worker fragment
@@ -157,6 +163,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					return false;
 				}
 			});
+	}
+	
+	private void initializeElevationProfileMenu()
+	{
+		if (elevationProfileMenuVisible)
+		{
+			showElevationProfileMenu(View.VISIBLE);
+			elevationProfileMenuVisible = true;
+		}
 	}
 
 	// Maak toolbar
@@ -245,6 +260,21 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 
 				return true;
+				
+			case R.id.action_elevation_profile:
+				if (elevationProfileMenu.getVisibility() == View.VISIBLE)
+				{
+					showElevationProfileMenu(View.INVISIBLE);
+					elevationProfileMenuVisible = false;
+				}
+				else
+				{
+					showElevationProfileMenu(View.VISIBLE);
+					elevationProfileMenuVisible = true;
+				}
+
+				return true;
+				
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -644,6 +674,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		View legend = findViewById(R.id.legend_scrollview);
 		legend.setVisibility(visibility);
 	}
+	
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showElevationProfileMenu(int visibility)
+	{
+		View menu = findViewById(R.id.card_elevation_profile_menu);
+		menu.setVisibility(visibility);
+	}
 
 	private void showOnboardingScreenAtFirstRun()
 	{
@@ -668,6 +705,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
+		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
 
 		super.onSaveInstanceState(outState);
 	}
