@@ -266,11 +266,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				{
 					showElevationProfileMenu(View.INVISIBLE);
 					elevationProfileMenuVisible = false;
+					Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_left);
+					elevationProfileMenu.startAnimation(slideLeft);
 				}
 				else
 				{
 					showElevationProfileMenu(View.VISIBLE);
 					elevationProfileMenuVisible = true;
+					Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_right);
+					elevationProfileMenu.startAnimation(slideRight);
 				}
 
 				return true;
