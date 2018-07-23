@@ -90,6 +90,8 @@
 						android:scaleType="fitCenter"
 						android:adjustViewBounds="true"
 						android:background="@color/rood"
+						android:foreground="?android:attr/selectableItemBackground"
+						android:clickable="true"
 						android:src="@drawable/baseline_close_24px" />
 
 					<ImageView
@@ -100,6 +102,8 @@
 						android:gravity="center"
 						android:scaleType="fitCenter"
 						android:adjustViewBounds="true"
+						android:foreground="?android:attr/selectableItemBackground"
+						android:clickable="true"
 						android:src="@drawable/delete_last_point_24px" />
 
 					<ImageView
@@ -110,6 +114,8 @@
 						android:gravity="center"
 						android:scaleType="fitCenter"
 						android:adjustViewBounds="true"
+						android:foreground="?android:attr/selectableItemBackground"
+						android:clickable="true"
 						android:src="@drawable/baseline_delete_24px" />
 					
 					<ImageView
@@ -120,6 +126,8 @@
 						android:gravity="center"
 						android:scaleType="fitCenter"
 						android:adjustViewBounds="true"
+						android:foreground="?android:attr/selectableItemBackground"
+						android:clickable="true"
 						android:src="@drawable/baseline_play_arrow_24px" />
 
 				</LinearLayout>

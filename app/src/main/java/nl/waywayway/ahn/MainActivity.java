@@ -131,6 +131,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//setTransparentStatusBar();
     }
 
+	// Legenda
 	private void initializeLegend()
 	{
 		if (legendVisible)
@@ -164,14 +165,25 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 			});
 	}
-	
+
+	// Menu hoogteprofiel
 	private void initializeElevationProfileMenu()
 	{
 		if (elevationProfileMenuVisible)
 		{
-			showElevationProfileMenu(View.VISIBLE);
+			toggleElevationProfileMenu();
 			elevationProfileMenuVisible = true;
 		}
+
+		((ImageView) findViewById(R.id.elevation_profile_close))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					toggleElevationProfileMenu();
+				}
+			});
 	}
 
 	// Maak toolbar
@@ -181,19 +193,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		setSupportActionBar(toolbar);
 		getSupportActionBar();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-
-		// Toon icoon alleen als nodig
-		/*
-		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
-		myLocationIcon.setVisible(myLocationIconVisible);
-		*/
-		
 		return true;
 	}
 
@@ -214,7 +219,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				permissionAsked = false;
 				locationProvider = initializeZoomToLocation(false);
 				enableMyLocation(true);
-				
+
 				return true;
 
 			case R.id.action_legend:
@@ -240,11 +245,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				shareImage.share();
 
 				return true;
-				
+
 			case R.id.action_info:
 				Intent intent = new Intent(context, InformationActivity.class);
 				context.startActivity(intent);
-				
+
 				return true;
 
 			case R.id.action_search:
@@ -260,25 +265,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 
 				return true;
-				
+
 			case R.id.action_elevation_profile:
-				if (elevationProfileMenu.getVisibility() == View.VISIBLE)
-				{
-					showElevationProfileMenu(View.INVISIBLE);
-					elevationProfileMenuVisible = false;
-					Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_left);
-					elevationProfileMenu.startAnimation(slideLeft);
-				}
-				else
-				{
-					showElevationProfileMenu(View.VISIBLE);
-					elevationProfileMenuVisible = true;
-					Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_right);
-					elevationProfileMenu.startAnimation(slideRight);
-				}
+				toggleElevationProfileMenu();
 
 				return true;
-				
+
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -329,7 +321,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 				gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
 			}
-			
+
 			@Override
 			public void locationUnavailable()
 			{
@@ -340,14 +332,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			public void onConnected(Bundle bundle)
 			{
 				//Log.i("HermLog", "onConnected");
-				
+
 				if (isZoomToStandardIfLocationNotAvailable())
 					zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
 				else
 					zoomToCurrentLocation(1, 15);
 			}
 		};
-		
+
 		locationProvider.setZoomToStandardIfLocationNotAvailable(zoomToStandardIfLocationNotAvailable);
 
 		return locationProvider;
@@ -398,7 +390,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     private void enableMyLocation(boolean zoomAction)
 	{
 		//Log.i("HermLog", "enableMyLocation()");
-		
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 			!= PackageManager.PERMISSION_GRANTED)
 		{
@@ -503,7 +495,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 								   layerItem.getMaxx(), 
 								   layerItem.getMaxy()
 							   )));
-							   
+
 		tileOverlay.setTransparency(1f - opacity / 100f);
 
 		// Zet referentie naar kaartlaag in lijst
@@ -603,9 +595,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			markerList.get(0).remove();
 			markerList.remove(0);
 		}
-		
+
 		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
-		
+
 		if (visibleLayers.size() == 0)
 		{
 			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
@@ -678,12 +670,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		View legend = findViewById(R.id.legend_scrollview);
 		legend.setVisibility(visibility);
 	}
-	
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
-	private void showElevationProfileMenu(int visibility)
+	private void toggleElevationProfileMenu()
 	{
-		View menu = findViewById(R.id.card_elevation_profile_menu);
-		menu.setVisibility(visibility);
+		if (elevationProfileMenu.getVisibility() == View.VISIBLE)
+		{
+			elevationProfileMenu.setVisibility(View.INVISIBLE);
+			elevationProfileMenuVisible = false;
+			Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_left);
+			elevationProfileMenu.startAnimation(slideLeft);
+		}
+		else
+		{
+			elevationProfileMenu.setVisibility(View.VISIBLE);
+			elevationProfileMenuVisible = true;
+			Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_right);
+			elevationProfileMenu.startAnimation(slideRight);
+		}
 	}
 
 	private void showOnboardingScreenAtFirstRun()
