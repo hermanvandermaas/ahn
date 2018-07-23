@@ -75,6 +75,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
+	private ArrayList<LatLng> elevationProfileList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -175,6 +176,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			elevationProfileMenuVisible = true;
 		}
 
+		// Sluit menu
 		((ImageView) findViewById(R.id.elevation_profile_close))
 			.setOnClickListener(new View.OnClickListener()
 			{
@@ -182,6 +184,39 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				public void onClick(View v)
 				{
 					toggleElevationProfileMenu();
+				}
+			});
+			
+		// Verwijder laatste punt
+		((ImageView) findViewById(R.id.elevation_profile_delete_last_point))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					
+				}
+			});
+			
+		// Verwijder alle punten
+		((ImageView) findViewById(R.id.elevation_profile_delete_all_points))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+
+				}
+			});
+		
+		// Maak hoogteprofiel
+		((ImageView) findViewById(R.id.elevation_profile_make_profile))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+
 				}
 			});
 	}
