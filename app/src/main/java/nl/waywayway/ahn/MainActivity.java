@@ -75,7 +75,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
+	private String MODE_KEY = "mode_key";
 	private ArrayList<LatLng> elevationProfileList;
+	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
+	public enum Mode {POINT, LINE};
+	private Mode mode = Mode.POINT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,7 +107,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
-			elevationProfileMenuVisible = savedInstanceState.getBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY);
+			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
+			//Log.i("HermLog", "savedInstanceState mode: " + mode);
 		}
 
 		initializeLegend();
@@ -137,8 +142,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		if (legendVisible)
 		{
-			showLegend(View.VISIBLE);
-			legendVisible = true;
+			legendVisible = toggleViewVisibility(
+				legend,
+				AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
+				AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
+				true);
 		}
 
 		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeGestureListener()
@@ -146,13 +154,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onSwipeRight()
 				{
-					if (legend.getVisibility() == View.VISIBLE)
-					{
-						showLegend(View.INVISIBLE);
-						legendVisible = false;
-						Animation slideRight = AnimationUtils.loadAnimation(context, R.anim.legend_slide_right);
-						legend.startAnimation(slideRight);
-					}
+					legendVisible = toggleViewVisibility(
+						legend,
+						AnimationUtils.loadAnimation(context, R.anim.legend_slide_left),
+						AnimationUtils.loadAnimation(context, R.anim.legend_slide_right),
+						false);
 				}
 			});
 
@@ -170,11 +176,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// Menu hoogteprofiel
 	private void initializeElevationProfileMenu()
 	{
-		if (elevationProfileMenuVisible)
-		{
-			toggleElevationProfileMenu();
-			elevationProfileMenuVisible = true;
-		}
+		if (mode == Mode.LINE) elevationProfileMenuVisible = toggleViewVisibility(elevationProfileMenu, null, null, true);
 
 		// Sluit menu
 		((ImageView) findViewById(R.id.elevation_profile_close))
@@ -183,7 +185,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					toggleElevationProfileMenu();
+					elevationProfileMenuVisible = toggleViewVisibility(
+						elevationProfileMenu,
+						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
+						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
+						false);
+					
+					mode = elevationProfileMenuVisible ? Mode.LINE : Mode.POINT;
 				}
 			});
 			
@@ -258,21 +266,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 
 			case R.id.action_legend:
-				if (legend.getVisibility() == View.VISIBLE)
-				{
-					showLegend(View.INVISIBLE);
-					legendVisible = false;
-					Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.legend_slide_right);
-					legend.startAnimation(slideRight);
-				}
-				else
-				{
-					showLegend(View.VISIBLE);
-					legendVisible = true;
-					Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.legend_slide_left);
-					legend.startAnimation(slideLeft);
-				}
-
+				legendVisible = toggleViewVisibility(
+					legend,
+					AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
+					AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
+					false);
+					
 				return true;
 
 			case R.id.action_share_map:
@@ -302,8 +301,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 
 			case R.id.action_elevation_profile:
-				toggleElevationProfileMenu();
-
+				elevationProfileMenuVisible = toggleViewVisibility(
+					elevationProfileMenu,
+					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
+					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
+					false);
+				
+				mode = elevationProfileMenuVisible ? Mode.LINE : Mode.POINT;
+				
 				return true;
 
 
@@ -705,23 +710,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		View legend = findViewById(R.id.legend_scrollview);
 		legend.setVisibility(visibility);
 	}
-
-	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
-	private void toggleElevationProfileMenu()
+	
+	// Wissel tussen zichtbare en onzichtbare View
+	// eventueel met animatie
+	// geeft true als zichtbaar gemaakt
+	// als boolean show == true: niet wisselen maar altijd menu zichtbaar maken
+	private boolean toggleViewVisibility(View view, Animation showAnimation, Animation hideAnimation, boolean show)
 	{
-		if (elevationProfileMenu.getVisibility() == View.VISIBLE)
+		if (view.getVisibility() == View.VISIBLE && !show)
 		{
-			elevationProfileMenu.setVisibility(View.INVISIBLE);
-			elevationProfileMenuVisible = false;
-			Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_left);
-			elevationProfileMenu.startAnimation(slideLeft);
+			view.setVisibility(View.INVISIBLE);
+			if (hideAnimation != null) view.startAnimation(hideAnimation);
+			return false;
 		}
 		else
 		{
-			elevationProfileMenu.setVisibility(View.VISIBLE);
-			elevationProfileMenuVisible = true;
-			Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.elevation_profile_menu_slide_right);
-			elevationProfileMenu.startAnimation(slideRight);
+			view.setVisibility(View.VISIBLE);
+			if (showAnimation != null) view.startAnimation(showAnimation);
+			return true;
 		}
 	}
 
@@ -749,6 +755,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
+		outState.putSerializable(MODE_KEY, mode);
 
 		super.onSaveInstanceState(outState);
 	}
