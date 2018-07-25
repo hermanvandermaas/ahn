@@ -12,14 +12,12 @@ import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
 import android.widget.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
-import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.*;
 import com.google.android.gms.maps.*;
@@ -76,10 +74,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
 	private String MODE_KEY = "mode_key";
-	private ArrayList<LatLng> elevationProfileList;
+	private float LINE_Z_INDEX = 500;
+	private float DOT_Z_INDEX = 600;
+	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
+	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
-	public enum Mode {POINT, LINE};
+	public enum Mode
+	{POINT, LINE};
 	private Mode mode = Mode.POINT;
+	Polyline line;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -190,11 +193,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 						false);
-					
-					mode = elevationProfileMenuVisible ? Mode.LINE : Mode.POINT;
+
+					switchMode(elevationProfileMenuVisible);
 				}
 			});
-			
+
 		// Verwijder laatste punt
 		((ImageView) findViewById(R.id.elevation_profile_delete_last_point))
 			.setOnClickListener(new View.OnClickListener()
@@ -202,10 +205,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					
+
 				}
 			});
-			
+
 		// Verwijder alle punten
 		((ImageView) findViewById(R.id.elevation_profile_delete_all_points))
 			.setOnClickListener(new View.OnClickListener()
@@ -216,7 +219,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 				}
 			});
-		
+
 		// Maak hoogteprofiel
 		((ImageView) findViewById(R.id.elevation_profile_make_profile))
 			.setOnClickListener(new View.OnClickListener()
@@ -271,7 +274,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
 					AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
 					false);
-					
+
 				return true;
 
 			case R.id.action_share_map:
@@ -306,9 +309,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 					false);
-				
-				mode = elevationProfileMenuVisible ? Mode.LINE : Mode.POINT;
-				
+
+				switchMode(elevationProfileMenuVisible);
+
 				return true;
 
 
@@ -342,6 +345,35 @@ LayersRecyclerViewAdapter.AdapterCallbacks
         enableMyLocation(false);
     }
 
+	// Wissel tussen punt- en lijnmodus
+	private void switchMode(boolean menuVisible)
+	{
+		if (menuVisible)
+		{
+			mode = Mode.LINE;
+			// Verwijder markers
+			removeMarker();
+			line = gMap.addPolyline(new PolylineOptions()
+				.zIndex(LINE_Z_INDEX)
+				.startCap(new RoundCap())
+				.endCap(new RoundCap())
+				.jointType(JointType.ROUND)
+				.geodesic(true)
+				.add());
+		}
+		else
+		{
+			mode = Mode.POINT;
+			// Verwijder lijn
+			line.remove();
+			verticesList.clear();
+			// Verwijder stippen
+			for (Marker dot : dotsList) dot.remove();
+			dotsList.clear();
+		}
+		
+	}
+	
 	private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable)
 	{
 		LocationProvider locationProvider = new LocationProvider(context)
@@ -624,18 +656,19 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     public void onMapClick(LatLng point)
 	{
 		//Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
-		putMarker(point);
+		if (mode == Mode.POINT)
+		{
+			putMarker(point);
+		}
+		else
+		{
+			addPointToLine(point);
+		}
     }
-
+	
 	private void putMarker(LatLng pointLatLong)
 	{
-		// Verwijder huidige marker van kaart en uit de lijst met markers
-		if (markerList.size() > 0)
-		{
-			markerList.get(0).remove();
-			markerList.remove(0);
-		}
-
+		removeMarker();
 		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
 
 		if (visibleLayers.size() == 0)
@@ -662,6 +695,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
+	
+	// Verwijder huidige marker
+	private void removeMarker()
+	{
+		if (markerList.size() > 0)
+		{
+			// Verwijder van kaart 
+			markerList.get(0).remove();
+			// Verwijder uit de lijst met markers
+			markerList.remove(0);
+		}
+	}
 
 	private void getElevationFromLatLong(LatLng pointLatLong, ArrayList<LayerItem> visibleLayers)
 	{
@@ -681,7 +726,21 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
-
+	
+	// Voeg punt toe aan lijn
+	private void addPointToLine(LatLng point)
+	{
+		// Werk lijn bij
+		verticesList.add(point);
+		line.setPoints(verticesList);
+		// Zet stip
+		dotsList.add(gMap.addMarker(new MarkerOptions()
+			.position(point)
+			.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
+			.zIndex(DOT_Z_INDEX)
+			.anchor(0.5f, 0.5f)
+			));
+	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBar(int visibility)
@@ -710,7 +769,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		View legend = findViewById(R.id.legend_scrollview);
 		legend.setVisibility(visibility);
 	}
-	
+
 	// Wissel tussen zichtbare en onzichtbare View
 	// eventueel met animatie
 	// geeft true als zichtbaar gemaakt
