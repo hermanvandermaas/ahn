@@ -78,6 +78,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
+	private String IS_DOT = "isDot";
 	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
@@ -208,7 +209,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-
+					
 				}
 			});
 
@@ -312,7 +313,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 					false);
-
+				
 				if (taskFragment.isRunning()) taskFragment.cancel();
 				switchMode(elevationProfileMenuVisible);
 
@@ -345,6 +346,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		googleMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
+		gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation(false);
 		switchMode(elevationProfileMenuVisible);
@@ -759,6 +761,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 									.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
 									.zIndex(DOT_Z_INDEX)
 									.anchor(0.5f, 0.5f));
+		// Zet tag dat dit een stip is, voor bepalen van actie bij aanklikken
+		dot.setTag(IS_DOT);
 
 		return dot;
 	}
