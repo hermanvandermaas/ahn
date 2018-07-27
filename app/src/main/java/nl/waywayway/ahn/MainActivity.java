@@ -115,7 +115,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
 			verticesList = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
-			Log.i("HermLog", "savedInstanceState, verticesList: " +  verticesList);
+			//Log.i("HermLog", "savedInstanceState, verticesList: " +  verticesList);
 		}
 
 		// Handler voor worker fragment
@@ -135,7 +135,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		initializeLegend();
 		initializeElevationProfileMenu();
 		createGoogleApiClient();
-		
+
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -209,7 +209,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					
+					deleteLastPoint();
 				}
 			});
 
@@ -313,7 +313,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 					false);
-				
+
 				if (taskFragment.isRunning()) taskFragment.cancel();
 				switchMode(elevationProfileMenuVisible);
 
@@ -360,18 +360,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			mode = Mode.LINE;
 			// Verwijder markers
 			removeMarker();
-			// Voeg lijn toe
-			line = gMap.addPolyline(new PolylineOptions()
-									.zIndex(LINE_Z_INDEX)
-									.startCap(new RoundCap())
-									.endCap(new RoundCap())
-									.jointType(JointType.ROUND)
-									.geodesic(true)
-									.addAll(verticesList));
-
-			// Voeg stippen toe
-			for (LatLng point : verticesList)
-				dotsList.add(drawDot(point));
+			drawLineAndDots();
 		}
 		else
 		{
@@ -379,7 +368,22 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			removeLineAndDots();
 		}
 	}
-	
+
+	private void drawLineAndDots()
+	{
+		// Voeg lijn toe
+		line = gMap.addPolyline(new PolylineOptions()
+								.zIndex(LINE_Z_INDEX)
+								.startCap(new RoundCap())
+								.endCap(new RoundCap())
+								.jointType(JointType.ROUND)
+								.geodesic(true)
+								.addAll(verticesList));
+		// Voeg stippen toe
+		for (LatLng point : verticesList)
+			dotsList.add(drawDot(point));
+	}
+
 	private void removeLineAndDots()
 	{
 		// Verwijder lijn
@@ -388,6 +392,49 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Verwijder stippen
 		for (Marker dot : dotsList) dot.remove();
 		dotsList.clear();
+	}
+
+	// Voeg punt toe aan lijn
+	private void addPointToLine(LatLng point)
+	{
+		// Werk lijn bij
+		verticesList.add(point);
+		line.setPoints(verticesList);
+		// Werk stippen bij
+		dotsList.add(drawDot(point));
+	}
+
+	// Verwijder laatste punt van lijn
+	private void deleteLastPoint()
+	{
+		// Werk lijn bij
+		if (verticesList == null) return;
+		if (verticesList.size() < 1) return;
+		int lastElementIndexLine = verticesList.size() - 1;
+		verticesList.remove(lastElementIndexLine);
+		line.setPoints(verticesList);
+		// Werk stippen bij
+		if (dotsList == null) return;
+		if (dotsList.size() < 1) return;
+		int lastElementIndexDots = dotsList.size() - 1;
+		// Verwijder stip van scherm
+		dotsList.get(lastElementIndexDots).remove();
+		// ... en uit de lijst
+		dotsList.remove(lastElementIndexDots);
+	}
+
+	// Zet stip
+	private Marker drawDot(LatLng point)
+	{
+		Marker dot = gMap.addMarker(new MarkerOptions()
+									.position(point)
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
+									.zIndex(DOT_Z_INDEX)
+									.anchor(0.5f, 0.5f));
+		// Zet tag dat dit een stip is, voor bepalen van actie bij aanklikken
+		dot.setTag(IS_DOT);
+
+		return dot;
 	}
 
 	private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable)
@@ -741,30 +788,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
-	}
-
-	// Voeg punt toe aan lijn
-	private void addPointToLine(LatLng point)
-	{
-		// Werk lijn bij
-		verticesList.add(point);
-		line.setPoints(verticesList);
-		// Werk stippen bij
-		dotsList.add(drawDot(point));
-	}
-
-	// Zet stip
-	private Marker drawDot(LatLng point)
-	{
-		Marker dot = gMap.addMarker(new MarkerOptions()
-									.position(point)
-									.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
-									.zIndex(DOT_Z_INDEX)
-									.anchor(0.5f, 0.5f));
-		// Zet tag dat dit een stip is, voor bepalen van actie bij aanklikken
-		dot.setTag(IS_DOT);
-
-		return dot;
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
