@@ -12,6 +12,7 @@ import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -74,6 +75,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
 	private String MODE_KEY = "mode_key";
+	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
 	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
@@ -111,12 +113,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
-			//Log.i("HermLog", "savedInstanceState mode: " + mode);
+			verticesList = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
+			Log.i("HermLog", "savedInstanceState, verticesList: " +  verticesList);
 		}
-
-		initializeLegend();
-		initializeElevationProfileMenu();
-		createGoogleApiClient();
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
@@ -132,6 +131,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 		if (taskFragment.isRunning()) taskFragment.cancel();
 
+		initializeLegend();
+		initializeElevationProfileMenu();
+		createGoogleApiClient();
+		
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
@@ -310,6 +313,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 					false);
 
+				if (taskFragment.isRunning()) taskFragment.cancel();
 				switchMode(elevationProfileMenuVisible);
 
 				return true;
@@ -343,6 +347,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation(false);
+		switchMode(elevationProfileMenuVisible);
     }
 
 	// Wissel tussen punt- en lijnmodus
@@ -353,27 +358,36 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			mode = Mode.LINE;
 			// Verwijder markers
 			removeMarker();
+			// Voeg lijn toe
 			line = gMap.addPolyline(new PolylineOptions()
-				.zIndex(LINE_Z_INDEX)
-				.startCap(new RoundCap())
-				.endCap(new RoundCap())
-				.jointType(JointType.ROUND)
-				.geodesic(true)
-				.add());
+									.zIndex(LINE_Z_INDEX)
+									.startCap(new RoundCap())
+									.endCap(new RoundCap())
+									.jointType(JointType.ROUND)
+									.geodesic(true)
+									.addAll(verticesList));
+
+			// Voeg stippen toe
+			for (LatLng point : verticesList)
+				dotsList.add(drawDot(point));
 		}
 		else
 		{
 			mode = Mode.POINT;
-			// Verwijder lijn
-			line.remove();
-			verticesList.clear();
-			// Verwijder stippen
-			for (Marker dot : dotsList) dot.remove();
-			dotsList.clear();
+			removeLineAndDots();
 		}
-		
 	}
 	
+	private void removeLineAndDots()
+	{
+		// Verwijder lijn
+		if (line != null) line.remove();
+		verticesList.clear();
+		// Verwijder stippen
+		for (Marker dot : dotsList) dot.remove();
+		dotsList.clear();
+	}
+
 	private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable)
 	{
 		LocationProvider locationProvider = new LocationProvider(context)
@@ -665,7 +679,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			addPointToLine(point);
 		}
     }
-	
+
 	private void putMarker(LatLng pointLatLong)
 	{
 		removeMarker();
@@ -695,7 +709,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		//testProjection();
 		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
-	
+
 	// Verwijder huidige marker
 	private void removeMarker()
 	{
@@ -726,20 +740,27 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
-	
+
 	// Voeg punt toe aan lijn
 	private void addPointToLine(LatLng point)
 	{
 		// Werk lijn bij
 		verticesList.add(point);
 		line.setPoints(verticesList);
-		// Zet stip
-		dotsList.add(gMap.addMarker(new MarkerOptions()
-			.position(point)
-			.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
-			.zIndex(DOT_Z_INDEX)
-			.anchor(0.5f, 0.5f)
-			));
+		// Werk stippen bij
+		dotsList.add(drawDot(point));
+	}
+
+	// Zet stip
+	private Marker drawDot(LatLng point)
+	{
+		Marker dot = gMap.addMarker(new MarkerOptions()
+									.position(point)
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
+									.zIndex(DOT_Z_INDEX)
+									.anchor(0.5f, 0.5f));
+
+		return dot;
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
@@ -815,6 +836,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
 		outState.putSerializable(MODE_KEY, mode);
+		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, verticesList);
 
 		super.onSaveInstanceState(outState);
 	}
