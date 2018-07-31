@@ -43,8 +43,8 @@ CancelOrProceedDialogFragment.YesNoDialog,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
+	private static final String TAG_DELETE_LINE_DIALOG = "delete_line";
 	private boolean dialogPlayServicesWasShowed = false;
-	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
 	private Context context;
 	private Toolbar toolbar;
@@ -111,7 +111,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		{
 			permissionAsked = savedInstanceState.getBoolean(PERMISSION_ASKED_STATE_KEY);
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
-			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
@@ -225,7 +224,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 						R.string.dialog_confirm_action_body_text,
 						R.string.dialog_confirm_action_yes,
 						R.string.dialog_confirm_action_no)
-						.show(getSupportFragmentManager(), "delete_line");
+						.show(getSupportFragmentManager(), TAG_DELETE_LINE_DIALOG);
 				}
 			});
 
@@ -874,7 +873,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		outState.putBoolean(PERMISSION_ASKED_STATE_KEY, permissionAsked);
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
-		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
