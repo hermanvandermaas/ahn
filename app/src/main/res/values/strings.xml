@@ -24,6 +24,10 @@
 	<string name="share_image_path">/hoogte.png</string>
 	<string name="files_authority">nl.waywayway.ahn.fileprovider</string>
 	
+	<string name="dialog_confirm_action_body_text">Verwijder alle punten?</string>
+	<string name="dialog_confirm_action_yes">Ja</string>
+	<string name="dialog_confirm_action_no">Nee</string>
+	
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
 	<string name="opacity_seekbar_description">Zichtbaar</string>

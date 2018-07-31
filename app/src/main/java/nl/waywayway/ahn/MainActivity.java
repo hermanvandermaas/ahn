@@ -39,6 +39,7 @@ GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks,
+CancelOrProceedDialogFragment.YesNoDialog,
 LayersRecyclerViewAdapter.AdapterCallbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
@@ -220,7 +221,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-
+					CancelOrProceedDialogFragment.newInstance(
+						R.string.dialog_confirm_action_body_text,
+						R.string.dialog_confirm_action_yes,
+						R.string.dialog_confirm_action_no)
+						.show(getSupportFragmentManager(), "delete_line");
 				}
 			});
 
@@ -235,7 +240,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 			});
 	}
-
+	
+	@Override
+	public void onYes(DialogInterface dialog, int id)
+	{
+		removeLineAndDots();
+		drawLineAndDots();
+	}
+	
+	@Override
+	public void onNo(DialogInterface dialog, int id)
+	{}
+	
 	// Maak toolbar
 	private void makeToolbar()
 	{
