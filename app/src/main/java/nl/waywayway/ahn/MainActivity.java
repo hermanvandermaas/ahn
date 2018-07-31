@@ -220,6 +220,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					if (dotsList.size() == 0) return;
 					CancelOrProceedDialogFragment.newInstance(
 						R.string.dialog_confirm_action_body_text,
 						R.string.dialog_confirm_action_yes,
@@ -235,7 +236,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-
+					makeElevationProfile(verticesList);
 				}
 			});
 	}
@@ -250,6 +251,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onNo(DialogInterface dialog, int id)
 	{}
+	
+	private ArrayList<ElevationProfileVertex> makeElevationProfile(ArrayList<LatLng> verticesList)
+	{
+		ArrayList<ElevationProfileVertex> list = new ArrayList<ElevationProfileVertex>();
+		
+		return list;
+	}
 	
 	// Maak toolbar
 	private void makeToolbar()
@@ -809,6 +817,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private void showProgressBar(int visibility)
 	{
 		View progressbar = findViewById(R.id.progressbar);
+		progressbar.setVisibility(visibility);
+	}
+	
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showProgressBarDeterminate(int visibility)
+	{
+		View progressbar = findViewById(R.id.progressbar_determinate);
 		progressbar.setVisibility(visibility);
 	}
 
