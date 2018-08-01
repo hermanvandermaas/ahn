@@ -80,6 +80,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
+	ArrayList<String> shortTitles = new ArrayList<String>();
 	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
@@ -772,14 +773,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			ConnectionUtils.showMessage(context, getResources().getString(R.string.not_connected_message));
 			return;
 		}
-
-		// Download van data wordt uitgevoerd in TaskFragment instance
-		// verwerking van data in de marker infowindow wordt gedaan in
-		// Task Callback Methods in MainActivity
+		
 		getElevationFromLatLong(pointLatLong, visibleLayers);
-
-		//testProjection();
-		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
 	}
 
 	// Verwijder huidige marker
@@ -799,7 +794,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment.isRunning()) taskFragment.cancel();
 
 		ArrayList<URL> urls = new ArrayList<URL>();
-		ArrayList<String> shortTitles = new ArrayList<String>();
+		shortTitles.clear();
 
 		for (LayerItem layerItem : visibleLayers)
 		{
@@ -809,7 +804,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			shortTitles.add(layerItem.getShortTitle());
 		}
 
-		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
 
@@ -963,32 +957,30 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	}
 
 	@Override
-	public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo)
+	public void onPostExecute(ArrayList<Double> result)
 	{
-		showProgressBar(View.GONE);
-
-		// Toon hoogte bij marker
-		if (result == null)
+		if (mode == Mode.POINT)
 		{
-			Toast.makeText(context, getResources().getString(R.string.download_error_message), Toast.LENGTH_SHORT).show();
+			showProgressBar(View.GONE);
+
+			// Toon hoogte bij marker
+			if (result == null)
+			{
+				Toast.makeText(context, getResources().getString(R.string.download_error_message), Toast.LENGTH_SHORT).show();
+			}
+			else
+			{
+				String snippet = ElevationListToText.toText(context, result, shortTitles);
+
+				Marker marker = markerList.get(0);
+				marker.setTitle(getResources().getString(R.string.marker_title));
+				marker.setSnippet(snippet);
+				marker.showInfoWindow();
+			}
 		}
 		else
 		{
-
-			String snippet = "";
-
-			for (int i = 0; i < result.size(); i++)
-			{
-				String affix = result.get(i).equals(getResources().getString(R.string.not_available_UI)) ? "" : " " + getResources().getString(R.string.unit_of_measurement_UI);
-				String newLine = (i == (result.size() - 1)) ? "" : "\n";
-				String line = layerInfo.get(i) + ": " + result.get(i) + affix + newLine;
-				snippet = snippet + line;
-			}
-
-			Marker marker = markerList.get(0);
-			marker.setTitle("Hoogte");
-			marker.setSnippet(snippet);
-			marker.showInfoWindow();
+			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}
 }

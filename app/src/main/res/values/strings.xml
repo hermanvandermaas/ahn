@@ -28,6 +28,7 @@
 	<string name="dialog_confirm_action_yes">Ja</string>
 	<string name="dialog_confirm_action_no">Nee</string>
 	
+	<string name="marker_title">Hoogte</string>
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
 	<string name="opacity_seekbar_description">Zichtbaar</string>

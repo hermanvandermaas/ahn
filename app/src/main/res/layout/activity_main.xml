@@ -175,7 +175,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
 			android:indeterminate="false"
-			android:progress="40"
+			android:progress="0"
 			app:mpb_progressStyle="horizontal"
 			app:mpb_useIntrinsicPadding="false"
 			style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal.NoPadding"

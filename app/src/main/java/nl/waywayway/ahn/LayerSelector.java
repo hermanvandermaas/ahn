@@ -55,7 +55,6 @@ public class LayerSelector
 	}
 	
 	// Lijst met zichtbare lagen met hoogte
-	// kan null zijn
 	public ArrayList<LayerItem> getVisibleQueryableLayers()
 	{
 		ArrayList<LayerItem> visibleLayers = new ArrayList<LayerItem>();
