@@ -77,12 +77,16 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
 	private String MODE_KEY = "mode_key";
 	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
+	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
+	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
+	private String snippet;
 	ArrayList<String> shortTitles = new ArrayList<String>();
 	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
+	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
 	public enum Mode
 	{POINT, LINE};
@@ -116,33 +120,28 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
 			verticesList = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
-			//Log.i("HermLog", "savedInstanceState, verticesList: " +  verticesList);
+			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
+			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
+			//Log.i("HermLog", "savedInstanceState, markersLatLngList: " +  markersLatLngList);
 		}
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
-
-		// If the Fragment is non-null, it is being retained
-		// over a configuration change.
 		if (taskFragment == null)
 		{
 			taskFragment = new TaskFragment();
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
-		if (taskFragment.isRunning()) taskFragment.cancel();
-
 		initializeLegend();
 		initializeElevationProfileMenu();
 		createGoogleApiClient();
 
-		MapFragment mapFragment = (MapFragment) getFragmentManager()
-            .findFragmentById(R.id.map);
+		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
 		makeToolbar();
-		//setTransparentStatusBar();
     }
 
 	// Legenda
@@ -367,7 +366,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		createLayerMenu();
 		createPlaceSearch();
 
-		googleMap.setOnCameraIdleListener(this);
+		// Herstel markers
+		markerList = MarkersListToLatLngList.restoreMarkers(markersLatLngList, gMap);
+		if (markerList.size() > 0) setMarkerInfoWindow(markerList.get(0), snippet);
+		
+		gMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
@@ -753,6 +756,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
     }
 
+	// Plaats marker na klik op kaart
 	private void putMarker(LatLng pointLatLong)
 	{
 		removeMarker();
@@ -764,9 +768,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			return;
 		}
 
-		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
-
+		drawMarker(pointLatLong);
+		
 		// Vraag hoogte op voor punt
 		if (!ConnectionUtils.isNetworkConnected(context))
 		{
@@ -775,6 +778,20 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 		
 		getElevationFromLatLong(pointLatLong, visibleLayers);
+	}
+	
+	// Teken marker op de kaart
+	private void drawMarker(LatLng point)
+	{
+		// Plaats nieuwe marker op kaart en in de lijst
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+	}
+	
+	private void setMarkerInfoWindow(Marker marker, String snippet)
+	{
+		marker.setTitle(getResources().getString(R.string.marker_title));
+		marker.setSnippet(snippet);
+		marker.showInfoWindow();
 	}
 
 	// Verwijder huidige marker
@@ -887,6 +904,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
 		outState.putSerializable(MODE_KEY, mode);
 		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, verticesList);
+		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
+		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
 
 		super.onSaveInstanceState(outState);
 	}
@@ -971,11 +990,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			else
 			{
 				String snippet = ElevationListToText.toText(context, result, shortTitles);
-
 				Marker marker = markerList.get(0);
-				marker.setTitle(getResources().getString(R.string.marker_title));
-				marker.setSnippet(snippet);
-				marker.showInfoWindow();
+				setMarkerInfoWindow(marker, snippet);
 			}
 		}
 		else
