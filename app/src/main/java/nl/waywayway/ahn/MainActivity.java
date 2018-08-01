@@ -66,7 +66,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
 	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
-	private static final String WELCOME_DIALOG_SHOWED_STATE_KEY = "welcome_dialog_showed_state_key";
 	private static final String NOT_CONNECTED_STATE_KEY = "not_connected_state_key";
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
@@ -79,6 +78,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
 	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
 	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
+	private String SHORT_TITLES_KEY = "short_titles_key";
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
@@ -121,7 +121,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
 			verticesList = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
 			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
+			snippet = (snippet == null) ? "" : snippet;
 			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
+			shortTitles = savedInstanceState.getStringArrayList(SHORT_TITLES_KEY);
 			//Log.i("HermLog", "savedInstanceState, markersLatLngList: " +  markersLatLngList);
 		}
 
@@ -134,6 +136,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
+		if (taskFragment.isRunning()) showProgressBar(View.VISIBLE);
 		initializeLegend();
 		initializeElevationProfileMenu();
 		createGoogleApiClient();
@@ -369,7 +372,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		// Herstel markers
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		markerList = MarkersListToLatLngList.restoreMarkers(markersLatLngList, gMap);
-		if (markerList.size() > 0) setMarkerInfoWindow(markerList.get(0), snippet);
+		if (markerList.size() > 0 && !snippet.equals("")) setMarkerInfoWindow(markerList.get(0), snippet);
 		
 		gMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
@@ -906,6 +909,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, verticesList);
 		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
 		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
+		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -914,7 +918,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		if (taskFragment.isRunning()) taskFragment.cancel();
+		//if (taskFragment.isRunning()) taskFragment.cancel();
 		//toolbar.getMenu().close();
 		//closeOptionsMenu();
 		//Log.i("HermLog", "onDestroy()");
@@ -989,9 +993,17 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			}
 			else
 			{
-				String snippet = ElevationListToText.toText(context, result, shortTitles);
+				String snippetText = ElevationListToText.toText(context, result, shortTitles);
+				
+				// Als GoogleMap nog niet geladen is, stel alleen tekst in, InfoWindow wordt dan later gevuld
+				if (markerList.size() == 0)
+				{
+					snippet = snippetText;
+					return;
+				}
+				
 				Marker marker = markerList.get(0);
-				setMarkerInfoWindow(marker, snippet);
+				setMarkerInfoWindow(marker, snippetText);
 			}
 		}
 		else
