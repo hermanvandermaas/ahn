@@ -367,12 +367,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		createPlaceSearch();
 
 		// Herstel markers
+		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		markerList = MarkersListToLatLngList.restoreMarkers(markersLatLngList, gMap);
 		if (markerList.size() > 0) setMarkerInfoWindow(markerList.get(0), snippet);
 		
 		gMap.setOnCameraIdleListener(this);
 		gMap.setOnMapClickListener(this);
-		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
 		gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation(false);
