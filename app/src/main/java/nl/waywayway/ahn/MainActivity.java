@@ -239,7 +239,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					makeElevationProfile(verticesList);
+					ElevationProfileMaker.make(verticesList);
 				}
 			});
 	}
@@ -254,13 +254,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onNo(DialogInterface dialog, int id)
 	{}
-	
-	private ArrayList<ElevationProfileVertex> makeElevationProfile(ArrayList<LatLng> verticesList)
-	{
-		ArrayList<ElevationProfileVertex> list = new ArrayList<ElevationProfileVertex>();
-		
-		return list;
-	}
 	
 	// Maak toolbar
 	private void makeToolbar()
