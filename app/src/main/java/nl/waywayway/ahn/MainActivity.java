@@ -84,9 +84,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String IS_DOT = "isDot";
 	private String snippet;
 	ArrayList<String> shortTitles = new ArrayList<String>();
-	private ArrayList<LatLng> verticesList = new ArrayList<LatLng>();
+	private ArrayList<LatLng> userMadePoints = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
+	private int totalPoints = 10;
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
 	public enum Mode
 	{POINT, LINE};
@@ -119,7 +120,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
-			verticesList = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
+			userMadePoints = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
 			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
 			snippet = (snippet == null) ? "" : snippet;
 			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
@@ -239,7 +240,17 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					ElevationProfileMaker.make(verticesList);
+					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
+					if (userMadePoints.size() < 2) return;
+					LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers();
+					//Log.i("HermLog", "layerList.size(): " + layerList.size());
+					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
+					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
+					if (topElevationLayer == null) return;
+					ArrayList<LatLng> lst = ElevationProfileUrlListMaker.make(topElevationLayer, zoomLevel,  userMadePoints, totalPoints);
+					//Log.i("HermLog", "lst.size(): " + lst.size());
+					
+					
 				}
 			});
 	}
@@ -401,9 +412,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 								.endCap(new RoundCap())
 								.jointType(JointType.ROUND)
 								.geodesic(true)
-								.addAll(verticesList));
+								.addAll(userMadePoints));
 		// Voeg stippen toe
-		for (LatLng point : verticesList)
+		for (LatLng point : userMadePoints)
 			dotsList.add(drawDot(point));
 	}
 
@@ -411,7 +422,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		// Verwijder lijn
 		if (line != null) line.remove();
-		verticesList.clear();
+		userMadePoints.clear();
 		// Verwijder stippen
 		for (Marker dot : dotsList) dot.remove();
 		dotsList.clear();
@@ -421,8 +432,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private void addPointToLine(LatLng point)
 	{
 		// Werk lijn bij
-		verticesList.add(point);
-		line.setPoints(verticesList);
+		userMadePoints.add(point);
+		line.setPoints(userMadePoints);
 		// Werk stippen bij
 		dotsList.add(drawDot(point));
 	}
@@ -431,11 +442,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private void deleteLastPoint()
 	{
 		// Werk lijn bij
-		if (verticesList == null) return;
-		if (verticesList.size() < 1) return;
-		int lastElementIndexLine = verticesList.size() - 1;
-		verticesList.remove(lastElementIndexLine);
-		line.setPoints(verticesList);
+		if (userMadePoints == null) return;
+		if (userMadePoints.size() < 1) return;
+		int lastElementIndexLine = userMadePoints.size() - 1;
+		userMadePoints.remove(lastElementIndexLine);
+		line.setPoints(userMadePoints);
 		// Werk stippen bij
 		if (dotsList == null) return;
 		if (dotsList.size() < 1) return;
@@ -757,12 +768,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		removeMarker();
 		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
-
-		if (visibleLayers.size() == 0)
-		{
-			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
-			return;
-		}
+		LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers();
 
 		drawMarker(pointLatLong);
 		
@@ -899,7 +905,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
 		outState.putSerializable(MODE_KEY, mode);
-		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, verticesList);
+		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, userMadePoints);
 		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
 		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
 		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
