@@ -90,10 +90,17 @@ public class LayerSelector
 	}
 	
 	// Toon boodschap als geen queryable laag zichtbaar is
-	public void showMessageNoVisibleQueryableLayers()
+	public boolean showMessageNoVisibleQueryableLayers()
 	{
 		//ArrayList<LayerItem> visibleLayers = getLayerSelector(layerList, context).getVisibleQueryableLayers();
 		if (getTopVisibleLayer() == null)
+		{
 			Toast.makeText(context, context.getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

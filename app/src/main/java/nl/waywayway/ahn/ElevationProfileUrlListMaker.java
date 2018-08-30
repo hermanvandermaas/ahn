@@ -10,7 +10,7 @@ import java.net.*;
 public class ElevationProfileUrlListMaker
 {
 	// totalPoints is maximum aantal punten voor opvragen hoogte
-	public static ArrayList<LatLng> make(LayerItem topElevationLayer, double zoom, ArrayList<LatLng> userMadePoints, int totalPoints)
+	public static ArrayList<URL> make(LayerItem topElevationLayer, double zoom, ArrayList<LatLng> userMadePoints, int totalPoints)
 	{
 		// Bepaal tussenliggende punten en zet in lijst
 		ArrayList<URL> list = new ArrayList<URL>();
@@ -26,7 +26,6 @@ public class ElevationProfileUrlListMaker
 		
 		//Log.i("HermLog", "pointsList: " + pointsList);
 
-		double averageDistance = totalDistance / (totalPoints - 1);
 		double distance;
 		//Log.i("HermLog", "averageDistance: " + averageDistance);
 		
@@ -43,7 +42,6 @@ public class ElevationProfileUrlListMaker
 		}
 
 		// Maak URL per punt en zet in lijst
-		
 		for (LatLng latLng : pointsList)
 		{
 			URL url = WMSGetMapFeatureUrlMaker.getUrlMaker(256, 256, latLng, zoom, topElevationLayer).makeUrl();
@@ -51,7 +49,7 @@ public class ElevationProfileUrlListMaker
 			list.add(url);
 		}
 
-		return pointsList;
+		return list;
 	}
 	
 	// Maak lijst met tussenliggende punten, exclusief eerste en laatste punt

@@ -101,7 +101,7 @@ public class TaskFragment extends Fragment
 	{
 		if (running)
 		{
-			task.cancel(false);
+			task.cancel(true);
 			task = null;
 			running = false;
 		}
@@ -144,9 +144,13 @@ public class TaskFragment extends Fragment
 			//if (urls[0] == null) return "n/a";
 
 			ArrayList<Double> elevations = new ArrayList<Double>();
+			int total = urls.length;
+			int i = 0;
 			
 			for (URL url : urls)
 			{
+				if (isCancelled()) break;
+				
 				if (url == null)
 				{
 					elevations.add(null);
@@ -166,6 +170,9 @@ public class TaskFragment extends Fragment
 					Double elevation = ResultParser.parse(jsonstring);
 					elevations.add(elevation);
 				}
+				
+				publishProgress((int) ((i / (float) total) * 100));
+				i++;
 			}
 			
 			return elevations;
@@ -175,7 +182,7 @@ public class TaskFragment extends Fragment
 		protected void onProgressUpdate(Integer... percent)
 		{
 			// Proxy the call to the Activity.
-			// mCallbacks.onProgressUpdate(percent[0]);
+			callbacks.onProgressUpdate(percent[0]);
 		}
 
 		@Override

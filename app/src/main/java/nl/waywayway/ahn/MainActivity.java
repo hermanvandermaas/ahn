@@ -137,7 +137,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
-		if (taskFragment.isRunning()) showProgressBar(View.VISIBLE);
+		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBar(View.VISIBLE);
+		if (taskFragment.isRunning() && mode == Mode.LINE) showProgressBarDeterminate(View.VISIBLE);
 		initializeLegend();
 		initializeElevationProfileMenu();
 		createGoogleApiClient();
@@ -196,6 +197,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					Log.i("HermLog", "taskFragment.isRunning(): " + taskFragment.isRunning());
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					showProgressBarDeterminate(View.GONE);
+					
 					elevationProfileMenuVisible = toggleViewVisibility(
 						elevationProfileMenu,
 						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
@@ -240,16 +245,16 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
 					if (userMadePoints.size() < 2) return;
-					LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers();
+					if (LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers()) return;
 					//Log.i("HermLog", "layerList.size(): " + layerList.size());
 					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
 					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
-					if (topElevationLayer == null) return;
-					ArrayList<LatLng> lst = ElevationProfileUrlListMaker.make(topElevationLayer, zoomLevel,  userMadePoints, totalPoints);
+					ArrayList<URL> lst = ElevationProfileUrlListMaker.make(topElevationLayer, zoomLevel, userMadePoints, totalPoints);
 					//Log.i("HermLog", "lst.size(): " + lst.size());
-					
+					taskFragment.start(lst);
 					
 				}
 			});
@@ -773,12 +778,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		drawMarker(pointLatLong);
 		
 		// Vraag hoogte op voor punt
-		if (!ConnectionUtils.isNetworkConnected(context))
-		{
-			ConnectionUtils.showMessage(context, getResources().getString(R.string.not_connected_message));
-			return;
-		}
-		
+		if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 		getElevationFromLatLong(pointLatLong, visibleLayers);
 	}
 	
@@ -963,12 +963,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	public void onPreExecute()
 	{
 		//Log.i("HermLog", "onPreExecute()");
-		showProgressBar(View.VISIBLE);
+		if (mode == Mode.POINT) showProgressBar(View.VISIBLE);
+		else showProgressBarDeterminate(View.VISIBLE);
 	}
 
 	@Override
 	public void onProgressUpdate(int percent)
 	{
+		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
+		progressbar.setProgress(percent, true);
 	}
 
 	@Override
@@ -1007,6 +1010,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 		else
 		{
+			showProgressBarDeterminate(View.GONE);
 			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}

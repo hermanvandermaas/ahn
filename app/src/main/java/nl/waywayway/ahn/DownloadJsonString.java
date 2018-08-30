@@ -42,7 +42,7 @@ public class DownloadJsonString
 		}
 		catch (IOException e)
 		{
-			Log.i("HermLog", "Exception in DownloadJsonString");
+			//Log.i("HermLog", "Exception in DownloadJsonString");
 		}
 
 		return "Fout in DownloadJsonString!";
