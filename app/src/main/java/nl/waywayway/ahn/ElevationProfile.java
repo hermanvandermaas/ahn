@@ -39,8 +39,7 @@ public class ElevationProfile
 			pointsList.addAll(j + 1, pointsBetween);
 			//Log.i("HermLog", "pointsList.size(): " + pointsList.size());
 		}
-		Log.i("HermLog", "pointsList: " + pointsList);
-		Log.i("HermLog", "pointsList.size(): " + pointsList.size());
+		
 		return pointsList;
 	}
 	
@@ -55,7 +54,7 @@ public class ElevationProfile
 			//Log.i("HermLog", "URL: " + url);
 			list.add(url);
 		}
-		Log.i("HermLog", "urlList.size(): " + list.size());
+		
 		return list;
 	}
 	
@@ -94,8 +93,6 @@ public class ElevationProfile
 			distanceList.add(distancePrevious + distance);
 		}
 		
-		Log.i("HermLog", "distanceList: " + distanceList.toString());
-		Log.i("HermLog", "distanceList.size(): " + distanceList.size());
 		return distanceList;
 	}
 }
