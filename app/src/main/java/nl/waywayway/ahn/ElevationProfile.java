@@ -7,13 +7,12 @@ import java.net.*;
 
 // Maak URL lijst uit LatLng puntenlijst, voor downloaden hoogten per punt
 
-public class ElevationProfileUrlListMaker
+public class ElevationProfile
 {
 	// totalPoints is maximum aantal punten voor opvragen hoogte
-	public static ArrayList<URL> make(LayerItem topElevationLayer, double zoom, ArrayList<LatLng> userMadePoints, int totalPoints)
+	public static ArrayList<LatLng> makePointsList(ArrayList<LatLng> userMadePoints, int totalPoints)
 	{
 		// Bepaal tussenliggende punten en zet in lijst
-		ArrayList<URL> list = new ArrayList<URL>();
 		double totalDistance = 0;
 		ArrayList<LatLng> pointsList = new ArrayList<LatLng>();
 
@@ -40,7 +39,15 @@ public class ElevationProfileUrlListMaker
 			pointsList.addAll(j + 1, pointsBetween);
 			//Log.i("HermLog", "pointsList.size(): " + pointsList.size());
 		}
-
+		Log.i("HermLog", "pointsList: " + pointsList);
+		Log.i("HermLog", "pointsList.size(): " + pointsList.size());
+		return pointsList;
+	}
+	
+	public static ArrayList<URL> makeUrlList(LayerItem topElevationLayer, double zoom, ArrayList<LatLng> pointsList)
+	{
+		ArrayList<URL> list = new ArrayList<URL>();
+		
 		// Maak URL per punt en zet in lijst
 		for (LatLng latLng : pointsList)
 		{
@@ -48,7 +55,7 @@ public class ElevationProfileUrlListMaker
 			//Log.i("HermLog", "URL: " + url);
 			list.add(url);
 		}
-
+		Log.i("HermLog", "urlList.size(): " + list.size());
 		return list;
 	}
 	
@@ -71,5 +78,24 @@ public class ElevationProfileUrlListMaker
 		//Log.i("HermLog", "pointsBetween.size(): " + pointsBetween.size());
 		
 		return pointsBetween;
+	}
+	
+	public static ArrayList<Double> makeDistanceFromOriginList(ArrayList<LatLng> pointsList)
+	{
+		ArrayList<Double> distanceList = new ArrayList<Double>();
+		distanceList.add(0d);
+		Double distance;
+		Double distancePrevious;
+		
+		for (int j = 1; j < pointsList.size(); j++)
+		{
+			distancePrevious = distanceList.get(j - 1);
+			distance = SphericalUtil.computeDistanceBetween(pointsList.get(j - 1), pointsList.get(j));
+			distanceList.add(distancePrevious + distance);
+		}
+		
+		Log.i("HermLog", "distanceList: " + distanceList.toString());
+		Log.i("HermLog", "distanceList.size(): " + distanceList.size());
+		return distanceList;
 	}
 }
