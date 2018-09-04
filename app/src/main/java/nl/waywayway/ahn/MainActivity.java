@@ -113,6 +113,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
+		
 
 		showOnboardingScreenAtFirstRun();
 
@@ -350,6 +351,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 
 			case R.id.action_elevation_profile:
+				
 				elevationProfileMenuVisible = toggleViewVisibility(
 					elevationProfileMenu,
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
@@ -1020,6 +1022,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		else
 		{
 			showProgressBarDeterminate(View.GONE);
+			
+			
 			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}
