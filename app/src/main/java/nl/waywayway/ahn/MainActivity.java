@@ -17,6 +17,7 @@ import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
 import android.widget.*;
+import com.github.mikephil.charting.charts.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
 import com.google.android.gms.location.places.*;
@@ -62,6 +63,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private View searchBar;
 	private View legend;
 	private View elevationProfileMenu;
+	private Chart chart;
 	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
@@ -70,9 +72,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
 	private boolean legendVisible = false;
+	private boolean chartVisible = false;
 	private boolean elevationProfileMenuVisible = false;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
+	private String CHART_VISIBLE_KEY = "chart_visible_key";
 	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
 	private String MODE_KEY = "mode_key";
 	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
@@ -113,7 +117,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
-
+		chart = findViewById(R.id.chart_line);
 
 		showOnboardingScreenAtFirstRun();
 
@@ -124,6 +128,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
+			chartVisible = savedInstanceState.getBoolean(CHART_VISIBLE_KEY);
 			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
 			userMadePoints = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
 			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
@@ -146,6 +151,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBar(View.VISIBLE);
 		if (taskFragment.isRunning() && mode == Mode.LINE) showProgressBarDeterminate(View.VISIBLE);
 		initializeLegend();
+		initializeChart();
 		initializeElevationProfileMenu();
 		createGoogleApiClient();
 
@@ -190,6 +196,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 			});
 	}
+	
+	// Grafiek
+	private void initializeChart()
+	{
+		Log.i("HermLog", "chartVisible: " + chartVisible);
+		if (chartVisible)
+			chartVisible = toggleViewVisibility(
+				chart,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				true);
+	}
 
 	// Menu hoogteprofiel
 	private void initializeElevationProfileMenu()
@@ -206,6 +224,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					Log.i("HermLog", "taskFragment.isRunning(): " + taskFragment.isRunning());
 					if (taskFragment.isRunning()) taskFragment.cancel();
 					showProgressBarDeterminate(View.GONE);
+
+					if (chartVisible)
+						chartVisible = toggleViewVisibility(
+							chart,
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+							false);
 
 					elevationProfileMenuVisible = toggleViewVisibility(
 						elevationProfileMenu,
@@ -358,7 +383,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
 					false);
-
+					
 				if (taskFragment.isRunning()) taskFragment.cancel();
 				switchMode(elevationProfileMenuVisible);
 
@@ -913,6 +938,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
+		outState.putBoolean(CHART_VISIBLE_KEY, chartVisible);
 		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
 		outState.putSerializable(MODE_KEY, mode);
 		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, userMadePoints);
@@ -1023,7 +1049,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		else
 		{
 			showProgressBarDeterminate(View.GONE);
-
+			chartVisible = toggleViewVisibility(
+				chart,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				true);
 
 			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
