@@ -113,7 +113,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
-		
+
 
 		showOnboardingScreenAtFirstRun();
 
@@ -337,21 +337,22 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				return true;
 
 			case R.id.action_search:
-				if (searchBar.getVisibility() == View.VISIBLE)
-				{
-					showSearchBar(View.GONE);
-					searchBarVisible = false;
-				}
-				else
-				{
-					showSearchBar(View.VISIBLE);
-					searchBarVisible = true;
-				}
+				searchBarVisible = toggleViewVisibility(
+					searchBar,
+					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
+					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
+					false);
 
 				return true;
 
 			case R.id.action_elevation_profile:
-				
+				if (searchBarVisible)
+					searchBarVisible = toggleViewVisibility(
+						searchBar,
+						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
+						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
+						false);
+
 				elevationProfileMenuVisible = toggleViewVisibility(
 					elevationProfileMenu,
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
@@ -878,7 +879,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		if (view.getVisibility() == View.VISIBLE && !show)
 		{
-			view.setVisibility(View.INVISIBLE);
+			view.setVisibility(View.GONE);
 			if (hideAnimation != null) view.startAnimation(hideAnimation);
 			return false;
 		}
@@ -920,7 +921,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
 		outState.putSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY, distanceFromOriginList);
 		outState.putSerializable(ELEVATION_LIST_KEY, elevationList);
-		
+
 		super.onSaveInstanceState(outState);
 	}
 
@@ -1022,8 +1023,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		else
 		{
 			showProgressBarDeterminate(View.GONE);
-			
-			
+
+
 			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}
