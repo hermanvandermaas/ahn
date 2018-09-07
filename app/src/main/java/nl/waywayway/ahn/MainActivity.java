@@ -18,6 +18,7 @@ import android.view.View.*;
 import android.view.animation.*;
 import android.widget.*;
 import com.github.mikephil.charting.charts.*;
+import com.github.mikephil.charting.data.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
 import com.google.android.gms.location.places.*;
@@ -170,7 +171,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				legend,
 				AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
 				AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
-				true);
+				true, null);
 		}
 
 		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeGestureListener()
@@ -182,7 +183,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 						legend,
 						AnimationUtils.loadAnimation(context, R.anim.legend_slide_left),
 						AnimationUtils.loadAnimation(context, R.anim.legend_slide_right),
-						false);
+						false, null);
 				}
 			});
 
@@ -196,23 +197,23 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				}
 			});
 	}
-	
+
 	// Grafiek
 	private void initializeChart()
 	{
-		Log.i("HermLog", "chartVisible: " + chartVisible);
+		//Log.i("HermLog", "chartVisible: " + chartVisible);
 		if (chartVisible)
 			chartVisible = toggleViewVisibility(
 				chart,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
-				true);
+				true, null);
 	}
 
 	// Menu hoogteprofiel
 	private void initializeElevationProfileMenu()
 	{
-		if (mode == Mode.LINE) elevationProfileMenuVisible = toggleViewVisibility(elevationProfileMenu, null, null, true);
+		if (mode == Mode.LINE) elevationProfileMenuVisible = toggleViewVisibility(elevationProfileMenu, null, null, true, null);
 
 		// Sluit menu
 		((ImageView) findViewById(R.id.elevation_profile_close))
@@ -221,8 +222,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					Log.i("HermLog", "taskFragment.isRunning(): " + taskFragment.isRunning());
+					//Log.i("HermLog", "taskFragment.isRunning(): " + taskFragment.isRunning());
 					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
 					showProgressBarDeterminate(View.GONE);
 
 					if (chartVisible)
@@ -230,13 +232,13 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 							chart,
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
-							false);
+							false, null);
 
 					elevationProfileMenuVisible = toggleViewVisibility(
 						elevationProfileMenu,
 						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
-						false);
+						false, null);
 
 					switchMode(elevationProfileMenuVisible);
 				}
@@ -249,6 +251,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
+					showProgressBarDeterminate(View.GONE);
 					deleteLastPoint();
 				}
 			});
@@ -276,10 +281,22 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					Log.i("HermLog", "maak hoogteprofiel");
 					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
 					if (userMadePoints.size() < 2) return;
 					if (LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers()) return;
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
+					showProgressBarDeterminate(View.GONE);
+					
+					if (chartVisible) 
+						chartVisible = toggleViewVisibility(
+							chart,
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+							false, null);
+
 					//Log.i("HermLog", "layerList.size(): " + layerList.size());
 					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
 					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
@@ -288,7 +305,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					ArrayList<URL> urlList = ElevationProfile.makeUrlList(topElevationLayer, zoomLevel, pointsList);
 					//Log.i("HermLog", "lst.size(): " + lst.size());
 					taskFragment.start(urlList);
-
 				}
 			});
 	}
@@ -296,6 +312,10 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	@Override
 	public void onYes(DialogInterface dialog, int id)
 	{
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		setProgressBarDeterminate(0, false);
+		showProgressBarDeterminate(View.GONE);
+		
 		removeLineAndDots();
 		drawLineAndDots();
 	}
@@ -345,7 +365,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					legend,
 					AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
 					AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
-					false);
+					false, null);
 
 				return true;
 
@@ -366,7 +386,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					searchBar,
 					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
 					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
-					false);
+					false, null);
 
 				return true;
 
@@ -376,15 +396,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 						searchBar,
 						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
 						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
-						false);
+						false, null);
+
+				if (chartVisible) 
+					chartVisible = toggleViewVisibility(
+						chart,
+						AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+						AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+						false, null);
 
 				elevationProfileMenuVisible = toggleViewVisibility(
 					elevationProfileMenu,
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
 					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
-					false);
-					
+					false, null);
+
 				if (taskFragment.isRunning()) taskFragment.cancel();
+				setProgressBarDeterminate(0, false);
+				showProgressBarDeterminate(View.GONE);
 				switchMode(elevationProfileMenuVisible);
 
 				return true;
@@ -875,6 +904,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		progressbar.setVisibility(visibility);
 	}
 
+	private void setProgressBarDeterminate(int percent, boolean animate)
+	{
+		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
+		progressbar.setProgress(percent, animate);
+	}
+
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showSearchBar(int visibility)
 	{
@@ -900,17 +935,19 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	// eventueel met animatie
 	// geeft true als zichtbaar gemaakt
 	// als boolean show == true: niet wisselen maar altijd menu zichtbaar maken
-	private boolean toggleViewVisibility(View view, Animation showAnimation, Animation hideAnimation, boolean show)
+	private boolean toggleViewVisibility(View view, Animation showAnimation, Animation hideAnimation, boolean show, Animation.AnimationListener callback)
 	{
 		if (view.getVisibility() == View.VISIBLE && !show)
 		{
 			view.setVisibility(View.GONE);
+			if (callback != null) hideAnimation.setAnimationListener(callback);
 			if (hideAnimation != null) view.startAnimation(hideAnimation);
 			return false;
 		}
 		else
 		{
 			view.setVisibility(View.VISIBLE);
+			if (callback != null) showAnimation.setAnimationListener(callback);
 			if (showAnimation != null) view.startAnimation(showAnimation);
 			return true;
 		}
@@ -1002,20 +1039,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		//Log.i("HermLog", "onPreExecute()");
 		if (mode == Mode.POINT) showProgressBar(View.VISIBLE);
-		else showProgressBarDeterminate(View.VISIBLE);
+		else
+		{
+			setProgressBarDeterminate(0, false);
+			showProgressBarDeterminate(View.VISIBLE);
+		}
 	}
 
 	@Override
 	public void onProgressUpdate(int percent)
 	{
-		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
-		progressbar.setProgress(percent, true);
+		setProgressBarDeterminate(percent, true);
 	}
 
 	@Override
 	public void onCancelled()
 	{
 		//Log.i("HermLog", "onCancelled()");
+		setProgressBarDeterminate(0, false);
 		showProgressBar(View.GONE);
 	}
 
@@ -1048,14 +1089,31 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		}
 		else
 		{
+			setProgressBarDeterminate(100, true);
 			showProgressBarDeterminate(View.GONE);
+			setProgressBarDeterminate(0, false);
+			final ArrayList<Entry> entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
 			chartVisible = toggleViewVisibility(
 				chart,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
-				true);
+				true,
+				new Animation.AnimationListener()
+				{
+					@Override
+					public void onAnimationStart(Animation p1){}
 
-			Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
+					@Override
+					public void onAnimationRepeat(Animation p1){}
+					
+					@Override
+					public void onAnimationEnd(Animation animation)
+					{
+						LineChartMaker.getChartMaker().makeChart(chart, entries);
+					}
+				});
+				
+			//Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}
 }
