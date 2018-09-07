@@ -6,8 +6,8 @@ import java.util.*;
 
 public class LineChartDataMaker
 {
-	private double low = -10000;
-	private double high = 10000;
+	private double lowCap = -10000;
+	private double highCap = 10000;
 	
 	private LineChartDataMaker()
 	{}
@@ -25,12 +25,11 @@ public class LineChartDataMaker
 
 		for (int i = 0; i < xData.size(); i++)
 		{
-			float x = xData.get(i).floatValue();
-			float y = yData.get(i).floatValue();
-			if (y > high || y < low) y = 0;
-			Log.i("HermLog", "y: " + y);
-			//if (y == null) y = 0;
-			entries.add(new Entry(x, y)); 
+			Double x = xData.get(i);
+			Double y = yData.get(i);
+			if (y == null || y > highCap || y < lowCap) y = 0d;
+			Log.i("HermLog", "x/y: " + x + " / " + y);
+			entries.add(new Entry(x.floatValue(), y.floatValue())); 
 		}
 		
 		return entries;

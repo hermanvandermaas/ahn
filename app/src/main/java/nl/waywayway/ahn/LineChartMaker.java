@@ -21,6 +21,11 @@ public class LineChartMaker
 	public void makeChart(Chart chart, List<Entry> entries)
 	{
 		LineDataSet dataSet = new LineDataSet(entries, label);
+		dataSet.setDrawCircles(false);
+		dataSet.setDrawValues(false);
+		dataSet.setDrawHorizontalHighlightIndicator(false);
+		dataSet.setDrawVerticalHighlightIndicator(true);
+		
 		LineData lineData = new LineData(dataSet);
 		chart.setData(lineData);
 		chart.invalidate();

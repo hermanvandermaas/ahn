@@ -300,7 +300,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
-					Log.i("HermLog", "maak hoogteprofiel");
+					//Log.i("HermLog", "maak hoogteprofiel");
 					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
 					if (userMadePoints.size() < 2) return;
