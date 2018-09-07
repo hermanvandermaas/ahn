@@ -75,6 +75,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private boolean legendVisible = false;
 	private boolean chartVisible = false;
 	private boolean elevationProfileMenuVisible = false;
+	private ArrayList<Entry> entries;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
 	private String CHART_VISIBLE_KEY = "chart_visible_key";
@@ -86,6 +87,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String SHORT_TITLES_KEY = "short_titles_key";
 	private String DISTANCE_FROM_ORIGIN_LIST_KEY = "distance_from_origin_list_key";
 	private String ELEVATION_LIST_KEY = "elevation_list_key";
+	private String ENTRIES_LIST_KEY = "entries_list_key";
 	private float LINE_Z_INDEX = 500;
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
@@ -138,6 +140,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			shortTitles = savedInstanceState.getStringArrayList(SHORT_TITLES_KEY);
 			distanceFromOriginList = (ArrayList<Double>) savedInstanceState.getSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY);
 			elevationList = (ArrayList<Double>) savedInstanceState.getSerializable(ELEVATION_LIST_KEY);
+			entries = savedInstanceState.getParcelableArrayList(ENTRIES_LIST_KEY);
 		}
 
 		// Handler voor worker fragment
@@ -203,11 +206,27 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		//Log.i("HermLog", "chartVisible: " + chartVisible);
 		if (chartVisible)
+		{
 			chartVisible = toggleViewVisibility(
 				chart,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
-				true, null);
+				true,
+				new Animation.AnimationListener()
+				{
+					@Override
+					public void onAnimationStart(Animation p1){}
+
+					@Override
+					public void onAnimationRepeat(Animation p1){}
+
+					@Override
+					public void onAnimationEnd(Animation animation)
+					{
+						LineChartMaker.getChartMaker().makeChart(chart, entries);
+					}
+				});
+		}
 	}
 
 	// Menu hoogteprofiel
@@ -318,6 +337,17 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		
 		removeLineAndDots();
 		drawLineAndDots();
+		
+		if (chartVisible)
+		{
+			chartVisible = toggleViewVisibility(
+				chart,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				false, null);
+				
+			chart.clear();
+		}
 	}
 
 	@Override
@@ -524,6 +554,18 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		dotsList.get(lastElementIndexDots).remove();
 		// ... en uit de lijst
 		dotsList.remove(lastElementIndexDots);
+		
+		// Wis en verberg grafiek
+		if (chartVisible)
+		{
+			chartVisible = toggleViewVisibility(
+				chart,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				false, null);
+				
+			chart.clear();
+		}
 	}
 
 	// Zet stip
@@ -984,6 +1026,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
 		outState.putSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY, distanceFromOriginList);
 		outState.putSerializable(ELEVATION_LIST_KEY, elevationList);
+		outState.putParcelableArrayList(ENTRIES_LIST_KEY, entries);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -1092,7 +1135,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			setProgressBarDeterminate(100, true);
 			showProgressBarDeterminate(View.GONE);
 			setProgressBarDeterminate(0, false);
-			final ArrayList<Entry> entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
+			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
 			chartVisible = toggleViewVisibility(
 				chart,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),

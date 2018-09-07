@@ -1,10 +1,14 @@
 package nl.waywayway.ahn;
 
+import android.util.*;
 import com.github.mikephil.charting.data.*;
 import java.util.*;
 
 public class LineChartDataMaker
 {
+	private double low = -10000;
+	private double high = 10000;
+	
 	private LineChartDataMaker()
 	{}
 
@@ -21,7 +25,12 @@ public class LineChartDataMaker
 
 		for (int i = 0; i < xData.size(); i++)
 		{
-			entries.add(new Entry(xData.get(i).floatValue(), yData.get(i).floatValue())); 
+			float x = xData.get(i).floatValue();
+			float y = yData.get(i).floatValue();
+			if (y > high || y < low) y = 0;
+			Log.i("HermLog", "y: " + y);
+			//if (y == null) y = 0;
+			entries.add(new Entry(x, y)); 
 		}
 		
 		return entries;
