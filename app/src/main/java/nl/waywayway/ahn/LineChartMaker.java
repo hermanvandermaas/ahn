@@ -14,7 +14,10 @@ import com.github.mikephil.charting.animation.*;
 public class LineChartMaker
 {
 	private Context context;
-	private String label = "Hoogte +/- NAP";
+	private String noDataText = "";
+	private String label = "Hoogte in meters +/- NAP";
+	private float lineWidth = 3f;
+	private float highLightLineWidth = 1f;
 	
 	private LineChartMaker(Context context)
 	{
@@ -28,25 +31,42 @@ public class LineChartMaker
 
 	public void makeChart(Chart chart, List<Entry> entries, String title)
 	{
+		LineChart lineChart = (LineChart) chart;
+		
+		lineChart.setNoDataText(noDataText);
 		Description description = new Description();
 		description.setText(title);
-		chart.setDescription(description);
+		lineChart.setDescription(description);
+		
+		lineChart.setPinchZoom(true);
+		
+		lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+		lineChart.getAxisRight().setEnabled(false);
 		
 		LineDataSet dataSet = new LineDataSet(entries, label);
 		dataSet.setDrawCircles(false);
 		dataSet.setDrawValues(false);
+		
 		dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-		dataSet.setLineWidth(3f);
-		int lineColor = Color.BLACK;
-		//context.getResources().getColor(R.color.accent);
-		Log.i("HermLog", "lineColor: " + lineColor);
+		
+		int lineColor = context.getResources().getColor(R.color.accent);
+		int highLightLineColor = context.getResources().getColor(R.color.black);
+		
+		dataSet.setLineWidth(lineWidth);
+		dataSet.setDrawFilled(true);
 		dataSet.setFillColor(lineColor);
+		dataSet.setColor(lineColor);
+		
 		dataSet.setDrawHorizontalHighlightIndicator(false);
 		dataSet.setDrawVerticalHighlightIndicator(true);
+		dataSet.setHighlightLineWidth(highLightLineWidth);
+		dataSet.setHighLightColor(highLightLineColor);
 		
 		LineData lineData = new LineData(dataSet);
-		chart.setData(lineData);
+		lineChart.setData(lineData);
+		lineChart.setOnChartValueSelectedListener(MyOnChartValueSelectedListener.getListener(context, lineChart));
+		
 		//chart.invalidate();
-		chart.animateY(500, Easing.EasingOption.EaseInOutCubic);
+		lineChart.animateY(300, Easing.EasingOption.EaseInOutCubic);
 	}
 }

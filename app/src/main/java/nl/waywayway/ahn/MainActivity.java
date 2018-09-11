@@ -102,7 +102,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
 	private ArrayList<Double> distanceFromOriginList = new ArrayList<Double>();
 	private ArrayList<Double> elevationList = new ArrayList<Double>();
-	private int totalPoints = 3;
+	private int totalPoints = 5;
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
 	public enum Mode
 	{POINT, LINE};
@@ -214,7 +214,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (chartVisible)
 		{
 			chartVisible = toggleViewVisibility(
-				chart,
+				chartContainer,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				true,
@@ -254,7 +254,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 					if (chartVisible)
 						chartVisible = toggleViewVisibility(
-							chart,
+							chartContainer,
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 							false, null);
@@ -325,7 +325,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					
 					if (chartVisible) 
 						chartVisible = toggleViewVisibility(
-							chart,
+							chartContainer,
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 							false, null);
@@ -356,7 +356,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (chartVisible)
 		{
 			chartVisible = toggleViewVisibility(
-				chart,
+				chartContainer,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				false, null);
@@ -445,7 +445,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 				if (chartVisible) 
 					chartVisible = toggleViewVisibility(
-						chart,
+						chartContainer,
 						AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 						AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 						false, null);
@@ -574,7 +574,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (chartVisible)
 		{
 			chartVisible = toggleViewVisibility(
-				chart,
+				chartContainer,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				false, null);
@@ -1149,12 +1149,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		else
 		{
 			setProgressBarDeterminate(100, true);
-			showProgressBarDeterminate(View.GONE);
 			setProgressBarDeterminate(0, false);
+			showProgressBarDeterminate(View.GONE);
 			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
 			
 			chartVisible = toggleViewVisibility(
-				chart,
+				chartContainer,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				true,
