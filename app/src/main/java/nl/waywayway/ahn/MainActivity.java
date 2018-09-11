@@ -1100,8 +1100,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (mode == Mode.POINT) showProgressBar(View.VISIBLE);
 		else
 		{
-			setProgressBarDeterminate(0, false);
 			showProgressBarDeterminate(View.VISIBLE);
+			setProgressBarDeterminate(0, false);
 		}
 	}
 
@@ -1116,6 +1116,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		//Log.i("HermLog", "onCancelled()");
 		setProgressBarDeterminate(0, false);
+		showProgressBarDeterminate(View.GONE);
 		showProgressBar(View.GONE);
 	}
 
@@ -1149,7 +1150,6 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		else
 		{
 			setProgressBarDeterminate(100, true);
-			setProgressBarDeterminate(0, false);
 			showProgressBarDeterminate(View.GONE);
 			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
 			
@@ -1170,6 +1170,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					public void onAnimationEnd(Animation animation)
 					{
 						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
+						setProgressBarDeterminate(0, false);
+						showProgressBarDeterminate(View.GONE);
 					}
 				});
 				
