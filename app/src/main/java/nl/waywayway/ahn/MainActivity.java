@@ -30,6 +30,7 @@ import java.util.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import java.lang.reflect.*;
 
 public class MainActivity extends AppCompatActivity
 implements 
@@ -65,6 +66,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private View legend;
 	private View elevationProfileMenu;
 	private Chart chart;
+	private LinearLayout chartContainer;
 	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
@@ -85,6 +87,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
 	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
 	private String SHORT_TITLES_KEY = "short_titles_key";
+	private String SHORT_TITLE_KEY = "short_title_key";
 	private String DISTANCE_FROM_ORIGIN_LIST_KEY = "distance_from_origin_list_key";
 	private String ELEVATION_LIST_KEY = "elevation_list_key";
 	private String ENTRIES_LIST_KEY = "entries_list_key";
@@ -92,13 +95,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
 	private String snippet;
-	ArrayList<String> shortTitles = new ArrayList<String>();
+	private ArrayList<String> shortTitles = new ArrayList<String>();
+	private String shortTitle;
 	private ArrayList<LatLng> userMadePoints = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
 	private ArrayList<Double> distanceFromOriginList = new ArrayList<Double>();
 	private ArrayList<Double> elevationList = new ArrayList<Double>();
-	private int totalPoints = 10;
+	private int totalPoints = 3;
 	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
 	public enum Mode
 	{POINT, LINE};
@@ -121,6 +125,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
 		chart = findViewById(R.id.chart_line);
+		chartContainer = findViewById(R.id.chart_container);
 
 		showOnboardingScreenAtFirstRun();
 
@@ -138,6 +143,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			snippet = (snippet == null) ? "" : snippet;
 			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
 			shortTitles = savedInstanceState.getStringArrayList(SHORT_TITLES_KEY);
+			shortTitle = savedInstanceState.getString(SHORT_TITLE_KEY);
 			distanceFromOriginList = (ArrayList<Double>) savedInstanceState.getSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY);
 			elevationList = (ArrayList<Double>) savedInstanceState.getSerializable(ELEVATION_LIST_KEY);
 			entries = savedInstanceState.getParcelableArrayList(ENTRIES_LIST_KEY);
@@ -223,7 +229,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					@Override
 					public void onAnimationEnd(Animation animation)
 					{
-						LineChartMaker.getChartMaker().makeChart(chart, entries);
+						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
 					}
 				});
 		}
@@ -300,6 +306,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onClick(View v)
 				{
+					// nep objecten
+					/*Double[] a = {0d,1d,2d,3d,4d};
+					distanceFromOriginList = new ArrayList<Double>(Arrays.asList(a));
+					Double[] b = {2d,1d,2.5d,3d,40.5d};
+					ArrayList<Double> result = new ArrayList<Double>(Arrays.asList(b));
+					onPostExecute(result);
+					//return;
+					*/
 					//Log.i("HermLog", "maak hoogteprofiel");
 					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
@@ -318,6 +332,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 					//Log.i("HermLog", "layerList.size(): " + layerList.size());
 					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
+					shortTitle = topElevationLayer.getShortTitle();
 					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
 					ArrayList<LatLng> pointsList = ElevationProfile.makePointsList(userMadePoints, totalPoints);
 					distanceFromOriginList = ElevationProfile.makeDistanceFromOriginList(pointsList);
@@ -1024,6 +1039,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
 		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
 		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
+		outState.putString(SHORT_TITLE_KEY, shortTitle);
 		outState.putSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY, distanceFromOriginList);
 		outState.putSerializable(ELEVATION_LIST_KEY, elevationList);
 		outState.putParcelableArrayList(ENTRIES_LIST_KEY, entries);
@@ -1136,6 +1152,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			showProgressBarDeterminate(View.GONE);
 			setProgressBarDeterminate(0, false);
 			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
+			
 			chartVisible = toggleViewVisibility(
 				chart,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
@@ -1152,7 +1169,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					@Override
 					public void onAnimationEnd(Animation animation)
 					{
-						LineChartMaker.getChartMaker().makeChart(chart, entries);
+						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
 					}
 				});
 				

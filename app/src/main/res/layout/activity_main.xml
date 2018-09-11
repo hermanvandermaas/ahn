@@ -191,13 +191,22 @@
 					android:visibility="gone"/>
 
 			</FrameLayout>
-
-			<com.github.mikephil.charting.charts.LineChart
-				android:id="@+id/chart_line"
+			
+			<LinearLayout
+				android:id="@+id/chart_container"
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:visibility="gone" />
+				android:orientation="vertical"
+				android:padding="8dp"
+				android:visibility="gone">
+
+				<com.github.mikephil.charting.charts.LineChart
+					android:id="@+id/chart_line"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent" />
+				
+			</LinearLayout>
 			
 		</LinearLayout>
 	</android.support.design.widget.CoordinatorLayout>
