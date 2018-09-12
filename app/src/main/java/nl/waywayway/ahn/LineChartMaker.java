@@ -47,13 +47,14 @@ public class LineChartMaker
 		dataSet.setDrawCircles(false);
 		dataSet.setDrawValues(false);
 		
-		dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+		dataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
 		
 		int lineColor = context.getResources().getColor(R.color.accent);
 		int highLightLineColor = context.getResources().getColor(R.color.black);
 		
 		dataSet.setLineWidth(lineWidth);
 		dataSet.setDrawFilled(true);
+		dataSet.setFillFormatter(new MyCustomFillFormatter());
 		dataSet.setFillColor(lineColor);
 		dataSet.setColor(lineColor);
 		
@@ -61,6 +62,9 @@ public class LineChartMaker
 		dataSet.setDrawVerticalHighlightIndicator(true);
 		dataSet.setHighlightLineWidth(highLightLineWidth);
 		dataSet.setHighLightColor(highLightLineColor);
+		
+		IMarker marker = new MyMarkerView(context, R.layout.line_chart_highlight_marker);
+		chart.setMarker(marker);
 		
 		LineData lineData = new LineData(dataSet);
 		lineChart.setData(lineData);

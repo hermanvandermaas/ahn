@@ -26,7 +26,7 @@ public class MyOnChartValueSelectedListener
 	@Override
 	public void onValueSelected(Entry entry, Highlight highlight)
 	{
-		Toast.makeText(context, "Hoogte: " + highlight.getY(), Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Hoogte: " + highlight.getY(), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
