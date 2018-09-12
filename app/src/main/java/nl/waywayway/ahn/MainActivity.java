@@ -43,7 +43,8 @@ GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks,
 CancelOrProceedDialogFragment.YesNoDialog,
-LayersRecyclerViewAdapter.AdapterCallbacks
+LayersRecyclerViewAdapter.AdapterCallbacks,
+MyOnChartValueSelectedListener.Callbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
 	private static final String TAG_DELETE_LINE_DIALOG = "delete_line";
@@ -85,6 +86,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private String MODE_KEY = "mode_key";
 	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
 	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
+	private String POINTS_LIST_KEY = "points_list_key";
 	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
 	private String SHORT_TITLES_KEY = "short_titles_key";
 	private String SHORT_TITLE_KEY = "short_title_key";
@@ -100,6 +102,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private ArrayList<LatLng> userMadePoints = new ArrayList<LatLng>();
 	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
 	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
+	private ArrayList<LatLng> pointsList = new ArrayList<LatLng>();
 	private ArrayList<Double> distanceFromOriginList = new ArrayList<Double>();
 	private ArrayList<Double> elevationList = new ArrayList<Double>();
 	private int totalPoints = 5;
@@ -142,6 +145,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
 			snippet = (snippet == null) ? "" : snippet;
 			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
+			pointsList = savedInstanceState.getParcelableArrayList(POINTS_LIST_KEY);
 			shortTitles = savedInstanceState.getStringArrayList(SHORT_TITLES_KEY);
 			shortTitle = savedInstanceState.getString(SHORT_TITLE_KEY);
 			distanceFromOriginList = (ArrayList<Double>) savedInstanceState.getSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY);
@@ -251,6 +255,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					if (taskFragment.isRunning()) taskFragment.cancel();
 					setProgressBarDeterminate(0, false);
 					showProgressBarDeterminate(View.GONE);
+					removeMarker();
 
 					if (chartVisible)
 						chartVisible = toggleViewVisibility(
@@ -279,6 +284,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					if (taskFragment.isRunning()) taskFragment.cancel();
 					setProgressBarDeterminate(0, false);
 					showProgressBarDeterminate(View.GONE);
+					removeMarker();
 					deleteLastPoint();
 				}
 			});
@@ -322,6 +328,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					if (taskFragment.isRunning()) taskFragment.cancel();
 					setProgressBarDeterminate(0, false);
 					showProgressBarDeterminate(View.GONE);
+					removeMarker();
 					
 					if (chartVisible) 
 						chartVisible = toggleViewVisibility(
@@ -334,7 +341,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
 					shortTitle = topElevationLayer.getShortTitle();
 					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
-					ArrayList<LatLng> pointsList = ElevationProfile.makePointsList(userMadePoints, totalPoints);
+					pointsList = ElevationProfile.makePointsList(userMadePoints, totalPoints);
 					distanceFromOriginList = ElevationProfile.makeDistanceFromOriginList(pointsList);
 					ArrayList<URL> urlList = ElevationProfile.makeUrlList(topElevationLayer, zoomLevel, pointsList);
 					//Log.i("HermLog", "lst.size(): " + lst.size());
@@ -349,6 +356,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment.isRunning()) taskFragment.cancel();
 		setProgressBarDeterminate(0, false);
 		showProgressBarDeterminate(View.GONE);
+		removeMarker();
 		
 		removeLineAndDots();
 		drawLineAndDots();
@@ -459,6 +467,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				if (taskFragment.isRunning()) taskFragment.cancel();
 				setProgressBarDeterminate(0, false);
 				showProgressBarDeterminate(View.GONE);
+				removeMarker();
 				switchMode(elevationProfileMenuVisible);
 
 				return true;
@@ -903,22 +912,24 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		getElevationFromLatLong(pointLatLong, visibleLayers);
 	}
 
-	// Teken marker op de kaart
-	private void drawMarker(LatLng point)
-	{
-		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
-	}
-
 	private void setMarkerInfoWindow(Marker marker, String snippet)
 	{
 		marker.setTitle(getResources().getString(R.string.marker_title));
 		marker.setSnippet(snippet);
 		marker.showInfoWindow();
 	}
+	
+	// Teken marker op de kaart
+	@Override
+	public void drawMarker(LatLng point)
+	{
+		// Plaats nieuwe marker op kaart en in de lijst
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+	}
 
+	@Override
 	// Verwijder huidige marker
-	private void removeMarker()
+	public void removeMarker()
 	{
 		if (markerList.size() > 0)
 		{
@@ -1038,6 +1049,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, userMadePoints);
 		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
 		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
+		outState.putParcelableArrayList(POINTS_LIST_KEY, pointsList);
 		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
 		outState.putString(SHORT_TITLE_KEY, shortTitle);
 		outState.putSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY, distanceFromOriginList);
@@ -1151,7 +1163,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		{
 			setProgressBarDeterminate(100, true);
 			showProgressBarDeterminate(View.GONE);
-			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result);
+			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result, pointsList);
 			
 			chartVisible = toggleViewVisibility(
 				chartContainer,

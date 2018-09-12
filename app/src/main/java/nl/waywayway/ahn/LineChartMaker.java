@@ -1,13 +1,12 @@
 package nl.waywayway.ahn;
 
 import android.content.*;
-import android.graphics.*;
-import android.util.*;
+import com.github.mikephil.charting.animation.*;
 import com.github.mikephil.charting.charts.*;
 import com.github.mikephil.charting.components.*;
 import com.github.mikephil.charting.data.*;
+import com.google.android.gms.maps.model.*;
 import java.util.*;
-import com.github.mikephil.charting.animation.*;
 
 // Voegt data en opmaak toe aan bestaande lege lijngrafiek instance
 
