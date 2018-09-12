@@ -22,7 +22,7 @@ public class MyMarkerView extends MarkerView
     @Override
     public void refreshContent(Entry e, Highlight highlight)
 	{
-		tvContent.setText("" + Utils.formatNumber(e.getY(), 0, true));
+		tvContent.setText("" + Utils.formatNumber(e.getY(), 2, true));
         super.refreshContent(e, highlight);
     }
 	
@@ -33,7 +33,7 @@ public class MyMarkerView extends MarkerView
 
         if(mOffset == null) {
 			// center the marker horizontally and vertically
-			mOffset = new MPPointF(-(getWidth() / 2), -getHeight());
+			mOffset = new MPPointF(-(getWidth() / 2), -getHeight() - 6);
         }
 
         return mOffset;
