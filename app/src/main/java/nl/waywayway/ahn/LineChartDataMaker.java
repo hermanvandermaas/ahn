@@ -7,8 +7,8 @@ import java.util.*;
 
 public class LineChartDataMaker
 {
-	private double lowCap = -10000;
-	private double highCap = 10000;
+	private Double lowCap = -10000d;
+	private Double highCap = 10000d;
 	
 	private LineChartDataMaker()
 	{}
@@ -29,7 +29,7 @@ public class LineChartDataMaker
 			Double x = xData.get(i);
 			Double y = yData.get(i);
 			LatLng p = pointsList.get(i);
-			if (y == null || y > highCap || y < lowCap) y = 0d;
+			if (y == null || y > highCap || y < lowCap) continue;
 			//Log.i("HermLog", "x/y: " + x + " / " + y);
 			entries.add(new Entry(x.floatValue(), y.floatValue(), p)); 
 		}

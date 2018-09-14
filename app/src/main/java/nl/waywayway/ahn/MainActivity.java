@@ -1161,9 +1161,14 @@ MyOnChartValueSelectedListener.Callbacks
 		}
 		else
 		{
+			//Log.i("HermLog", "result: " + result);
+			
 			setProgressBarDeterminate(100, true);
 			showProgressBarDeterminate(View.GONE);
+			
 			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result, pointsList);
+			// Bericht als er hoogten ontbreken
+			if (result.size() != entries.size()) Toast.makeText(context, getResources().getString(R.string.missing_elevation_points), Toast.LENGTH_SHORT).show();
 			
 			chartVisible = toggleViewVisibility(
 				chartContainer,
@@ -1186,8 +1191,6 @@ MyOnChartValueSelectedListener.Callbacks
 						showProgressBarDeterminate(View.GONE);
 					}
 				});
-				
-			//Log.i("HermLog", "onPostExecute(), mode == Mode.LINE, result: " + result);
 		}
 	}
 }
