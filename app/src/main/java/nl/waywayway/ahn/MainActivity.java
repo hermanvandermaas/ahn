@@ -465,6 +465,7 @@ MyOnChartValueSelectedListener.Callbacks
 					false, null);
 
 				if (taskFragment.isRunning()) taskFragment.cancel();
+				showProgressBar(View.GONE);
 				setProgressBarDeterminate(0, false);
 				showProgressBarDeterminate(View.GONE);
 				removeMarker();
