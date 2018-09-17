@@ -162,7 +162,7 @@ MyOnChartValueSelectedListener.Callbacks
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
-		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBar(View.VISIBLE);
+		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBarIndeterminate(View.VISIBLE);
 		if (taskFragment.isRunning() && mode == Mode.LINE) showProgressBarDeterminate(View.VISIBLE);
 		initializeLegend();
 		initializeChart();
@@ -465,7 +465,7 @@ MyOnChartValueSelectedListener.Callbacks
 					false, null);
 
 				if (taskFragment.isRunning()) taskFragment.cancel();
-				showProgressBar(View.GONE);
+				showProgressBarIndeterminate(View.GONE);
 				setProgressBarDeterminate(0, false);
 				showProgressBarDeterminate(View.GONE);
 				removeMarker();
@@ -960,16 +960,16 @@ MyOnChartValueSelectedListener.Callbacks
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
-	private void showProgressBar(int visibility)
+	private void showProgressBarIndeterminate(int visibility)
 	{
-		View progressbar = findViewById(R.id.progressbar);
+		ProgressBar progressbar = findViewById(R.id.progressbar);
 		progressbar.setVisibility(visibility);
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
 	private void showProgressBarDeterminate(int visibility)
 	{
-		View progressbar = findViewById(R.id.progressbar_determinate);
+		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
 		progressbar.setVisibility(visibility);
 	}
 
@@ -1110,7 +1110,7 @@ MyOnChartValueSelectedListener.Callbacks
 	public void onPreExecute()
 	{
 		//Log.i("HermLog", "onPreExecute()");
-		if (mode == Mode.POINT) showProgressBar(View.VISIBLE);
+		if (mode == Mode.POINT) showProgressBarIndeterminate(View.VISIBLE);
 		else
 		{
 			showProgressBarDeterminate(View.VISIBLE);
@@ -1130,7 +1130,7 @@ MyOnChartValueSelectedListener.Callbacks
 		//Log.i("HermLog", "onCancelled()");
 		setProgressBarDeterminate(0, false);
 		showProgressBarDeterminate(View.GONE);
-		showProgressBar(View.GONE);
+		showProgressBarIndeterminate(View.GONE);
 	}
 
 	@Override
@@ -1138,7 +1138,7 @@ MyOnChartValueSelectedListener.Callbacks
 	{
 		if (mode == Mode.POINT)
 		{
-			showProgressBar(View.GONE);
+			showProgressBarIndeterminate(View.GONE);
 
 			// Toon hoogte bij marker
 			if (result == null)
