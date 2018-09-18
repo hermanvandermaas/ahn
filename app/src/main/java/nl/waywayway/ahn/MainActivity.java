@@ -12,7 +12,6 @@ import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.widget.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -30,7 +29,6 @@ import java.util.*;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
-import java.lang.reflect.*;
 
 public class MainActivity extends AppCompatActivity
 implements 
@@ -225,10 +223,12 @@ MyOnChartValueSelectedListener.Callbacks
 				new Animation.AnimationListener()
 				{
 					@Override
-					public void onAnimationStart(Animation p1){}
+					public void onAnimationStart(Animation p1)
+					{}
 
 					@Override
-					public void onAnimationRepeat(Animation p1){}
+					public void onAnimationRepeat(Animation p1)
+					{}
 
 					@Override
 					public void onAnimationEnd(Animation animation)
@@ -314,12 +314,12 @@ MyOnChartValueSelectedListener.Callbacks
 				{
 					// nep objecten
 					/*Double[] a = {0d,1d,2d,3d,4d};
-					distanceFromOriginList = new ArrayList<Double>(Arrays.asList(a));
-					Double[] b = {2d,1d,2.5d,3d,40.5d};
-					ArrayList<Double> result = new ArrayList<Double>(Arrays.asList(b));
-					onPostExecute(result);
-					//return;
-					*/
+					 distanceFromOriginList = new ArrayList<Double>(Arrays.asList(a));
+					 Double[] b = {2d,1d,2.5d,3d,40.5d};
+					 ArrayList<Double> result = new ArrayList<Double>(Arrays.asList(b));
+					 onPostExecute(result);
+					 //return;
+					 */
 					//Log.i("HermLog", "maak hoogteprofiel");
 					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
@@ -329,7 +329,7 @@ MyOnChartValueSelectedListener.Callbacks
 					setProgressBarDeterminate(0, false);
 					showProgressBarDeterminate(View.GONE);
 					removeMarker();
-					
+
 					if (chartVisible) 
 						chartVisible = toggleViewVisibility(
 							chartContainer,
@@ -357,10 +357,10 @@ MyOnChartValueSelectedListener.Callbacks
 		setProgressBarDeterminate(0, false);
 		showProgressBarDeterminate(View.GONE);
 		removeMarker();
-		
+
 		removeLineAndDots();
 		drawLineAndDots();
-		
+
 		if (chartVisible)
 		{
 			chartVisible = toggleViewVisibility(
@@ -368,7 +368,7 @@ MyOnChartValueSelectedListener.Callbacks
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				false, null);
-				
+
 			chart.clear();
 		}
 	}
@@ -579,7 +579,7 @@ MyOnChartValueSelectedListener.Callbacks
 		dotsList.get(lastElementIndexDots).remove();
 		// ... en uit de lijst
 		dotsList.remove(lastElementIndexDots);
-		
+
 		// Wis en verberg grafiek
 		if (chartVisible)
 		{
@@ -588,7 +588,7 @@ MyOnChartValueSelectedListener.Callbacks
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
 				false, null);
-				
+
 			chart.clear();
 		}
 	}
@@ -919,7 +919,7 @@ MyOnChartValueSelectedListener.Callbacks
 		marker.setSnippet(snippet);
 		marker.showInfoWindow();
 	}
-	
+
 	// Teken marker op de kaart
 	@Override
 	public void drawMarker(LatLng point)
@@ -976,7 +976,11 @@ MyOnChartValueSelectedListener.Callbacks
 	private void setProgressBarDeterminate(int percent, boolean animate)
 	{
 		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
-		progressbar.setProgress(percent, animate);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+			progressbar.setProgress(percent, animate);
+		else
+			progressbar.setProgress(percent);
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
@@ -1163,14 +1167,21 @@ MyOnChartValueSelectedListener.Callbacks
 		else
 		{
 			//Log.i("HermLog", "result: " + result);
-			
+
 			setProgressBarDeterminate(100, true);
 			showProgressBarDeterminate(View.GONE);
-			
+
 			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result, pointsList);
-			// Bericht als er hoogten ontbreken
-			if (result.size() != entries.size()) Toast.makeText(context, getResources().getString(R.string.missing_elevation_points), Toast.LENGTH_SHORT).show();
 			
+			// Bericht als er hoogten ontbreken
+			if (entries.size() == 0)
+			{
+				Toast.makeText(context, getResources().getString(R.string.no_elevation_points), Toast.LENGTH_SHORT).show();
+				return;
+			}
+			
+			if (result.size() != entries.size()) Toast.makeText(context, getResources().getString(R.string.missing_elevation_points), Toast.LENGTH_SHORT).show();
+
 			chartVisible = toggleViewVisibility(
 				chartContainer,
 				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
@@ -1179,11 +1190,13 @@ MyOnChartValueSelectedListener.Callbacks
 				new Animation.AnimationListener()
 				{
 					@Override
-					public void onAnimationStart(Animation p1){}
+					public void onAnimationStart(Animation p1)
+					{}
 
 					@Override
-					public void onAnimationRepeat(Animation p1){}
-					
+					public void onAnimationRepeat(Animation p1)
+					{}
+
 					@Override
 					public void onAnimationEnd(Animation animation)
 					{
