@@ -92,6 +92,7 @@ MyOnChartValueSelectedListener.Callbacks
 	private String ELEVATION_LIST_KEY = "elevation_list_key";
 	private String ENTRIES_LIST_KEY = "entries_list_key";
 	private float LINE_Z_INDEX = 500;
+	private float LINE_WIDTH = 5f;
 	private float DOT_Z_INDEX = 600;
 	private String IS_DOT = "isDot";
 	private String snippet;
@@ -535,6 +536,7 @@ MyOnChartValueSelectedListener.Callbacks
 								.startCap(new RoundCap())
 								.endCap(new RoundCap())
 								.jointType(JointType.ROUND)
+								.width(LINE_WIDTH)
 								.geodesic(true)
 								.addAll(userMadePoints));
 		// Voeg stippen toe
