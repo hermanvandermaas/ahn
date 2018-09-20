@@ -42,6 +42,7 @@
 	<string name="download_error_message">Download niet gelukt</string>
 	<string name="no_elevation_points">Geen hoogten gevonden voor de getekende lijn</string>
 	<string name="missing_elevation_points">Hoogte niet voor de hele getekende lijn beschikbaar</string>
+	<string name="chart_data_label">Y: Hoogte in meters +/- NAP, X: Afstand in meters</string>
 	
 	<!-- onboarding slideshow -->
 	<string name="ob_get_started">START</string>

@@ -14,7 +14,6 @@ public class LineChartMaker
 {
 	private Context context;
 	private String noDataText = "";
-	private String label = "Hoogte in meters +/- NAP";
 	private float lineWidth = 3f;
 	private float highLightLineWidth = 1f;
 	
@@ -42,6 +41,7 @@ public class LineChartMaker
 		lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 		lineChart.getAxisRight().setEnabled(false);
 		
+		String label = context.getResources().getString(R.string.chart_data_label);
 		LineDataSet dataSet = new LineDataSet(entries, label);
 		dataSet.setDrawCircles(false);
 		dataSet.setDrawValues(false);
