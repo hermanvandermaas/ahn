@@ -1,2 +1,4 @@
 /app/build
 /app/src/main/res/values/private_keys.xml
+/.idea
+/.gradle
