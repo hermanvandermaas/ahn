@@ -1,12 +1,18 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import com.github.mikephil.charting.animation.*;
-import com.github.mikephil.charting.charts.*;
-import com.github.mikephil.charting.components.*;
-import com.github.mikephil.charting.data.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
+import android.content.Context;
+
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.IMarker;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.List;
 
 // Voegt data en opmaak toe aan bestaande lege lijngrafiek instance
 

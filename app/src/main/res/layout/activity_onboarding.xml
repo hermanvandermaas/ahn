@@ -34,7 +34,7 @@
             android:id="@+id/btn_get_started"
 			android:layout_width="match_parent"
             android:layout_height="50dp"
-            style="?android:attr/borderlessButtonStyle"
+            style="?attr/borderlessButtonStyle"
             android:background="@color/accent"
             android:text="@string/ob_get_started"
             android:textAllCaps="false"

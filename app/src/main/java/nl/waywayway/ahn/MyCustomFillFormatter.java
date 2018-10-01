@@ -1,9 +1,8 @@
 package nl.waywayway.ahn;
 
-import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.interfaces.dataprovider.*;
-import com.github.mikephil.charting.formatter.*;
-import com.github.mikephil.charting.interfaces.datasets.*;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 public class MyCustomFillFormatter implements IFillFormatter
 {

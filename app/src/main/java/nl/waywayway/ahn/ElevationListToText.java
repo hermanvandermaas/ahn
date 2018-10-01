@@ -1,7 +1,8 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import java.util.*;
+import android.content.Context;
+
+import java.util.ArrayList;
 
 // Maak tekst string van lijst met hoogte in meters 
 

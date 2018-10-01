@@ -1,11 +1,13 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.widget.*;
-import com.github.mikephil.charting.components.*;
-import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.highlight.*;
-import com.github.mikephil.charting.utils.*;
+import android.content.Context;
+import android.widget.TextView;
+
+import com.github.mikephil.charting.components.MarkerView;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.utils.MPPointF;
+import com.github.mikephil.charting.utils.Utils;
 
 public class MyMarkerView extends MarkerView
 {

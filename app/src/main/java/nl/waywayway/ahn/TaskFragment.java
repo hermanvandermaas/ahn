@@ -1,15 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.util.*;
-import java.net.*;
-import java.util.*;
-import org.json.*;
-
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * TaskFragment manages a single background task and retains itself across

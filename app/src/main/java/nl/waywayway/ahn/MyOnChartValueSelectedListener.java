@@ -1,12 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.util.*;
-import com.github.mikephil.charting.charts.*;
-import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.highlight.*;
-import com.github.mikephil.charting.listener.*;
-import com.google.android.gms.maps.model.*;
+import android.content.Context;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MyOnChartValueSelectedListener
 	implements OnChartValueSelectedListener

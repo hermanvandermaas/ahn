@@ -1,9 +1,11 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import com.google.android.gms.maps.model.*;
-import java.net.*;
-import java.util.*;
+import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
 
 // Factory class voor WMS tiles in Web Mercator projectie
 

@@ -31,7 +31,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation('me.zhanghai.android.materialprogressbar:library:1.4.2')
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }

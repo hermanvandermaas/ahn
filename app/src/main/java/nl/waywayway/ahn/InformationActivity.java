@@ -1,12 +1,10 @@
 package nl.waywayway.ahn;
 
-import android.os.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.text.method.*;
-import android.widget.*;
-
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 public class InformationActivity extends AppCompatActivity
 {

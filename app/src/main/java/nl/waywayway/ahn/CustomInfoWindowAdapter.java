@@ -1,11 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.view.*;
-import android.widget.*;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 
 class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 {

@@ -1,8 +1,8 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.view.*;
+import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 
 // NavigationView (drawer), niet laten meeschuiven met SeekBar
 // SeekBar niet aanpassen als gebruiker verticaal begint te scrollen op SeekBar,

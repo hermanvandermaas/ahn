@@ -37,17 +37,19 @@ import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.data.Entry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
@@ -69,8 +71,6 @@ implements
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
-GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks,
@@ -86,7 +86,7 @@ MyOnChartValueSelectedListener.Callbacks
 	private Toolbar toolbar;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
-	private GoogleApiClient googleApiClient;
+	private GeoDataClient geoDataClient;
 	private LocationProvider locationProvider;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private ArrayList<LayerItem> layerList;
@@ -200,9 +200,9 @@ MyOnChartValueSelectedListener.Callbacks
 		initializeLegend();
 		initializeChart();
 		initializeElevationProfileMenu();
-		createGoogleApiClient();
+		createGoogleApi();
 
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
 		makeToolbar();
@@ -759,8 +759,8 @@ MyOnChartValueSelectedListener.Callbacks
 
 	private void createPlaceSearch()
 	{
-		PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-			getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+		SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
+				getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 		if (!searchBarVisible) showSearchBar(View.GONE);
 
@@ -793,29 +793,9 @@ MyOnChartValueSelectedListener.Callbacks
 			});
 	}
 
-	private void createGoogleApiClient()
+	private void createGoogleApi()
 	{
-		googleApiClient = new GoogleApiClient
-			.Builder(this)
-			.addApi(Places.GEO_DATA_API)
-			.addApi(Places.PLACE_DETECTION_API)
-			.enableAutoManage(this, this)
-			.build();
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult p1)
-	{
-	}
-
-	@Override
-	public void onConnected(Bundle p1)
-	{
-	}
-
-	@Override
-	public void onConnectionSuspended(int p1)
-	{
+        geoDataClient = Places.getGeoDataClient(this, null);
 	}
 
 	@Override

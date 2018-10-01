@@ -1,9 +1,9 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import com.github.mikephil.charting.data.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
+import com.github.mikephil.charting.data.Entry;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
 
 public class LineChartDataMaker
 {

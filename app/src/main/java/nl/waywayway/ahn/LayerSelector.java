@@ -1,9 +1,9 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.util.*;
-import android.widget.*;
-import java.util.*;
+import android.content.Context;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 // Factory voor selecties van kaartlagen
 

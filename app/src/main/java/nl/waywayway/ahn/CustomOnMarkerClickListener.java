@@ -1,8 +1,7 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 
 // Listener: is aangeklikte marker een stip in lijn van hoogteprofiel?
 // dan geen standaard actie uitvoeren bij klik (tonen info window en centreren aangeklikte stip marker)

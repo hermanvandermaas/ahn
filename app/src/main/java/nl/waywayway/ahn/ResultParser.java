@@ -1,7 +1,10 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import org.json.*;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 // Parse json string naar hoogte in meters +NAP
 

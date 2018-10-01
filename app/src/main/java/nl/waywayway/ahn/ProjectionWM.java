@@ -1,8 +1,8 @@
 package nl.waywayway.ahn;
 
-import android.graphics.*;
-import android.util.*;
-import com.google.android.gms.maps.model.*;
+import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 // Projectie Web Mercator (WM)
 // Converteren tussen breedte-/lengtecoordinaten in decimale graden (wgs84 ellipsoide)

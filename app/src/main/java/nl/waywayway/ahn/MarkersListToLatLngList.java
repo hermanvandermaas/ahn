@@ -1,8 +1,11 @@
 package nl.waywayway.ahn;
 
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 // Markers omzetten naar (parcelable) LatLng
 // voor opslaan en herstellen van Marker posities bij schermrotatie

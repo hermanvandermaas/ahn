@@ -1,9 +1,9 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
-import java.net.*;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.net.URL;
+import java.util.ArrayList;
 
 // Maak URL lijst uit LatLng puntenlijst, voor downloaden hoogten per punt
 
