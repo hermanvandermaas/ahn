@@ -1,9 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.util.*;
-import java.util.*;
-import org.json.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.Arrays;
 
 // Opslaan en ophalen voorkeuren
 

@@ -1,9 +1,14 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import java.io.*;
-import java.util.*;
-import org.json.*;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 // Maak ArrayList van json string
 

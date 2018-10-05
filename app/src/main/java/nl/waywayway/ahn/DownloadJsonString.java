@@ -1,10 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import java.io.*;
-import java.net.*;
-import java.util.concurrent.*;
-import okhttp3.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class DownloadJsonString
 {
@@ -42,7 +44,7 @@ public class DownloadJsonString
 		}
 		catch (IOException e)
 		{
-			Log.i("HermLog", "Exception in DownloadJsonString");
+			//Log.i("HermLog", "Exception in DownloadJsonString");
 		}
 
 		return "Fout in DownloadJsonString!";

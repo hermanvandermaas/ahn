@@ -1,18 +1,19 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.location.*;
-import android.os.*;
-import android.util.*;
-import com.google.android.gms.common.*;
-import com.google.android.gms.common.api.*;
-import com.google.android.gms.location.*;
-import com.google.android.gms.maps.model.*;
+import android.content.Context;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 
 public class LocationProvider
-implements 
+implements
 LocationListener,
 GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener
@@ -39,10 +40,10 @@ GoogleApiClient.OnConnectionFailedListener
 			.addOnConnectionFailedListener(this)
 			.addApi(LocationServices.API)
 			.build();
-			
+
 		return googleApiClient;
 	}
-	
+
 	// Zoom in op huidige locatie of midden van Nederland bij eerste opstart app
 	// timeOut in seconden
 	public void zoomToCurrentOrStandardLocation(final LatLng standardLocation, int timeOut, final float zoom)

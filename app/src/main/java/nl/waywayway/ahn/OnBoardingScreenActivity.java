@@ -1,16 +1,21 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.support.v4.content.*;
-import android.support.v4.view.*;
-import android.support.v7.app.*;
-import android.util.*;
-import android.view.*;
-import android.view.animation.*;
-import android.widget.*;
-import java.util.*;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
 
 public class OnBoardingScreenActivity extends AppCompatActivity
 {

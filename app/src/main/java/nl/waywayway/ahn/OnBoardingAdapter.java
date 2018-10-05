@@ -1,10 +1,15 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.support.v4.view.*;
-import android.view.*;
-import android.widget.*;
-import java.util.*;
+import android.content.Context;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 class OnBoardingAdapter extends PagerAdapter
 {

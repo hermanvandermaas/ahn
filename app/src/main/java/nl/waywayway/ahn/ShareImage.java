@@ -1,14 +1,20 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.graphics.*;
-import android.net.*;
-import android.support.v4.app.*;
-import android.support.v4.content.*;
-import android.widget.*;
-import com.google.android.gms.maps.*;
-import java.io.*;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.FileProvider;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 // Class voor maken en delen van kaartafbeelding
 

@@ -11,6 +11,7 @@
 	<string name="action_info">Informatie</string>
 	<string name="action_search">Zoek locatie</string>
 	<string name="action_share_map">Deel kaart</string>
+	<string name="action_elevation_profile">Maak hoogteprofiel</string>
 	
 	<string name="permission_rationale_location">Toegang tot je huidige locatie wordt gevraagd om op de kaart snel naar je huidige locatie te kunnen zoomen.</string>
     <string name="location_permission_denied">Je locatie is noodzakelijk voor deze app. Als je je locatie permanent niet hebt toegestaan, kun je dit herstellen via Systeeminstellingen &gt; Apps &gt; \'AHN\'.</string>
@@ -23,6 +24,11 @@
 	<string name="share_image_path">/hoogte.png</string>
 	<string name="files_authority">nl.waywayway.ahn.fileprovider</string>
 	
+	<string name="dialog_confirm_action_body_text">Verwijder alle punten?</string>
+	<string name="dialog_confirm_action_yes">Ja</string>
+	<string name="dialog_confirm_action_no">Nee</string>
+	
+	<string name="marker_title">Hoogte</string>
 	<string name="not_available_UI">n/a</string>
 	<string name="unit_of_measurement_UI">meter NAP</string>
 	<string name="opacity_seekbar_description">Zichtbaar</string>
@@ -34,6 +40,9 @@
 	<string name="place_search_not_available_message">Locatiezoeker nu niet beschikbaar</string>
 	<string name="make_layer_with_altitude_visible_message">Maak eerst een kaartlaag met hoogte zichtbaar in het lagenmenu</string>
 	<string name="download_error_message">Download niet gelukt</string>
+	<string name="no_elevation_points">Geen hoogten gevonden voor de getekende lijn</string>
+	<string name="missing_elevation_points">Hoogte niet voor de hele getekende lijn beschikbaar</string>
+	<string name="chart_data_label">Y: Hoogte in meters +/- NAP, X: Afstand in meters</string>
 	
 	<!-- onboarding slideshow -->
 	<string name="ob_get_started">START</string>

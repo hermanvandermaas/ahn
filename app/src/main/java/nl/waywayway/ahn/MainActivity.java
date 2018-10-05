@@ -1,56 +1,91 @@
 package nl.waywayway.ahn;
 
-import android.*;
-import android.app.*;
-import android.content.*;
-import android.content.pm.*;
-import android.location.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.support.v4.content.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.view.View.*;
-import android.view.animation.*;
-import android.widget.*;
-import com.google.android.gms.common.*;
-import com.google.android.gms.common.api.*;
-import com.google.android.gms.location.*;
-import com.google.android.gms.location.places.*;
-import com.google.android.gms.location.places.ui.*;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-import java.net.*;
-import java.util.*;
-
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.data.Entry;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+
+import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
 implements 
 GoogleMap.OnCameraIdleListener, 
 OnMapReadyCallback,
 GoogleMap.OnMapClickListener,
-GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener,
 GoogleMap.OnMyLocationButtonClickListener,
 ActivityCompat.OnRequestPermissionsResultCallback,
 TaskFragment.TaskCallbacks,
-LayersRecyclerViewAdapter.AdapterCallbacks
+CancelOrProceedDialogFragment.YesNoDialog,
+LayersRecyclerViewAdapter.AdapterCallbacks,
+MyOnChartValueSelectedListener.Callbacks
 {
 	private static final String TAG_TASK_FRAGMENT = "task_fragment";
+	private static final String TAG_DELETE_LINE_DIALOG = "delete_line";
 	private boolean dialogPlayServicesWasShowed = false;
-	private boolean dialogWelcomeWasShowed = false;
 	private boolean notConnectedMessageWasShowed = false;
 	private Context context;
 	private Toolbar toolbar;
 	private Bundle savedInstanceStateGlobal;
 	private GoogleMap gMap;
-	private GoogleApiClient googleApiClient;
+	private GeoDataClient geoDataClient;
 	private LocationProvider locationProvider;
 	private ArrayList<Marker> markerList = new ArrayList<Marker>();
 	private ArrayList<LayerItem> layerList;
@@ -61,17 +96,53 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	private DrawerLayout drawerLayout;
 	private View searchBar;
 	private View legend;
+	private View elevationProfileMenu;
+	private Chart chart;
+	private LinearLayout chartContainer;
 	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
 	private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
-	private static final String WELCOME_DIALOG_SHOWED_STATE_KEY = "welcome_dialog_showed_state_key";
 	private static final String NOT_CONNECTED_STATE_KEY = "not_connected_state_key";
 	private boolean myLocationIconVisible;
 	private boolean searchBarVisible = true;
 	private boolean legendVisible = false;
+	private boolean chartVisible = false;
+	private boolean elevationProfileMenuVisible = false;
+	private ArrayList<Entry> entries;
 	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
 	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
+	private String CHART_VISIBLE_KEY = "chart_visible_key";
+	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
+	private String MODE_KEY = "mode_key";
+	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
+	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
+	private String POINTS_LIST_KEY = "points_list_key";
+	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
+	private String SHORT_TITLES_KEY = "short_titles_key";
+	private String SHORT_TITLE_KEY = "short_title_key";
+	private String DISTANCE_FROM_ORIGIN_LIST_KEY = "distance_from_origin_list_key";
+	private String ELEVATION_LIST_KEY = "elevation_list_key";
+	private String ENTRIES_LIST_KEY = "entries_list_key";
+	private float LINE_Z_INDEX = 500;
+	private float LINE_WIDTH = 5f;
+	private float DOT_Z_INDEX = 600;
+	private String IS_DOT = "isDot";
+	private String snippet;
+	private ArrayList<String> shortTitles = new ArrayList<String>();
+	private String shortTitle;
+	private ArrayList<LatLng> userMadePoints = new ArrayList<LatLng>();
+	private ArrayList<Marker> dotsList = new ArrayList<Marker>();
+	private ArrayList<LatLng> markersLatLngList = new ArrayList<LatLng>();
+	private ArrayList<LatLng> pointsList = new ArrayList<LatLng>();
+	private ArrayList<Double> distanceFromOriginList = new ArrayList<Double>();
+	private ArrayList<Double> elevationList = new ArrayList<Double>();
+	private int totalPoints = 5;
+	// Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
+	public enum Mode
+	{POINT, LINE};
+	private Mode mode = Mode.POINT;
+	Polyline line;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -85,8 +156,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		drawerLayout = findViewById(R.id.drawer_layout);
 		searchBar = findViewById(R.id.card_place_autocomplete_fragment);
 		legend = findViewById(R.id.legend_scrollview);
+		elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
 		layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
 		locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
+		chart = findViewById(R.id.chart_line);
+		chartContainer = findViewById(R.id.chart_container);
 
 		showOnboardingScreenAtFirstRun();
 
@@ -95,42 +169,54 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		{
 			permissionAsked = savedInstanceState.getBoolean(PERMISSION_ASKED_STATE_KEY);
 			searchBarVisible = savedInstanceState.getBoolean(SEARCHBAR_VISIBLE_KEY);
-			dialogWelcomeWasShowed = savedInstanceState.getBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY);
 			notConnectedMessageWasShowed = savedInstanceState.getBoolean(NOT_CONNECTED_STATE_KEY);
 			legendVisible = savedInstanceState.getBoolean(LEGEND_VISIBLE_KEY);
+			chartVisible = savedInstanceState.getBoolean(CHART_VISIBLE_KEY);
+			mode = (Mode) savedInstanceState.getSerializable(MODE_KEY);
+			userMadePoints = savedInstanceState.getParcelableArrayList(LINE_VERTICES_LIST_KEY);
+			snippet = savedInstanceState.getString(MARKER_SNIPPET_KEY);
+			snippet = (snippet == null) ? "" : snippet;
+			markersLatLngList = savedInstanceState.getParcelableArrayList(MARKER_LATLNG_LIST_KEY);
+			pointsList = savedInstanceState.getParcelableArrayList(POINTS_LIST_KEY);
+			shortTitles = savedInstanceState.getStringArrayList(SHORT_TITLES_KEY);
+			shortTitle = savedInstanceState.getString(SHORT_TITLE_KEY);
+			distanceFromOriginList = (ArrayList<Double>) savedInstanceState.getSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY);
+			elevationList = (ArrayList<Double>) savedInstanceState.getSerializable(ELEVATION_LIST_KEY);
+			entries = savedInstanceState.getParcelableArrayList(ENTRIES_LIST_KEY);
 		}
-
-		initializeLegend();
-		createGoogleApiClient();
 
 		// Handler voor worker fragment
 		FragmentManager fm = getSupportFragmentManager();
 		taskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
-
-		// If the Fragment is non-null, it is being retained
-		// over a configuration change.
 		if (taskFragment == null)
 		{
 			taskFragment = new TaskFragment();
 			fm.beginTransaction().add(taskFragment, TAG_TASK_FRAGMENT).commit();
 		}
 
-		if (taskFragment.isRunning()) taskFragment.cancel();
+		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBarIndeterminate(View.VISIBLE);
+		if (taskFragment.isRunning() && mode == Mode.LINE) showProgressBarDeterminate(View.VISIBLE);
+		initializeLegend();
+		initializeChart();
+		initializeElevationProfileMenu();
+		createGoogleApi();
 
-		MapFragment mapFragment = (MapFragment) getFragmentManager()
-            .findFragmentById(R.id.map);
+		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
 		makeToolbar();
-		//setTransparentStatusBar();
     }
 
+	// Legenda
 	private void initializeLegend()
 	{
 		if (legendVisible)
 		{
-			showLegend(View.VISIBLE);
-			legendVisible = true;
+			legendVisible = toggleViewVisibility(
+				legend,
+				AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
+				AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
+				true, null);
 		}
 
 		swipeRightGestureDetector = new GestureDetectorCompat(this, new SwipeGestureListener()
@@ -138,13 +224,11 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				@Override
 				public void onSwipeRight()
 				{
-					if (legend.getVisibility() == View.VISIBLE)
-					{
-						showLegend(View.INVISIBLE);
-						legendVisible = false;
-						Animation slideRight = AnimationUtils.loadAnimation(context, R.anim.legend_slide_right);
-						legend.startAnimation(slideRight);
-					}
+					legendVisible = toggleViewVisibility(
+						legend,
+						AnimationUtils.loadAnimation(context, R.anim.legend_slide_left),
+						AnimationUtils.loadAnimation(context, R.anim.legend_slide_right),
+						false, null);
 				}
 			});
 
@@ -159,6 +243,174 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			});
 	}
 
+	// Grafiek
+	private void initializeChart()
+	{
+		//Log.i("HermLog", "chartVisible: " + chartVisible);
+		if (chartVisible)
+		{
+			chartVisible = toggleViewVisibility(
+				chartContainer,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				true,
+				new Animation.AnimationListener()
+				{
+					@Override
+					public void onAnimationStart(Animation p1)
+					{}
+
+					@Override
+					public void onAnimationRepeat(Animation p1)
+					{}
+
+					@Override
+					public void onAnimationEnd(Animation animation)
+					{
+						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
+					}
+				});
+		}
+	}
+
+	// Menu hoogteprofiel
+	private void initializeElevationProfileMenu()
+	{
+		if (mode == Mode.LINE) elevationProfileMenuVisible = toggleViewVisibility(elevationProfileMenu, null, null, true, null);
+
+		// Sluit menu
+		((ImageView) findViewById(R.id.elevation_profile_close))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					//Log.i("HermLog", "taskFragment.isRunning(): " + taskFragment.isRunning());
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
+					showProgressBarDeterminate(View.GONE);
+					removeMarker();
+
+					if (chartVisible)
+						chartVisible = toggleViewVisibility(
+							chartContainer,
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+							false, null);
+
+					elevationProfileMenuVisible = toggleViewVisibility(
+						elevationProfileMenu,
+						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
+						AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
+						false, null);
+
+					switchMode(elevationProfileMenuVisible);
+				}
+			});
+
+		// Verwijder laatste punt
+		((ImageView) findViewById(R.id.elevation_profile_delete_last_point))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
+					showProgressBarDeterminate(View.GONE);
+					removeMarker();
+					deleteLastPoint();
+				}
+			});
+
+		// Verwijder alle punten
+		((ImageView) findViewById(R.id.elevation_profile_delete_all_points))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if (dotsList.size() == 0) return;
+					CancelOrProceedDialogFragment.newInstance(
+						R.string.dialog_confirm_action_body_text,
+						R.string.dialog_confirm_action_yes,
+						R.string.dialog_confirm_action_no)
+						.show(getSupportFragmentManager(), TAG_DELETE_LINE_DIALOG);
+				}
+			});
+
+		// Maak hoogteprofiel
+		((ImageView) findViewById(R.id.elevation_profile_make_profile))
+			.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					// nep objecten
+					/*Double[] a = {0d,1d,2d,3d,4d};
+					 distanceFromOriginList = new ArrayList<Double>(Arrays.asList(a));
+					 Double[] b = {2d,1d,2.5d,3d,40.5d};
+					 ArrayList<Double> result = new ArrayList<Double>(Arrays.asList(b));
+					 onPostExecute(result);
+					 //return;
+					 */
+					//Log.i("HermLog", "maak hoogteprofiel");
+					if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
+					//Log.i("HermLog", "userMadePoints.size(): " + userMadePoints.size());
+					if (userMadePoints.size() < 2) return;
+					if (LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers()) return;
+					if (taskFragment.isRunning()) taskFragment.cancel();
+					setProgressBarDeterminate(0, false);
+					showProgressBarDeterminate(View.GONE);
+					removeMarker();
+
+					if (chartVisible) 
+						chartVisible = toggleViewVisibility(
+							chartContainer,
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+							AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+							false, null);
+
+					//Log.i("HermLog", "layerList.size(): " + layerList.size());
+					LayerItem topElevationLayer = LayerSelector.getLayerSelector(layerList, context).getTopVisibleLayer();
+					shortTitle = topElevationLayer.getShortTitle();
+					//Log.i("HermLog", "topElevationLayer: " + topElevationLayer.getShortTitle());
+					pointsList = ElevationProfile.makePointsList(userMadePoints, totalPoints);
+					distanceFromOriginList = ElevationProfile.makeDistanceFromOriginList(pointsList);
+					ArrayList<URL> urlList = ElevationProfile.makeUrlList(topElevationLayer, zoomLevel, pointsList);
+					//Log.i("HermLog", "lst.size(): " + lst.size());
+					taskFragment.start(urlList);
+				}
+			});
+	}
+
+	@Override
+	public void onYes(DialogInterface dialog, int id)
+	{
+		if (taskFragment.isRunning()) taskFragment.cancel();
+		setProgressBarDeterminate(0, false);
+		showProgressBarDeterminate(View.GONE);
+		removeMarker();
+
+		removeLineAndDots();
+		drawLineAndDots();
+
+		if (chartVisible)
+		{
+			chartVisible = toggleViewVisibility(
+				chartContainer,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				false, null);
+
+			chart.clear();
+		}
+	}
+
+	@Override
+	public void onNo(DialogInterface dialog, int id)
+	{}
+
 	// Maak toolbar
 	private void makeToolbar()
 	{
@@ -166,19 +418,12 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		setSupportActionBar(toolbar);
 		getSupportActionBar();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-
-		// Toon icoon alleen als nodig
-		/*
-		MenuItem myLocationIcon = menu.findItem(R.id.action_myposition);
-		myLocationIcon.setVisible(myLocationIconVisible);
-		*/
-		
 		return true;
 	}
 
@@ -199,24 +444,15 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				permissionAsked = false;
 				locationProvider = initializeZoomToLocation(false);
 				enableMyLocation(true);
-				
+
 				return true;
 
 			case R.id.action_legend:
-				if (legend.getVisibility() == View.VISIBLE)
-				{
-					showLegend(View.INVISIBLE);
-					legendVisible = false;
-					Animation slideRight = AnimationUtils.loadAnimation(this, R.anim.legend_slide_right);
-					legend.startAnimation(slideRight);
-				}
-				else
-				{
-					showLegend(View.VISIBLE);
-					legendVisible = true;
-					Animation slideLeft = AnimationUtils.loadAnimation(this, R.anim.legend_slide_left);
-					legend.startAnimation(slideLeft);
-				}
+				legendVisible = toggleViewVisibility(
+					legend,
+					AnimationUtils.loadAnimation(this, R.anim.legend_slide_left),
+					AnimationUtils.loadAnimation(this, R.anim.legend_slide_right),
+					false, null);
 
 				return true;
 
@@ -225,26 +461,52 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				shareImage.share();
 
 				return true;
-				
+
 			case R.id.action_info:
 				Intent intent = new Intent(context, InformationActivity.class);
 				context.startActivity(intent);
-				
+
 				return true;
 
 			case R.id.action_search:
-				if (searchBar.getVisibility() == View.VISIBLE)
-				{
-					showSearchBar(View.GONE);
-					searchBarVisible = false;
-				}
-				else
-				{
-					showSearchBar(View.VISIBLE);
-					searchBarVisible = true;
-				}
+				searchBarVisible = toggleViewVisibility(
+					searchBar,
+					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
+					AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
+					false, null);
 
 				return true;
+
+			case R.id.action_elevation_profile:
+				if (searchBarVisible)
+					searchBarVisible = toggleViewVisibility(
+						searchBar,
+						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_down),
+						AnimationUtils.loadAnimation(this, R.anim.search_bar_slide_up),
+						false, null);
+
+				if (chartVisible) 
+					chartVisible = toggleViewVisibility(
+						chartContainer,
+						AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+						AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+						false, null);
+
+				elevationProfileMenuVisible = toggleViewVisibility(
+					elevationProfileMenu,
+					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_right),
+					AnimationUtils.loadAnimation(context, R.anim.elevation_profile_menu_slide_left),
+					false, null);
+
+				if (taskFragment.isRunning()) taskFragment.cancel();
+				showProgressBarIndeterminate(View.GONE);
+				setProgressBarDeterminate(0, false);
+				showProgressBarDeterminate(View.GONE);
+				removeMarker();
+				switchMode(elevationProfileMenuVisible);
+
+				return true;
+
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -269,12 +531,116 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		createLayerMenu();
 		createPlaceSearch();
 
-		googleMap.setOnCameraIdleListener(this);
-		gMap.setOnMapClickListener(this);
+		// Herstel markers
 		gMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(context));
+		markerList = MarkersListToLatLngList.restoreMarkers(markersLatLngList, gMap);
+		if (markerList.size() > 0 && !snippet.equals("")) setMarkerInfoWindow(markerList.get(0), snippet);
+
+		gMap.setOnCameraIdleListener(this);
+		gMap.setOnMapClickListener(this);
+		gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
 		//gMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation(false);
+		switchMode(elevationProfileMenuVisible);
     }
+
+	// Wissel tussen punt- en lijnmodus
+	private void switchMode(boolean menuVisible)
+	{
+		if (menuVisible)
+		{
+			mode = Mode.LINE;
+			// Verwijder markers
+			removeMarker();
+			drawLineAndDots();
+		}
+		else
+		{
+			mode = Mode.POINT;
+			removeLineAndDots();
+		}
+	}
+
+	private void drawLineAndDots()
+	{
+		// Voeg lijn toe
+		line = gMap.addPolyline(new PolylineOptions()
+								.zIndex(LINE_Z_INDEX)
+								.startCap(new RoundCap())
+								.endCap(new RoundCap())
+								.jointType(JointType.ROUND)
+								.width(LINE_WIDTH)
+								.geodesic(true)
+								.addAll(userMadePoints));
+		// Voeg stippen toe
+		for (LatLng point : userMadePoints)
+			dotsList.add(drawDot(point));
+	}
+
+	private void removeLineAndDots()
+	{
+		// Verwijder lijn
+		if (line != null) line.remove();
+		userMadePoints.clear();
+		// Verwijder stippen
+		for (Marker dot : dotsList) dot.remove();
+		dotsList.clear();
+	}
+
+	// Voeg punt toe aan lijn
+	private void addPointToLine(LatLng point)
+	{
+		// Werk lijn bij
+		userMadePoints.add(point);
+		line.setPoints(userMadePoints);
+		// Werk stippen bij
+		dotsList.add(drawDot(point));
+	}
+
+	// Verwijder laatste punt van lijn
+	private void deleteLastPoint()
+	{
+		// Werk lijn bij
+		if (userMadePoints == null) return;
+		if (userMadePoints.size() < 1) return;
+		int lastElementIndexLine = userMadePoints.size() - 1;
+		userMadePoints.remove(lastElementIndexLine);
+		line.setPoints(userMadePoints);
+		// Werk stippen bij
+		if (dotsList == null) return;
+		if (dotsList.size() < 1) return;
+		int lastElementIndexDots = dotsList.size() - 1;
+		// Verwijder stip van scherm
+		dotsList.get(lastElementIndexDots).remove();
+		// ... en uit de lijst
+		dotsList.remove(lastElementIndexDots);
+
+		// Wis en verberg grafiek
+		if (chartVisible)
+		{
+			chartVisible = toggleViewVisibility(
+				chartContainer,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				false, null);
+
+			chart.clear();
+		}
+	}
+
+	// Zet stip
+	private Marker drawDot(LatLng point)
+	{
+		Marker dot = gMap.addMarker(new MarkerOptions()
+									.position(point)
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.circle_black_8x8))
+									.zIndex(DOT_Z_INDEX)
+									.anchor(0.5f, 0.5f));
+		// Zet tag dat dit een stip is, voor bepalen van actie bij aanklikken
+		dot.setTag(IS_DOT);
+
+		return dot;
+	}
 
 	private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable)
 	{
@@ -295,7 +661,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 				Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
 				gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
 			}
-			
+
 			@Override
 			public void locationUnavailable()
 			{
@@ -306,14 +672,14 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			public void onConnected(Bundle bundle)
 			{
 				//Log.i("HermLog", "onConnected");
-				
+
 				if (isZoomToStandardIfLocationNotAvailable())
 					zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
 				else
 					zoomToCurrentLocation(1, 15);
 			}
 		};
-		
+
 		locationProvider.setZoomToStandardIfLocationNotAvailable(zoomToStandardIfLocationNotAvailable);
 
 		return locationProvider;
@@ -364,7 +730,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     private void enableMyLocation(boolean zoomAction)
 	{
 		//Log.i("HermLog", "enableMyLocation()");
-		
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 			!= PackageManager.PERMISSION_GRANTED)
 		{
@@ -392,8 +758,8 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 
 	private void createPlaceSearch()
 	{
-		PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-			getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+		SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
+				getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
 		if (!searchBarVisible) showSearchBar(View.GONE);
 
@@ -426,29 +792,9 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			});
 	}
 
-	private void createGoogleApiClient()
+	private void createGoogleApi()
 	{
-		googleApiClient = new GoogleApiClient
-			.Builder(this)
-			.addApi(Places.GEO_DATA_API)
-			.addApi(Places.PLACE_DETECTION_API)
-			.enableAutoManage(this, this)
-			.build();
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult p1)
-	{
-	}
-
-	@Override
-	public void onConnected(Bundle p1)
-	{
-	}
-
-	@Override
-	public void onConnectionSuspended(int p1)
-	{
+        geoDataClient = Places.getGeoDataClient(this, null);
 	}
 
 	@Override
@@ -469,7 +815,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 								   layerItem.getMaxx(), 
 								   layerItem.getMaxy()
 							   )));
-							   
+
 		tileOverlay.setTransparency(1f - opacity / 100f);
 
 		// Zet referentie naar kaartlaag in lijst
@@ -558,43 +904,56 @@ LayersRecyclerViewAdapter.AdapterCallbacks
     public void onMapClick(LatLng point)
 	{
 		//Toast.makeText(context, "Point: " + point.toString(), Toast.LENGTH_SHORT).show();
-		putMarker(point);
+		if (mode == Mode.POINT)
+		{
+			putMarker(point);
+		}
+		else
+		{
+			addPointToLine(point);
+		}
     }
 
+	// Plaats marker na klik op kaart
 	private void putMarker(LatLng pointLatLong)
 	{
-		// Verwijder huidige marker van kaart en uit de lijst met markers
-		if (markerList.size() > 0)
-		{
-			markerList.get(0).remove();
-			markerList.remove(0);
-		}
-		
+		removeMarker();
 		ArrayList<LayerItem> visibleLayers = LayerSelector.getLayerSelector(layerList, context).getVisibleQueryableLayers();
-		
-		if (visibleLayers.size() == 0)
-		{
-			Toast.makeText(context, getResources().getString(R.string.make_layer_with_altitude_visible_message), Toast.LENGTH_LONG).show();
-			return;
-		}
+		LayerSelector.getLayerSelector(layerList, context).showMessageNoVisibleQueryableLayers();
 
-		// Plaats nieuwe marker op kaart en in de lijst
-		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(pointLatLong)));
+		drawMarker(pointLatLong);
 
 		// Vraag hoogte op voor punt
-		if (!ConnectionUtils.isNetworkConnected(context))
-		{
-			ConnectionUtils.showMessage(context, getResources().getString(R.string.not_connected_message));
-			return;
-		}
-
-		// Download van data wordt uitgevoerd in TaskFragment instance
-		// verwerking van data in de marker infowindow wordt gedaan in
-		// Task Callback Methods in MainActivity
+		if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false)) return;
 		getElevationFromLatLong(pointLatLong, visibleLayers);
+	}
 
-		//testProjection();
-		//Toast.makeText(context, "Lat/lon: " + ProjectionWM.xyToLatLng(new double[]{256,256}).toString(), Toast.LENGTH_SHORT).show();
+	private void setMarkerInfoWindow(Marker marker, String snippet)
+	{
+		marker.setTitle(getResources().getString(R.string.marker_title));
+		marker.setSnippet(snippet);
+		marker.showInfoWindow();
+	}
+
+	// Teken marker op de kaart
+	@Override
+	public void drawMarker(LatLng point)
+	{
+		// Plaats nieuwe marker op kaart en in de lijst
+		markerList.add(markerList.size(), gMap.addMarker(new MarkerOptions().position(point)));
+	}
+
+	@Override
+	// Verwijder huidige marker
+	public void removeMarker()
+	{
+		if (markerList.size() > 0)
+		{
+			// Verwijder van kaart 
+			markerList.get(0).remove();
+			// Verwijder uit de lijst met markers
+			markerList.remove(0);
+		}
 	}
 
 	private void getElevationFromLatLong(LatLng pointLatLong, ArrayList<LayerItem> visibleLayers)
@@ -602,7 +961,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		if (taskFragment.isRunning()) taskFragment.cancel();
 
 		ArrayList<URL> urls = new ArrayList<URL>();
-		ArrayList<String> shortTitles = new ArrayList<String>();
+		shortTitles.clear();
 
 		for (LayerItem layerItem : visibleLayers)
 		{
@@ -612,16 +971,31 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 			shortTitles.add(layerItem.getShortTitle());
 		}
 
-		taskFragment.setLayerInfoList(shortTitles);
 		taskFragment.start(urls);
 	}
 
+	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
+	private void showProgressBarIndeterminate(int visibility)
+	{
+		ProgressBar progressbar = findViewById(R.id.progressbar);
+		progressbar.setVisibility(visibility);
+	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
-	private void showProgressBar(int visibility)
+	private void showProgressBarDeterminate(int visibility)
 	{
-		View progressbar = findViewById(R.id.progressbar);
+		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
 		progressbar.setVisibility(visibility);
+	}
+
+	private void setProgressBarDeterminate(int percent, boolean animate)
+	{
+		ProgressBar progressbar = findViewById(R.id.progressbar_determinate);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+			progressbar.setProgress(percent, animate);
+		else
+			progressbar.setProgress(percent);
 	}
 
 	// int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
@@ -645,6 +1019,28 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 		legend.setVisibility(visibility);
 	}
 
+	// Wissel tussen zichtbare en onzichtbare View
+	// eventueel met animatie
+	// geeft true als zichtbaar gemaakt
+	// als boolean show == true: niet wisselen maar altijd menu zichtbaar maken
+	private boolean toggleViewVisibility(View view, Animation showAnimation, Animation hideAnimation, boolean show, Animation.AnimationListener callback)
+	{
+		if (view.getVisibility() == View.VISIBLE && !show)
+		{
+			view.setVisibility(View.GONE);
+			if (callback != null) hideAnimation.setAnimationListener(callback);
+			if (hideAnimation != null) view.startAnimation(hideAnimation);
+			return false;
+		}
+		else
+		{
+			view.setVisibility(View.VISIBLE);
+			if (callback != null) showAnimation.setAnimationListener(callback);
+			if (showAnimation != null) view.startAnimation(showAnimation);
+			return true;
+		}
+	}
+
 	private void showOnboardingScreenAtFirstRun()
 	{
 		SharedPreferences sharedPref = context.getSharedPreferences(getResources().getString(R.string.SHARED_PREFERENCES_FILENAME), context.MODE_PRIVATE);
@@ -665,9 +1061,20 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	{
 		outState.putBoolean(PERMISSION_ASKED_STATE_KEY, permissionAsked);
 		outState.putBoolean(SEARCHBAR_VISIBLE_KEY, searchBarVisible);
-		outState.putBoolean(WELCOME_DIALOG_SHOWED_STATE_KEY, dialogWelcomeWasShowed);
 		outState.putBoolean(NOT_CONNECTED_STATE_KEY, notConnectedMessageWasShowed);
 		outState.putBoolean(LEGEND_VISIBLE_KEY, legendVisible);
+		outState.putBoolean(CHART_VISIBLE_KEY, chartVisible);
+		outState.putBoolean(ELEVATION_PROFILE_MENU_VISIBLE_KEY, elevationProfileMenuVisible);
+		outState.putSerializable(MODE_KEY, mode);
+		outState.putParcelableArrayList(LINE_VERTICES_LIST_KEY, userMadePoints);
+		outState.putParcelableArrayList(MARKER_LATLNG_LIST_KEY, MarkersListToLatLngList.markersToLatLng(markerList));
+		if (markerList.size() > 0) outState.putString(MARKER_SNIPPET_KEY, markerList.get(0).getSnippet());
+		outState.putParcelableArrayList(POINTS_LIST_KEY, pointsList);
+		outState.putStringArrayList(SHORT_TITLES_KEY, shortTitles);
+		outState.putString(SHORT_TITLE_KEY, shortTitle);
+		outState.putSerializable(DISTANCE_FROM_ORIGIN_LIST_KEY, distanceFromOriginList);
+		outState.putSerializable(ELEVATION_LIST_KEY, elevationList);
+		outState.putParcelableArrayList(ENTRIES_LIST_KEY, entries);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -676,7 +1083,7 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		if (taskFragment.isRunning()) taskFragment.cancel();
+		//if (taskFragment.isRunning()) taskFragment.cancel();
 		//toolbar.getMenu().close();
 		//closeOptionsMenu();
 		//Log.i("HermLog", "onDestroy()");
@@ -722,48 +1129,97 @@ LayersRecyclerViewAdapter.AdapterCallbacks
 	public void onPreExecute()
 	{
 		//Log.i("HermLog", "onPreExecute()");
-		showProgressBar(View.VISIBLE);
+		if (mode == Mode.POINT) showProgressBarIndeterminate(View.VISIBLE);
+		else
+		{
+			showProgressBarDeterminate(View.VISIBLE);
+			setProgressBarDeterminate(0, false);
+		}
 	}
 
 	@Override
 	public void onProgressUpdate(int percent)
 	{
+		setProgressBarDeterminate(percent, true);
 	}
 
 	@Override
 	public void onCancelled()
 	{
 		//Log.i("HermLog", "onCancelled()");
-		showProgressBar(View.GONE);
+		setProgressBarDeterminate(0, false);
+		showProgressBarDeterminate(View.GONE);
+		showProgressBarIndeterminate(View.GONE);
 	}
 
 	@Override
-	public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo)
+	public void onPostExecute(ArrayList<Double> result)
 	{
-		showProgressBar(View.GONE);
-
-		// Toon hoogte bij marker
-		if (result == null)
+		if (mode == Mode.POINT)
 		{
-			Toast.makeText(context, getResources().getString(R.string.download_error_message), Toast.LENGTH_SHORT).show();
+			showProgressBarIndeterminate(View.GONE);
+
+			// Toon hoogte bij marker
+			if (result == null)
+			{
+				Toast.makeText(context, getResources().getString(R.string.download_error_message), Toast.LENGTH_SHORT).show();
+			}
+			else
+			{
+				String snippetText = ElevationListToText.toText(context, result, shortTitles);
+
+				// Als GoogleMap nog niet geladen is, stel alleen tekst in, InfoWindow wordt dan later gevuld
+				if (markerList.size() == 0)
+				{
+					snippet = snippetText;
+					return;
+				}
+
+				Marker marker = markerList.get(0);
+				setMarkerInfoWindow(marker, snippetText);
+			}
 		}
 		else
 		{
+			//Log.i("HermLog", "result: " + result);
 
-			String snippet = "";
+			setProgressBarDeterminate(100, true);
+			showProgressBarDeterminate(View.GONE);
 
-			for (int i = 0; i < result.size(); i++)
+			entries = LineChartDataMaker.getDataMaker().makeData(distanceFromOriginList, result, pointsList);
+			
+			// Bericht als er hoogten ontbreken
+			if (entries.size() == 0)
 			{
-				String affix = result.get(i).equals(getResources().getString(R.string.not_available_UI)) ? "" : " " + getResources().getString(R.string.unit_of_measurement_UI);
-				String newLine = (i == (result.size() - 1)) ? "" : "\n";
-				String line = layerInfo.get(i) + ": " + result.get(i) + affix + newLine;
-				snippet = snippet + line;
+				Toast.makeText(context, getResources().getString(R.string.no_elevation_points), Toast.LENGTH_SHORT).show();
+				return;
 			}
+			
+			if (result.size() != entries.size()) Toast.makeText(context, getResources().getString(R.string.missing_elevation_points), Toast.LENGTH_SHORT).show();
 
-			Marker marker = markerList.get(0);
-			marker.setTitle("Hoogte");
-			marker.setSnippet(snippet);
-			marker.showInfoWindow();
+			chartVisible = toggleViewVisibility(
+				chartContainer,
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
+				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
+				true,
+				new Animation.AnimationListener()
+				{
+					@Override
+					public void onAnimationStart(Animation p1)
+					{}
+
+					@Override
+					public void onAnimationRepeat(Animation p1)
+					{}
+
+					@Override
+					public void onAnimationEnd(Animation animation)
+					{
+						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
+						setProgressBarDeterminate(0, false);
+						showProgressBarDeterminate(View.GONE);
+					}
+				});
 		}
 	}
 }

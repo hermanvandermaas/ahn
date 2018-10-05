@@ -1,15 +1,12 @@
 package nl.waywayway.ahn;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.util.*;
-import java.net.*;
-import java.util.*;
-import org.json.*;
-
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * TaskFragment manages a single background task and retains itself across
@@ -27,25 +24,14 @@ public class TaskFragment extends Fragment
 		public void onPreExecute();
 		public void onProgressUpdate(int percent);
 		public void onCancelled();
-		public void onPostExecute(ArrayList<String> result, ArrayList<String> layerInfo);
+		public void onPostExecute(ArrayList<Double> result);
 	}
 
 	private Context context;
 	private TaskCallbacks callbacks;
 	private DummyTask task;
 	private boolean running;
-	ArrayList<String> layerInfoList = new ArrayList<String>();
-
-	public void setLayerInfoList(ArrayList<String> layerInfoList)
-	{
-		this.layerInfoList = layerInfoList;
-	}
-
-	public ArrayList<String> getLayerInfoList()
-	{
-		return layerInfoList;
-	}
-
+	
 	/**
 	 * Hold a reference to the parent Activity so we can report the task's current
 	 * progress and results. The Android framework will pass us a reference to the
@@ -112,7 +98,7 @@ public class TaskFragment extends Fragment
 	{
 		if (running)
 		{
-			task.cancel(false);
+			task.cancel(true);
 			task = null;
 			running = false;
 		}
@@ -130,7 +116,7 @@ public class TaskFragment extends Fragment
 	 * A dummy task that performs some (dumb) background work and proxies progress
 	 * updates and results back to the Activity.
 	 */
-	private class DummyTask extends AsyncTask<URL, Integer, ArrayList<String>>
+	private class DummyTask extends AsyncTask<URL, Integer, ArrayList<Double>>
 	{
 		public DummyTask()
 		{}
@@ -148,68 +134,52 @@ public class TaskFragment extends Fragment
 		 * background thread, as this could result in a race condition.
 		 */
 		@Override
-		protected ArrayList<String> doInBackground(URL... urls)
+		protected ArrayList<Double> doInBackground(URL... urls)
 		{
 			//Log.i("HermLog", "doInBackground");
 			//Log.i("HermLog", "urls[]: " + Arrays.toString(urls));
 			//if (urls[0] == null) return "n/a";
 
-			ArrayList<String> hoogtes = new ArrayList<String>();
+			ArrayList<Double> elevations = new ArrayList<Double>();
+			int total = urls.length;
 			int i = 0;
-			String ahn1ShortTitle = context.getResources().getString(R.string.ahn1_short_title);
-
+			
 			for (URL url : urls)
 			{
+				if (isCancelled()) break;
+				
 				if (url == null)
 				{
-					hoogtes.add(context.getResources().getString(R.string.not_available_UI));
+					elevations.add(null);
 					continue;
 				}
 
 				DownloadJsonString downloader = new DownloadJsonString(url);
 				String jsonstring = downloader.download();
-
+				
 				if (jsonstring.equals("Fout in DownloadJsonString!") || jsonstring == null)
 				{
-					//Log.i("HermLog", "doInBackground: fout");
-					return null;
+					elevations.add(null);
+					continue;
 				}
 				else
 				{
-					String hoogteAfgerond;
-					//Log.i("HermLog", "doInBackground: jsonstring: " + jsonstring);
-					Double hoogte = parseResult(jsonstring);
-
-					if (hoogte == null || hoogte > 10000d || hoogte < -10000d)
-					{
-						hoogteAfgerond = context.getResources().getString(R.string.not_available_UI);
-					}
-					else
-					{
-						// AHN1 is in centimeters dus delen door 100
-						if (layerInfoList.get(i).equals(ahn1ShortTitle))
-						{
-							hoogte = hoogte / 100d;
-						}
-						
-						hoogteAfgerond = String.format("%.2f", hoogte);
-						if (hoogte > 0) hoogteAfgerond = "+" + hoogteAfgerond;
-					}
-
-					hoogtes.add(hoogteAfgerond);
+					Double elevation = ResultParser.parse(jsonstring);
+					elevations.add(elevation);
 				}
 				
+				publishProgress((int) ((i / (float) total) * 100));
 				i++;
 			}
-
-			return hoogtes;
+			
+			return elevations;
 		}
 
 		@Override
 		protected void onProgressUpdate(Integer... percent)
 		{
 			// Proxy the call to the Activity.
-			// mCallbacks.onProgressUpdate(percent[0]);
+			callbacks.onProgressUpdate(percent[0]);
 		}
 
 		@Override
@@ -221,40 +191,13 @@ public class TaskFragment extends Fragment
 		}
 
 		@Override
-		protected void onPostExecute(ArrayList<String> result)
+		protected void onPostExecute(ArrayList<Double> result)
 		{	
 			//Log.i("HermLog", "TaskFragment");
 
 			// Proxy the call to the Activity
-			callbacks.onPostExecute(result, layerInfoList);
+			callbacks.onPostExecute(result);
 			running = false;
-		}
-
-		// json string verwerken na download
-		// geeft null indien geen waarde
-		private Double parseResult(String result)
-		{
-			//Log.i("HermLog", "TaskFragment: parseResult()");
-
-			try
-			{
-				JSONArray jArray = new JSONObject(result).optJSONArray("features");
-
-				if (jArray.length() == 0) return null;
-
-				double hoogte = jArray
-					.optJSONObject(0)
-					.optJSONObject("properties")
-					.optDouble("GRAY_INDEX");
-				//Log.i("HermLog", "Hoogte: " + hoogte);
-
-				return hoogte;
-			}
-			catch (JSONException e)
-			{
-				Log.i("HermLog", e.getStackTrace().toString());
-				return null;
-			}
 		}
 	}
 }

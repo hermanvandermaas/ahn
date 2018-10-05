@@ -36,6 +36,11 @@
 
 	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">
 	</style>
+	
+	<style name="elevation_profile_menu" parent="Theme.AppCompat.Light">
+		<item name="cardBackgroundColor">@color/white</item>
+		<!-- <item name="android:background">@android:color/transparent</item> -->
+	</style>
 
 	<style name="text_title" parent="TextAppearance.AppCompat.Title">
 		<item name="android:textSize">16sp</item>

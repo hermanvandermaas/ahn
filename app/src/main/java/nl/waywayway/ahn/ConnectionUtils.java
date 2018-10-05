@@ -1,9 +1,9 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.net.*;
-import android.support.coreutils.*;
-import android.widget.*;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
 
 public class ConnectionUtils
 {

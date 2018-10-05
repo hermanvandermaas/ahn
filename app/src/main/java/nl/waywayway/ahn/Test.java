@@ -1,9 +1,10 @@
 package nl.waywayway.ahn;
 
-import android.util.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
-import nl.waywayway.ahn.*;
+import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Arrays;
 
 public class Test
 {

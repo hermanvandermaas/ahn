@@ -1,7 +1,7 @@
 package nl.waywayway.ahn;
 
-import android.view.*;
-import android.widget.*;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 public class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener
 {

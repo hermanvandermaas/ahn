@@ -1,12 +1,19 @@
 package nl.waywayway.ahn;
 
-import android.content.*;
-import android.support.v4.view.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.widget.*;
-import com.google.android.gms.maps.model.*;
-import java.util.*;
+import android.content.Context;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.model.TileOverlay;
+
+import java.util.List;
 
 public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecyclerViewAdapter.CustomViewHolder>
 {
