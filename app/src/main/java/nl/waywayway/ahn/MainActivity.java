@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,24 +111,24 @@ MyOnChartValueSelectedListener.Callbacks
 	private boolean chartVisible = false;
 	private boolean elevationProfileMenuVisible = false;
 	private ArrayList<Entry> entries;
-	private String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
-	private String LEGEND_VISIBLE_KEY = "legend_visible_key";
-	private String CHART_VISIBLE_KEY = "chart_visible_key";
-	private String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
-	private String MODE_KEY = "mode_key";
-	private String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
-	private String MARKER_LATLNG_LIST_KEY = "marker_list_key";
-	private String POINTS_LIST_KEY = "points_list_key";
-	private String MARKER_SNIPPET_KEY = "marker_info_window_key";
-	private String SHORT_TITLES_KEY = "short_titles_key";
-	private String SHORT_TITLE_KEY = "short_title_key";
-	private String DISTANCE_FROM_ORIGIN_LIST_KEY = "distance_from_origin_list_key";
-	private String ELEVATION_LIST_KEY = "elevation_list_key";
-	private String ENTRIES_LIST_KEY = "entries_list_key";
-	private float LINE_Z_INDEX = 500;
-	private float LINE_WIDTH = 5f;
-	private float DOT_Z_INDEX = 600;
-	private String IS_DOT = "isDot";
+	private static final String SEARCHBAR_VISIBLE_KEY = "search_bar_visible_key";
+	private static final String LEGEND_VISIBLE_KEY = "legend_visible_key";
+	private static final String CHART_VISIBLE_KEY = "chart_visible_key";
+	private static final String ELEVATION_PROFILE_MENU_VISIBLE_KEY = "elevation_profile_menu_visible_key";
+	private static final String MODE_KEY = "mode_key";
+	private static final String LINE_VERTICES_LIST_KEY = "line_vertices_list_key";
+	private static final String MARKER_LATLNG_LIST_KEY = "marker_list_key";
+	private static final String POINTS_LIST_KEY = "points_list_key";
+	private static final String MARKER_SNIPPET_KEY = "marker_info_window_key";
+	private static final String SHORT_TITLES_KEY = "short_titles_key";
+	private static final String SHORT_TITLE_KEY = "short_title_key";
+	private static final String DISTANCE_FROM_ORIGIN_LIST_KEY = "distance_from_origin_list_key";
+	private static final String ELEVATION_LIST_KEY = "elevation_list_key";
+	private static final String ENTRIES_LIST_KEY = "entries_list_key";
+	private static final float LINE_Z_INDEX = 500;
+	private static final float LINE_WIDTH = 5f;
+	private static final float DOT_Z_INDEX = 600;
+	private static final String IS_DOT = "isDot";
 	private String snippet;
 	private ArrayList<String> shortTitles = new ArrayList<String>();
 	private String shortTitle;
@@ -196,8 +197,9 @@ MyOnChartValueSelectedListener.Callbacks
 
 		if (taskFragment.isRunning() && mode == Mode.POINT) showProgressBarIndeterminate(View.VISIBLE);
 		if (taskFragment.isRunning() && mode == Mode.LINE) showProgressBarDeterminate(View.VISIBLE);
+
 		initializeLegend();
-		initializeChart();
+		makeAndShowChart(false);
 		initializeElevationProfileMenu();
 		createGoogleApi();
 
@@ -244,7 +246,7 @@ MyOnChartValueSelectedListener.Callbacks
 	}
 
 	// Grafiek
-	private void initializeChart()
+	private void makeAndShowChart(final boolean newData)
 	{
 		//Log.i("HermLog", "chartVisible: " + chartVisible);
 		if (chartVisible)
@@ -267,7 +269,26 @@ MyOnChartValueSelectedListener.Callbacks
 					@Override
 					public void onAnimationEnd(Animation animation)
 					{
+						// Toon grafiek
 						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
+						setProgressBarDeterminate(0, false);
+						showProgressBarDeterminate(View.GONE);
+
+						// Verschuif kaart van onder grafiek stukje naar links, bij liggend scherm
+						int orientation = context.getResources().getConfiguration().orientation;
+						if (orientation == Configuration.ORIENTATION_LANDSCAPE && newData)
+						{
+                            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                            int mapViewWidth = mapFragment.getView().getWidth();
+                            int newX = Math.round(mapViewWidth * 0.75f);
+                            int mapViewHeight = mapFragment.getView().getHeight();
+                            int newY = Math.round(mapViewHeight * 0.5f);
+                            Point point = new Point(newX, newY);
+                            double newLongitude = gMap.getProjection().fromScreenLocation(point).longitude;
+                            double newLatitude = gMap.getProjection().fromScreenLocation(point).latitude;
+                            float currentZoom = gMap.getCameraPosition().zoom;
+                            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(newLatitude, newLongitude), currentZoom));
+                        }
 					}
 				});
 		}
@@ -1197,29 +1218,9 @@ MyOnChartValueSelectedListener.Callbacks
 			
 			if (result.size() != entries.size()) Toast.makeText(context, getResources().getString(R.string.missing_elevation_points), Toast.LENGTH_SHORT).show();
 
-			chartVisible = toggleViewVisibility(
-				chartContainer,
-				AnimationUtils.loadAnimation(context, R.anim.chart_slide_up),
-				AnimationUtils.loadAnimation(context, R.anim.chart_slide_down),
-				true,
-				new Animation.AnimationListener()
-				{
-					@Override
-					public void onAnimationStart(Animation p1)
-					{}
-
-					@Override
-					public void onAnimationRepeat(Animation p1)
-					{}
-
-					@Override
-					public void onAnimationEnd(Animation animation)
-					{
-						LineChartMaker.getChartMaker(context).makeChart(chart, entries, shortTitle);
-						setProgressBarDeterminate(0, false);
-						showProgressBarDeterminate(View.GONE);
-					}
-				});
+			// Toon grafiek
+			chartVisible = true;
+			makeAndShowChart(true);
 		}
 	}
 }
