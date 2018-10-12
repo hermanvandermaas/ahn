@@ -99,7 +99,7 @@ MyOnChartValueSelectedListener.Callbacks
 	private View legend;
 	private View elevationProfileMenu;
 	private Chart chart;
-	private LinearLayout chartContainer;
+	private View chartContainer;
 	private GestureDetectorCompat swipeRightGestureDetector;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean permissionAsked = false;
