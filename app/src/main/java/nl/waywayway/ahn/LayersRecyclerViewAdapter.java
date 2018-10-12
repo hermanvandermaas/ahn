@@ -26,7 +26,6 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
     private List<LayerItem> layerList;
     private Context context;
 	private LayersRecyclerViewAdapter.AdapterCallbacks callbacks;
-	GestureDetectorCompat swipeUpOrDownGestureDetector;
 
     public LayersRecyclerViewAdapter(Context context, List<LayerItem> layerList)
 	{
