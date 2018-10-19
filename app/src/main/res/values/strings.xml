@@ -21,7 +21,8 @@
 	<string name="PREFERENCES_KEY_SHOW_ONBOARDING_SCREEN">preferences_key_show_onboarding_screen</string>
 	
 	<string name="share_image_mime_type">image/png</string>
-	<string name="share_image_path">/hoogte.png</string>
+	<string name="share_map_image_path">/hoogtekaart.png</string>
+	<string name="share_chart_image_path">/hoogteprofiel.png</string>
 	<string name="files_authority">nl.waywayway.ahn.fileprovider</string>
 	
 	<string name="dialog_confirm_action_body_text">Verwijder alle punten?</string>

@@ -9,84 +9,75 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-// Class voor maken en delen van kaartafbeelding
+// Class voor delen van afbeelding of tekstbestand tussen apps, zonder toestemming om bestanden te schrijven
 
-public class ShareImage
-{
-	private GoogleMap gMap;
-	private Context context;
-	
-	public ShareImage(GoogleMap gMap, Context context)
-	{
-		this.gMap = gMap;
-		this.context = context;
-	}
-	
-	public void share()
-	{
-		gMap.snapshot(new GoogleMap.SnapshotReadyCallback()
-			{
-				@Override
-				public void onSnapshotReady(Bitmap bitmap)
-				{
-					File file = new File(context.getCacheDir() + context.getResources().getString(R.string.share_image_path));
-					FileOutputStream fileOut = null;
+public class ShareImage {
+    private Context context;
+    private Bitmap bitmap;
+    private String fileName;
+    private String fileAuthority;
+    private String noFileAvailableMessage;
+    private String mimeType;
 
-					try
-					{
-						fileOut = new FileOutputStream(file);
-					}
-					catch (FileNotFoundException e)
-					{
-						e.printStackTrace();
-					}
+    private ShareImage(Context context, Bitmap bitmap, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
+        this.context = context;
+        this.bitmap = bitmap;
+        this.fileName = fileName;
+        this.fileAuthority = fileAuthority;
+        this.noFileAvailableMessage = noFileAvailableMessage;
+        this.mimeType = mimeType;
+    }
 
-					if (fileOut != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
+    public static ShareImage getInstance(Context context, Bitmap bitmap, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
+        return new ShareImage(context, bitmap, fileName, fileAuthority, noFileAvailableMessage, mimeType);
+    }
 
-					try
-					{
-						fileOut.close();
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-					
-					shareImage(file);
-				}
-			});
-	}
+    public void share() {
+        File file = new File(context.getCacheDir() + fileName);
+        FileOutputStream fileOut = null;
 
-	// Deel afbeelding via andere app
-	public void shareImage(File imageFile)
-	{
+        try {
+            fileOut = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-		if (imageFile == null)
-		{
-			Toast.makeText(context, context.getResources().getString(R.string.no_image_for_sharing_available_message), Toast.LENGTH_SHORT).show();
-			return;
-		}
+        if (fileOut != null && bitmap != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
 
-		Uri uriToImage = FileProvider.getUriForFile(context, context.getResources().getString(R.string.files_authority), imageFile);
+        try {
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		Intent shareIntent = ShareCompat.IntentBuilder.from((Activity) context)
-			.setStream(uriToImage)
-			.getIntent();
+        shareImage(file);
+    }
 
-		shareIntent.setData(uriToImage);
-		shareIntent.setType(context.getResources().getString(R.string.share_image_mime_type));
-		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    // Deel afbeelding via andere app
+    private void shareImage(File imageFile) {
 
-		if (shareIntent.resolveActivity(context.getPackageManager()) != null)
-		{
-			context.startActivity(shareIntent);
-		}
-	}
+        if (imageFile == null) {
+            Toast.makeText(context, noFileAvailableMessage, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Uri uriToImage = FileProvider.getUriForFile(context, fileAuthority, imageFile);
+
+        Intent shareIntent = ShareCompat.IntentBuilder.from((Activity) context)
+                .setStream(uriToImage)
+                .getIntent();
+
+        shareIntent.setData(uriToImage);
+        shareIntent.setType(mimeType);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (shareIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(shareIntent);
+        }
+    }
 }
