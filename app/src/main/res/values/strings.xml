@@ -26,9 +26,12 @@
 	<string name="share_chart_image_path">/hoogteprofiel.png</string>
 	<string name="share_table_path">/hoogteprofiel.csv</string>
 	<string name="files_authority">nl.waywayway.ahn.fileprovider</string>
+
     <string name="table_column_label_1">Afstand (m)</string>
     <string name="table_column_label_2">Hoogte (m +/- NAP)</string>
-	
+	<string name="table_column_label_3">Lengtegraad</string>
+	<string name="table_column_label_4">Breedtegraad</string>
+
 	<string name="dialog_confirm_action_body_text">Verwijder alle punten?</string>
 	<string name="dialog_confirm_action_yes">Ja</string>
 	<string name="dialog_confirm_action_no">Nee</string>

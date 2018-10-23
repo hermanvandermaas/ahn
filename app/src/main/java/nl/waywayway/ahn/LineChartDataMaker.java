@@ -47,6 +47,8 @@ public class LineChartDataMaker
 		ArrayList<String> columnLabels = new ArrayList<String>();
 		columnLabels.add(context.getResources().getString(R.string.table_column_label_1));
 		columnLabels.add(context.getResources().getString(R.string.table_column_label_2));
+		columnLabels.add(context.getResources().getString(R.string.table_column_label_3));
+		columnLabels.add(context.getResources().getString(R.string.table_column_label_4));
 
 		return columnLabels;
 	}

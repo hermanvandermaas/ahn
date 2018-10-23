@@ -281,11 +281,11 @@ public class MainActivity extends AppCompatActivity
                                         @Override
                                         public void onClick(View v) {
                                             ArrayList<String> columnlabels = LineChartDataMaker.getDataMaker().getColumnlabels(context);
-                                            String csvData = CsvStringMaker.getInstance(entries, columnlabels).getCsvString();
+                                            String csvData = CsvStringMaker.getInstance(entries, columnlabels, shortTitle, pointsList).getCsvString();
                                             String fileName = context.getResources().getString(R.string.share_table_path);
                                             String noDataAvailableMessage = context.getResources().getString(R.string.no_data_for_sharing_available_message);
                                             String fileAuthority = context.getResources().getString(R.string.files_authority);
-                                            String mimeType = context.getResources().getString(R.string.share_image_mime_type);
+                                            String mimeType = context.getResources().getString(R.string.share_data_mime_type);
                                             ShareFile.getInstance(context, null, csvData, fileName, fileAuthority, noDataAvailableMessage, mimeType).share();
                                         }
                                     });
@@ -379,14 +379,6 @@ public class MainActivity extends AppCompatActivity
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // nep objecten
-					/*Double[] a = {0d,1d,2d,3d,4d};
-					 distanceFromOriginList = new ArrayList<Double>(Arrays.asList(a));
-					 Double[] b = {2d,1d,2.5d,3d,40.5d};
-					 ArrayList<Double> result = new ArrayList<Double>(Arrays.asList(b));
-					 onPostExecute(result);
-					 //return;
-					 */
                         //Log.i("HermLog", "maak hoogteprofiel");
                         if (ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), false))
                             return;
@@ -1084,9 +1076,9 @@ public class MainActivity extends AppCompatActivity
         if (locationProvider.isConnected()) locationProvider.disconnect();
     }
 
-    /*********************************/
-    /***** TASK CALLBACK METHODS *****/
-    /*********************************/
+    /*
+    TASK CALLBACK METHODS
+    */
 
     @Override
     public void onPreExecute() {
