@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity
                                             String noImageAvailableMessage = context.getResources().getString(R.string.no_image_for_sharing_available_message);
                                             String fileAuthority = context.getResources().getString(R.string.files_authority);
                                             String mimeType = context.getResources().getString(R.string.share_image_mime_type);
-                                            ShareImage.getInstance(context, chartBitmap, fileName, fileAuthority, noImageAvailableMessage, mimeType).share();
+                                            ShareFile.getInstance(context, chartBitmap, null, fileName, fileAuthority, noImageAvailableMessage, mimeType).share();
                                         }
                                     });
 
@@ -280,12 +280,13 @@ public class MainActivity extends AppCompatActivity
                                     .setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Bitmap chartBitmap = chart.getChartBitmap();
-                                            String fileName = context.getResources().getString(R.string.share_chart_image_path);
-                                            String noImageAvailableMessage = context.getResources().getString(R.string.no_image_for_sharing_available_message);
+                                            ArrayList<String> columnlabels = LineChartDataMaker.getDataMaker().getColumnlabels(context);
+                                            String csvData = CsvStringMaker.getInstance(entries, columnlabels).getCsvString();
+                                            String fileName = context.getResources().getString(R.string.share_table_path);
+                                            String noDataAvailableMessage = context.getResources().getString(R.string.no_data_for_sharing_available_message);
                                             String fileAuthority = context.getResources().getString(R.string.files_authority);
                                             String mimeType = context.getResources().getString(R.string.share_image_mime_type);
-                                            ShareImage.getInstance(context, chartBitmap, fileName, fileAuthority, noImageAvailableMessage, mimeType).share();
+                                            ShareFile.getInstance(context, null, csvData, fileName, fileAuthority, noDataAvailableMessage, mimeType).share();
                                         }
                                     });
 
@@ -492,7 +493,7 @@ public class MainActivity extends AppCompatActivity
                         String noImageAvailableMessage = context.getResources().getString(R.string.no_image_for_sharing_available_message);
                         String fileAuthority = context.getResources().getString(R.string.files_authority);
                         String mimeType = context.getResources().getString(R.string.share_image_mime_type);
-                        ShareImage.getInstance(context, bitmap, fileName, fileAuthority, noImageAvailableMessage, mimeType).share();
+                        ShareFile.getInstance(context, bitmap, null, fileName, fileAuthority, noImageAvailableMessage, mimeType).share();
                     }
                 });
 

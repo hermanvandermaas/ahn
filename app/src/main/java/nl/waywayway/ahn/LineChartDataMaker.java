@@ -1,9 +1,15 @@
 package nl.waywayway.ahn;
 
+import android.content.Context;
+
 import com.github.mikephil.charting.data.Entry;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class LineChartDataMaker
 {
@@ -37,4 +43,11 @@ public class LineChartDataMaker
 		return entries;
 	}
 
+	public ArrayList<String> getColumnlabels(Context context) {
+		ArrayList<String> columnLabels = new ArrayList<String>();
+		columnLabels.add(context.getResources().getString(R.string.table_column_label_1));
+		columnLabels.add(context.getResources().getString(R.string.table_column_label_2));
+
+		return columnLabels;
+	}
 }

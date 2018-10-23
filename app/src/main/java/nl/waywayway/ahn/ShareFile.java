@@ -13,28 +13,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 // Class voor delen van afbeelding of tekstbestand tussen apps, zonder toestemming om bestanden te schrijven
 
-public class ShareImage {
+public class ShareFile {
     private Context context;
     private Bitmap bitmap;
+    private String csvData;
     private String fileName;
     private String fileAuthority;
     private String noFileAvailableMessage;
     private String mimeType;
 
-    private ShareImage(Context context, Bitmap bitmap, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
+    private ShareFile(Context context, Bitmap bitmap, String csvData, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
         this.context = context;
         this.bitmap = bitmap;
+        this.csvData = csvData;
         this.fileName = fileName;
         this.fileAuthority = fileAuthority;
         this.noFileAvailableMessage = noFileAvailableMessage;
         this.mimeType = mimeType;
     }
 
-    public static ShareImage getInstance(Context context, Bitmap bitmap, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
-        return new ShareImage(context, bitmap, fileName, fileAuthority, noFileAvailableMessage, mimeType);
+    public static ShareFile getInstance(Context context, Bitmap bitmap, String csvData, String fileName, String fileAuthority, String noFileAvailableMessage, String mimeType) {
+        return new ShareFile(context, bitmap, csvData, fileName, fileAuthority, noFileAvailableMessage, mimeType);
     }
 
     public void share() {
@@ -47,12 +50,22 @@ public class ShareImage {
             e.printStackTrace();
         }
 
-        if (fileOut != null && bitmap != null) bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
+        if (fileOut != null && bitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
+        } else if (fileOut != null && csvData != null) {
+            try {
+                fileOut.write(csvData.getBytes(Charset.defaultCharset()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-        try {
-            fileOut.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (fileOut != null && bitmap != null) {
+            try {
+                fileOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         shareImage(file);
