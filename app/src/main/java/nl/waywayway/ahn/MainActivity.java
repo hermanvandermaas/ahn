@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<LatLng> pointsList = new ArrayList<LatLng>();
     private ArrayList<Double> distanceFromOriginList = new ArrayList<Double>();
     private ArrayList<Double> elevationList = new ArrayList<Double>();
-    private int totalPoints = 5;
+    private int totalPoints = 30;
 
     // Mode.POINT: klik op kaart geeft hoogte van punt, Mode.LINE: klik maakt lijn voor hoogteprofiel
     public enum Mode {

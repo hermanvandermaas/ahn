@@ -26,6 +26,7 @@ public class ElevationProfile
 		//Log.i("HermLog", "pointsList: " + pointsList);
 
 		double distance;
+		int positionShift = 0;
 		//Log.i("HermLog", "averageDistance: " + averageDistance);
 		
 		// Invoegen tussenliggende punten, optellend tot ingesteld maximum
@@ -36,7 +37,9 @@ public class ElevationProfile
 			//Log.i("HermLog", "distance / totalDistance: " + distance + " / " + totalDistance);
 			//Log.i("HermLog", "numberOfPointsIncludingEndpoints: " + numberOfPointsIncludingEndpoints);
 			ArrayList<LatLng> pointsBetween = getPointsBetween(userMadePoints.get(j), userMadePoints.get(j + 1), numberOfPointsIncludingEndpoints);
-			pointsList.addAll(j + 1, pointsBetween);
+			pointsList.addAll(j + positionShift + 1, pointsBetween);
+			// Invoegpunt in de lijst verschuift nadat er punten zijn ingevoegd
+			positionShift += pointsBetween.size();
 			//Log.i("HermLog", "pointsList.size(): " + pointsList.size());
 		}
 		
