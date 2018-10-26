@@ -55,7 +55,15 @@
 				<TextView
 					style="@style/activity_info_text_body"
 					android:text="@string/hoogte_weergeven_body" />
-				
+
+				<TextView
+					style="@style/activity_info_text_title"
+					android:text="@string/hoogteprofiel_title" />
+
+				<TextView
+					style="@style/activity_info_text_body"
+					android:text="@string/hoogteprofiel_body" />
+
 				<TextView
 					style="@style/activity_info_text_title"
 					android:text="@string/kaartlagen_title" />

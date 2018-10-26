@@ -7,9 +7,12 @@
 	<string name="hoogte_weergeven_title">Hoogte weergeven</string>
 	<string name="hoogte_weergeven_body">Tik op de kaart om de hoogte op die plek te tonen. Als je meerdere lagen hebt geselecteerd, zie je van iedere geselecteerde laag de hoogte. Zo kun je bijvoorbeeld zien of die plek is gedaald of gestegen in de loop van de tijd.</string>
 	
+	<string name="hoogteprofiel_title">Hoogteprofiel</string>
+	<string name="hoogteprofiel_body">Een hoogteprofiel maak je door lijnstukken op de kaart te tekenen. Tik op de play knop om de hoogte voor de getekende lijnstukken in een grafiek te zien. Beweeg over de grafiek om de hoogte voor een punt af te lezen. Je kunt ook inzoomen op de grafiek voor meer detail. Het hoogteprofiel kun je eenvoudig opslaan of delen, evenals de tabel voor gebruik in Excel.</string>
+
 	<string name="kaartlagen_title">Kaartlagen</string>
 	<string name="kaartlagen_body">De verschillende kaartlagen kun je aan- en uitzetten in het lagenmenu. Hier kun je per laag ook de transparantie instellen. Tip: veeg vanaf de rechter schermrand naar links voor het menu.</string>
-	
+
 	<string name="kaart_delen_title">Kaart opslaan of delen</string>
 	<string name="kaart_delen_body">Je kunt een kaart delen via \'Deel kaart\' in het menu. De kaart opslaan kan ook op deze manier. Je moet de kaart dan delen met een andere app op je apparaat die bestanden kan opslaan, een <a href="http://play.google.com/store/search?q=file manager&amp;c=apps">File Manager app</a>.</string>
 	

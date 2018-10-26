@@ -61,6 +61,8 @@
 	<string name="ob_desc2">Begin te typen in de zoekbalk of zoom naar je huidige locatie</string>
     <string name="ob_header3">BEKIJK DE HOOGTE VAN EEN PUNT</string>
 	<string name="ob_desc3">Tik op de kaart om de hoogte ten opzichte van NAP op te vragen</string>
-	<string name="ob_header4">AHN 3 nog niet landsdekkend</string>
-	<string name="ob_desc4">Voor het AHN 3 geven delen van Nederland nu nog \'n/a\', AHN 2 is wel landsdekkend</string>
+	<string name="ob_header4">MAAK EEN HOOGTEPROFIEL</string>
+	<string name="ob_desc4">Maak eenvoudig een grafiek van de hoogte en exporteer de tabel naar Excel</string>
+	<string name="ob_header5">AHN 3 NOG NIET LANDSDEKKEND</string>
+	<string name="ob_desc5">AHN 2 bestrijkt heel Nederland, AHN 3 is nog niet voor heel Nederland gereed</string>
 </resources>
