@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,12 +43,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,9 +60,14 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -86,7 +88,6 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     private Bundle savedInstanceStateGlobal;
     private GoogleMap gMap;
-    private GeoDataClient geoDataClient;
     private LocationProvider locationProvider;
     private ArrayList<Marker> markerList = new ArrayList<Marker>();
     private ArrayList<LayerItem> layerList;
@@ -203,7 +204,8 @@ public class MainActivity extends AppCompatActivity
         initializeLegend();
         makeAndShowChart(false);
         initializeElevationProfileMenu();
-        createGoogleApi();
+        //createGoogleApi();
+        initializePlaces();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -758,17 +760,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void createPlaceSearch() {
-        SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         if (!searchBarVisible) showSearchBar(View.GONE);
 
-        // Alleen in Nederland zoeken
-        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                .setCountry(getResources().getString(R.string.country_code))
-                .build();
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.VIEWPORT));
 
-        autocompleteFragment.setFilter(typeFilter);
+        // Alleen in Nederland zoeken
+        autocompleteFragment.setCountry("NL");
 
         // Zoom naar gekozen Place
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -776,9 +776,8 @@ public class MainActivity extends AppCompatActivity
             public void onPlaceSelected(Place place) {
                 showSearchBar(View.GONE);
                 searchBarVisible = false;
-                gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(place.getViewport(), 0));
-                //Toast.makeText(context, "Place: " + place.getName(), Toast.LENGTH_SHORT).show();
-                //Log.i("HermLog", "Place: " + place.getName());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(place.getViewport(), 0);
+                gMap.animateCamera(cameraUpdate);
             }
 
             @Override
@@ -789,8 +788,14 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void createGoogleApi() {
+    /*private void createGoogleApi() {
         geoDataClient = Places.getGeoDataClient(this, null);
+    } */
+
+    private void initializePlaces() {
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key_test));
+        }
     }
 
     @Override
