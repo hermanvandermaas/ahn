@@ -60,6 +60,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -804,17 +806,30 @@ public class MainActivity extends AppCompatActivity
         // zIndex is gelijk aan ID van de laag
         // hoogste zIndex ligt bovenop
         float zIndex = Float.parseFloat(layerItem.getID());
-        TileOverlay tileOverlay = gMap.
-                addTileOverlay(new TileOverlayOptions().zIndex(zIndex).tileProvider(
-                        WMSTileProvider.getTileProvider(
-                                256,
-                                256,
-                                layerItem.getServiceUrl(),
-                                layerItem.getMinx(),
-                                layerItem.getMiny(),
-                                layerItem.getMaxx(),
-                                layerItem.getMaxy()
-                        )));
+        TileProvider myTileProvider;
+
+        // Kies WMS of WMTS UrlTileProvider
+        if (layerItem.getServiceType().equals("wms")) {
+            myTileProvider = WMSTileProvider.getTileProvider(
+                    256,
+                    256,
+                    layerItem.getServiceUrl(),
+                    layerItem.getMinx(),
+                    layerItem.getMiny(),
+                    layerItem.getMaxx(),
+                    layerItem.getMaxy()
+            );
+        } else {
+            myTileProvider = new WMTSTileProvider(
+                    256,
+                    256,
+                    layerItem.getServiceUrl(),
+                    layerItem.getMinZoom(),
+                    layerItem.getMaxZoom()
+            );
+        }
+
+        TileOverlay tileOverlay = gMap.addTileOverlay(new TileOverlayOptions().zIndex(zIndex).tileProvider(myTileProvider));
 
         tileOverlay.setTransparency(1f - opacity / 100f);
 

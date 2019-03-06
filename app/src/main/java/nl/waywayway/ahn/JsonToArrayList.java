@@ -39,12 +39,15 @@ public class JsonToArrayList
 				layerItem.setID(jObject.optString("ID"));
 				layerItem.setTitle(jObject.optString("title"));
 				layerItem.setShortTitle(jObject.optString("shortTitle"));
+				layerItem.setServiceType(jObject.optString("serviceType"));
 				layerItem.setServiceUrl(jObject.optString("serviceUrl"));
 				layerItem.setWMSGetMapFeatureInfoQueryLayer(jObject.optString("WMSGetMapFeatureInfoQueryLayer"));
 				layerItem.setMinx(jObject.optDouble("minx"));
 				layerItem.setMaxx(jObject.optDouble("miny"));
 				layerItem.setMiny(jObject.optDouble("maxx"));
 				layerItem.setMaxy(jObject.optDouble("maxy"));
+				layerItem.setMinZoom(jObject.optInt("minZoom"));
+				layerItem.setMaxZoom(jObject.optInt("maxZoom"));
 				layerItem.setVisibleByDefault(jObject.optBoolean("visibleByDefault"));
 				layerItem.setOpacityDefault(jObject.optInt("opacityDefault"));
 				layerItem.setQueryable(jObject.optBoolean("queryable"));

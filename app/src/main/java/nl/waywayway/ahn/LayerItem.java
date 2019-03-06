@@ -5,12 +5,15 @@ public class LayerItem
 	private String ID;
     private String title;
 	private String shortTitle;
+	private String serviceType;
 	private String serviceUrl;
 	private String WMSGetMapFeatureInfoQueryLayer;
 	private double minx;
 	private double miny;
 	private double maxx;
 	private double maxy;
+	private int minZoom;
+	private int maxZoom;
 	private boolean visibleByDefault;
 	private int opacityDefault;
 	private boolean queryable;
@@ -146,4 +149,28 @@ public class LayerItem
 	{
 		return serviceUrl;
 	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+    public int getMinZoom() {
+        return minZoom;
+    }
+
+    public void setMinZoom(int minZoom) {
+        this.minZoom = minZoom;
+    }
+
+    public int getMaxZoom() {
+        return maxZoom;
+    }
+
+    public void setMaxZoom(int maxZoom) {
+        this.maxZoom = maxZoom;
+    }
 }
