@@ -3,7 +3,7 @@ package nl.waywayway.ahn;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import java.net.URL;
 import java.util.ArrayList;
