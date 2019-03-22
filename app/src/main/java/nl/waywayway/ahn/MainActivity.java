@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,7 +80,6 @@ public class MainActivity extends AppCompatActivity
         ActivityCompat.OnRequestPermissionsResultCallback,
         TaskFragment.TaskCallbacks,
         CancelOrProceedDialogFragment.YesNoDialog,
-        LayersRecyclerViewAdapter.AdapterCallbacks,
         MyOnChartValueSelectedListener.Callbacks {
     private static final String TAG_TASK_FRAGMENT = "task_fragment";
     private static final String TAG_DELETE_LINE_DIALOG = "delete_line";
@@ -557,8 +557,9 @@ public class MainActivity extends AppCompatActivity
         uiSettings.setMapToolbarEnabled(true);
         //uiSettings.setTiltGesturesEnabled(true);
 
-        // Kaartlagen worden in RecyclerView adapter toegevoegd
-        //createLayers();
+        // Kaartlagen toevoegen en lagenmenu maken
+        LayerMaker layerMaker = new LayerMaker(context);
+        layerMaker.addLayersToMap(layerList, gMap);
         createLayerMenu();
         createPlaceSearch();
 
@@ -799,54 +800,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public TileOverlay createLayer(LayerItem layerItem, int opacity) {
-        // Maak TileOverlay,
-        // zIndex is gelijk aan ID van de laag
-        // hoogste zIndex ligt bovenop
-        float zIndex = Float.parseFloat(layerItem.getID());
-        TileProvider myTileProvider;
-
-        // Kies WMS of WMTS UrlTileProvider
-        if (layerItem.getServiceType().equals("wms")) {
-            myTileProvider = WMSTileProvider.getTileProvider(
-                    256,
-                    256,
-                    layerItem.getServiceUrl(),
-                    layerItem.getMinx(),
-                    layerItem.getMiny(),
-                    layerItem.getMaxx(),
-                    layerItem.getMaxy()
-            );
-        } else {
-            myTileProvider = new WMTSTileProvider(
-                    256,
-                    256,
-                    layerItem.getServiceUrl(),
-                    layerItem.getMinZoom(),
-                    layerItem.getMaxZoom()
-            );
-        }
-
-        TileOverlay tileOverlay = gMap.addTileOverlay(new TileOverlayOptions().zIndex(zIndex).tileProvider(myTileProvider));
-
-        tileOverlay.setTransparency(1f - opacity / 100f);
-
-        // Zet referentie naar kaartlaag in lijst
-        //Log.i("HermLog", "getServiceUrl: " + layerItem.getServiceUrl());
-
-        layerItem.setLayerObject(tileOverlay);
-
-        return tileOverlay;
-    }
-
     // RecyclerView
     private void createLayerMenu() {
         RecyclerView recyclerView = findViewById(R.id.layers_recycler_view);
-        //Log.i("HermLog", "recyclerView: " + recyclerView);
+        Log.i("HermLog", "createLayerMenu");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
-        LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList);
+        LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList, gMap);
         recyclerView.setAdapter(adapter);
 
         // Plaats titel van lagenmenu beneden status bar
@@ -1064,7 +1024,7 @@ public class MainActivity extends AppCompatActivity
         //if (taskFragment.isRunning()) taskFragment.cancel();
         //toolbar.getMenu().close();
         //closeOptionsMenu();
-        //Log.i("HermLog", "onDestroy()");
+        Log.i("HermLog", "onDestroy()");
     }
 
     @Override
@@ -1079,7 +1039,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //Log.i("HermLog", "onStart()");
+        Log.i("HermLog", "onStart()");
         notConnectedMessageWasShowed = ConnectionUtils.showMessageOnlyIfNotConnected(context, getResources().getString(R.string.not_connected_message), notConnectedMessageWasShowed);
     }
 

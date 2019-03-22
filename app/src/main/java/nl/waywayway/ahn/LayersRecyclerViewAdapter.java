@@ -3,6 +3,8 @@ package nl.waywayway.ahn;
 import android.content.Context;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.TileOverlay;
 
 import java.util.List;
@@ -23,22 +26,15 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 		public TileOverlay createLayer(LayerItem layerItem, int opacity);
 	}
 
-    private List<LayerItem> layerList;
     private Context context;
-	private LayersRecyclerViewAdapter.AdapterCallbacks callbacks;
+    private List<LayerItem> layerList;
+    private  GoogleMap gMap;
 
-    public LayersRecyclerViewAdapter(Context context, List<LayerItem> layerList)
+    public LayersRecyclerViewAdapter(Context context, List<LayerItem> layerList, GoogleMap gMap)
 	{
-		if (!(context instanceof AdapterCallbacks))
-		{
-			throw new IllegalStateException("Activity must implement the AdapterCallbacks interface.");
-		}
-
-		// Referentie naar Activity voor aanroepen methods in Activity
-		callbacks = (AdapterCallbacks) context;
-
-        this.layerList = layerList;
         this.context = context;
+        this.layerList = layerList;
+        this.gMap = gMap;
 	}
 
     @Override
@@ -54,37 +50,23 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
     @Override
     public void onBindViewHolder(CustomViewHolder customViewHolder, int i)
 	{
-        final LayerItem layerItem = layerList.get(i);
-		final CustomViewHolder mCustomViewHolder = customViewHolder;
+		Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: i: " + i);
 
-        //Set text views
+		final LayerItem layerItem = layerList.get(i);
+		final CustomViewHolder mCustomViewHolder = customViewHolder;
+		Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: layerItem getShortTitle / getID: " + layerItem.getShortTitle() + " / " + layerItem.getID());
+
+		//Set text views
         customViewHolder.checkBoxView.setText(layerItem.getTitle());
 
 		// NavigationView (drawer), niet laten meeschuiven met SeekBar
 		customViewHolder.seekBarView.setOnTouchListener(new SeekBarTouchListener(context));
 
-		// Voeg (deels) zichtbare lagen toe aan kaart
-		// Zichtbaarheid en dekkendheid laag instellen uit SharedPreference of default
-		int[] preferences = LayersSaveAndRestore.getInstance(context, layerItem.getID()).restore();
-		boolean visible;
-		int opacity;
+		LayerMaker layerMaker = new LayerMaker(context);
+		int[] preferences = layerMaker.getSharedPreferences(context, layerItem);
+		boolean visible = layerMaker.getVisibility(layerItem, preferences);
+		int opacity = layerMaker.getOpacity(layerItem, preferences);
 
-		if (preferences == null)
-		{
-			visible = layerItem.isVisibleByDefault();
-			opacity = layerItem.getOpacityDefault();
-			//Log.i("HermLog", "isVisibleByDefault: " + layerItem.isVisibleByDefault());
-			//Log.i("HermLog", "opacityDefault: " + layerItem.getOpacityDefault());
-		}
-		else
-		{
-			visible = preferences[0] == 1 ? true : false;
-			opacity = preferences[1];
-			//Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible/opacity): " + layerItem.getTitle() + "/" + visible + "/" + opacity);
-		}
-
-		// Voeg laag toe
-		if (visible && opacity > 0) callbacks.createLayer(layerItem, opacity);
 		customViewHolder.checkBoxView.setChecked(visible);
 		customViewHolder.seekBarView.setProgress(opacity);
 
@@ -114,7 +96,8 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					{
 						if (layer == null && mCustomViewHolder.checkBoxView.isChecked())
 						{
-							layer = callbacks.createLayer(layerItem, progress);
+							LayerMaker layerMaker = new LayerMaker(context);
+							layer = layerMaker.createLayer(layerItem, progress, gMap);
 							layerItem.setLayerObject(layer);
 						}
 					}
@@ -145,8 +128,6 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 		// verwijdert laag van, of voegt toe aan lagenlijst en kaart
 		customViewHolder.checkBoxView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
 			{
-				LayersRecyclerViewAdapter.AdapterCallbacks mCallbacks = callbacks;
-
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 				{
 					TileOverlay layer = (TileOverlay) layerItem.getLayerObject();
@@ -158,7 +139,8 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 
 						if (layer == null && progress > 0)
 						{
-							layer = mCallbacks.createLayer(layerItem, progress);
+                            LayerMaker layerMaker = new LayerMaker(context);
+                            layer = layerMaker.createLayer(layerItem, progress, gMap);
 							layerItem.setLayerObject(layer);
 						}
 

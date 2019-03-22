@@ -114,8 +114,8 @@
 			"miny": 0,
 			"maxx": 0,
 			"maxy": 0,
-			"minZoom": "0",
-			"maxZoom": "19",
+			"minZoom": 0,
+			"maxZoom": 19,
 			"visibleByDefault": "false",
 			"opacityDefault": 100,
 			"queryable": "false"
