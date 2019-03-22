@@ -50,11 +50,11 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
     @Override
     public void onBindViewHolder(CustomViewHolder customViewHolder, int i)
 	{
-		Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: i: " + i);
+		//Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: i: " + i);
 
 		final LayerItem layerItem = layerList.get(i);
 		final CustomViewHolder mCustomViewHolder = customViewHolder;
-		Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: layerItem getShortTitle / getID: " + layerItem.getShortTitle() + " / " + layerItem.getID());
+		//Log.i("HermLog", "LayersRecyclerViewAdapter.onBindViewHolder: layerItem getShortTitle / getID: " + layerItem.getShortTitle() + " / " + layerItem.getID());
 
 		//Set text views
         customViewHolder.checkBoxView.setText(layerItem.getTitle());

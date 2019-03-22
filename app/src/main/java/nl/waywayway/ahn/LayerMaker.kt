@@ -32,7 +32,7 @@ class LayerMaker(val context: Context) {
             return layerItem.isVisibleByDefault()
             //Log.i("HermLog", "isVisibleByDefault: " + layerItem.isVisibleByDefault());
         } else {
-            Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible): " + layerItem.getTitle() + " / " + (preferences[0] == 1))
+            //Log.i("HermLog", "Instellen uit SharedPreferences (laag/visible): " + layerItem.getTitle() + " / " + (preferences[0] == 1))
             return preferences[0] == 1
         }
     }
@@ -42,7 +42,7 @@ class LayerMaker(val context: Context) {
             return layerItem.getOpacityDefault()
             //Log.i("HermLog", "opacityDefault: " + layerItem.getOpacityDefault());
         } else {
-            Log.i("HermLog", "Instellen uit SharedPreferences (laag/opacity): " + layerItem.getTitle() + " / " + preferences[1])
+            //Log.i("HermLog", "Instellen uit SharedPreferences (laag/opacity): " + layerItem.getTitle() + " / " + preferences[1])
             return preferences[1]
         }
     }
@@ -51,7 +51,7 @@ class LayerMaker(val context: Context) {
         // Maak TileOverlay,
         // zIndex is gelijk aan ID van de laag
         // hoogste zIndex ligt bovenop
-        Log.i("HermLog", "createLayer: " + layerItem.shortTitle)
+        //Log.i("HermLog", "createLayer: " + layerItem.shortTitle)
         val zIndex = java.lang.Float.parseFloat(layerItem.id)
         val myTileProvider: TileProvider
 
