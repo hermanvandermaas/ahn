@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 
 import java.util.List;
@@ -142,6 +144,9 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
                             LayerMaker layerMaker = new LayerMaker(context);
                             layer = layerMaker.createLayer(layerItem, progress, gMap);
 							layerItem.setLayerObject(layer);
+
+							// Bij zichtbaar maken van andere achtergrondkaart met labels (BGT), verberg features van Google basiskaart
+                            if (layerItem.isBaseMap()) setMapStyle(R.raw.map_style_empty);
 						}
 
 						if (layer != null) layer.setVisible(true);
@@ -150,7 +155,10 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 					{
 						if (layer != null) layer.remove();
 						layerItem.setLayerObject(null);
-					}
+
+						// Bij verwijderen van andere achtergrondkaart met labels (BGT), toon features van Google basiskaart
+                        if (layerItem.isBaseMap()) setMapStyle(R.raw.map_style_normal);
+                    }
 
 					// Opslaan in SharedPreferences
 					int visible = mCustomViewHolder.checkBoxView.isChecked() ? 1 : 0;
@@ -180,4 +188,13 @@ public class LayersRecyclerViewAdapter extends RecyclerView.Adapter<LayersRecycl
 			this.seekBarLabelView = view.findViewById(R.id.seekbar_label);
         }
     }
+
+    private void setMapStyle(int style) {
+		try {
+			boolean success = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, style));
+			if (!success) Log.e("HermLog", "Style parsing failed.");
+		} catch (Resources.NotFoundException e) {
+			Log.e("HermLog", "Can't find style. Error: ", e);
+		}
+	}
 }

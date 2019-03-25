@@ -51,6 +51,7 @@ public class JsonToArrayList
 				layerItem.setVisibleByDefault(jObject.optBoolean("visibleByDefault"));
 				layerItem.setOpacityDefault(jObject.optInt("opacityDefault"));
 				layerItem.setQueryable(jObject.optBoolean("queryable"));
+				layerItem.setBaseMap(jObject.optBoolean("isBaseMap"));
 				
 				layerList.add(layerItem);
 			}

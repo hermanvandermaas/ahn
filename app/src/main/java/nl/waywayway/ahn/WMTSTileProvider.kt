@@ -26,7 +26,7 @@ class WMTSTileProvider(val xTileSize: Int, val yTileSize: Int, val urlFormat: St
         }
 
         try {
-            Log.i("HermLog", "WMTS url: " + s)
+            //Log.i("HermLog", "WMTS url: " + s)
             return URL(s)
         } catch (e: MalformedURLException) {
             throw AssertionError(e)

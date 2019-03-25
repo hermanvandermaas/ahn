@@ -17,6 +17,7 @@ public class LayerItem
 	private boolean visibleByDefault;
 	private int opacityDefault;
 	private boolean queryable;
+	private boolean isBaseMap;
 	// layerObject komt niet uit json maar wordt programmatisch toegevoegd
 	private Object layerObject;
 
@@ -173,4 +174,12 @@ public class LayerItem
     public void setMaxZoom(int maxZoom) {
         this.maxZoom = maxZoom;
     }
+
+	public boolean isBaseMap() {
+		return isBaseMap;
+	}
+
+	public void setBaseMap(boolean baseMap) {
+		isBaseMap = baseMap;
+	}
 }

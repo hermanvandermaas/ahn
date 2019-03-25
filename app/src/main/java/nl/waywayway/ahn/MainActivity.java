@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
@@ -54,6 +55,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -557,6 +559,14 @@ public class MainActivity extends AppCompatActivity
         uiSettings.setMapToolbarEnabled(true);
         //uiSettings.setTiltGesturesEnabled(true);
 
+        // Maak wit google logo door willekeurige (lege) mapstyle in te stellen
+        try {
+            boolean success = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_normal));
+            if (!success) Log.e("HermLog", "Style parsing failed.");
+        } catch (Resources.NotFoundException e) {
+            Log.e("HermLog", "Can't find style. Error: ", e);
+        }
+
         // Kaartlagen toevoegen en lagenmenu maken
         LayerMaker layerMaker = new LayerMaker(context);
         layerMaker.addLayersToMap(layerList, gMap);
@@ -803,7 +813,7 @@ public class MainActivity extends AppCompatActivity
     // RecyclerView
     private void createLayerMenu() {
         RecyclerView recyclerView = findViewById(R.id.layers_recycler_view);
-        Log.i("HermLog", "createLayerMenu");
+        //Log.i("HermLog", "createLayerMenu");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
         LayersRecyclerViewAdapter adapter = new LayersRecyclerViewAdapter(context, layerList, gMap);
