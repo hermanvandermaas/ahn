@@ -1,8 +1,10 @@
 package nl.waywayway.ahn
 
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.android.gms.maps.model.TileProvider
@@ -76,6 +78,17 @@ class LayerMaker(val context: Context) {
             )
         }
 
+        // Bij zichtbaar maken van andere achtergrondkaart met labels (BGT), verberg features van Google basiskaart
+        if (layerItem.isBaseMap) {
+            try {
+                val success = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_empty))
+                if (!success) Log.e("HermLog", "Style parsing failed.")
+            } catch (e: Resources.NotFoundException) {
+                Log.e("HermLog", "Can't find style. Error: ", e)
+            }
+        }
+
+        // Voeg laag toe
         val tileOverlay = gMap.addTileOverlay(TileOverlayOptions().zIndex(zIndex).tileProvider(myTileProvider))
         tileOverlay.setTransparency(1f - opacity / 100f)
 
