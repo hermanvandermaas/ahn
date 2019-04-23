@@ -11,20 +11,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GestureDetectorCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -61,9 +49,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -73,12 +58,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 public class MainActivity extends AppCompatActivity
         implements
         GoogleMap.OnCameraIdleListener,
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnMyLocationButtonClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         TaskFragment.TaskCallbacks,
         CancelOrProceedDialogFragment.YesNoDialog,
@@ -109,7 +103,6 @@ public class MainActivity extends AppCompatActivity
     private boolean permissionAsked = false;
     private static final String PERMISSION_ASKED_STATE_KEY = "permission_asked_state_key";
     private static final String NOT_CONNECTED_STATE_KEY = "not_connected_state_key";
-    private boolean myLocationIconVisible;
     private boolean searchBarVisible = true;
     private boolean legendVisible = false;
     private boolean chartVisible = false;
@@ -166,7 +159,6 @@ public class MainActivity extends AppCompatActivity
         legend = findViewById(R.id.legend_scrollview);
         elevationProfileMenu = findViewById(R.id.card_elevation_profile_menu);
         layerList = JsonToArrayList.makeArrayList(context.getResources().openRawResource(R.raw.layers));
-        locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
         chart = findViewById(R.id.chart_line);
         chartContainer = findViewById(R.id.chart_container);
 
@@ -468,8 +460,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.action_myposition:
                 permissionAsked = false;
-                locationProvider = initializeZoomToLocation(false);
-                enableMyLocation(true);
+                enableMyLocation();
 
                 return true;
 
@@ -583,7 +574,8 @@ public class MainActivity extends AppCompatActivity
         gMap.setOnMapClickListener(this);
         gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
         //gMap.setOnMyLocationButtonClickListener(this);
-        enableMyLocation(false);
+        locationProvider = new LocationProvider(context, gMap, amersfoort);
+        enableMyLocation();
         switchMode(elevationProfileMenuVisible);
     }
 
@@ -674,44 +666,7 @@ public class MainActivity extends AppCompatActivity
 
         return dot;
     }
-
-    private LocationProvider initializeZoomToLocation(boolean zoomToStandardIfLocationNotAvailable) {
-        LocationProvider locationProvider = new LocationProvider(context) {
-            @Override
-            public void handleLocation(Location location, float zoom) {
-                //Log.i("HermLog", "handleLocation, this.getCurrentLocation(): " + this.getCurrentLocation());
-                //if (this.getCurrentLocation() != null) showMyLocationIcon(true);
-                zoomToLocation(location, zoom);
-            }
-
-            @Override
-            public void locationUnavailableZoomToStandardLocation(LatLng standardLocation, float zoom) {
-                //Log.i("HermLog", "locationUnavailable");
-                Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, zoom));
-            }
-
-            @Override
-            public void locationUnavailable() {
-                Toast.makeText(context, getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onConnected(Bundle bundle) {
-                //Log.i("HermLog", "onConnected");
-
-                if (isZoomToStandardIfLocationNotAvailable())
-                    zoomToCurrentOrStandardLocation(amersfoort, 1, 15);
-                else
-                    zoomToCurrentLocation(1, 15);
-            }
-        };
-
-        locationProvider.setZoomToStandardIfLocationNotAvailable(zoomToStandardIfLocationNotAvailable);
-
-        return locationProvider;
-    }
-
+/*
     @Override
     public boolean onMyLocationButtonClick() {
         //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
@@ -720,33 +675,27 @@ public class MainActivity extends AppCompatActivity
         // (the camera animates to the user's current position).
         return false;
     }
-
-    private void zoomToLocation(Location lastLocation, float zoom) {
-        if (lastLocation != null) {
-            double lat = lastLocation.getLatitude();
-            double lon = lastLocation.getLongitude();
-            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
-        }
-    }
-
+*/
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Enable the my location layer if the permission has been granted.
-            enableMyLocation(true);
+            enableMyLocation();
         } else {
             // geen toestemming, zoom naar standaard locatie
-            locationProvider.locationUnavailableZoomToStandardLocation(amersfoort, 15);
+            Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+            locationProvider.zoomToLocation(amersfoort, getResources().getInteger(R.integer.standard_zoom_level));
         }
     }
 
-    // Blauwe stip op huidige locatie, my location layer
+    // Blauwe stip zetten op huidige locatie (in de 'my location layer')
     // zoomAction: moet ingezoomd worden of niet
-    private void enableMyLocation(boolean zoomAction) {
+    private void enableMyLocation() {
         //Log.i("HermLog", "enableMyLocation()");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -754,20 +703,18 @@ public class MainActivity extends AppCompatActivity
             // Niet nog eens toestemming vragen na schermrotatie
             if (permissionAsked) return;
 
-            // Permission to access the location is missing.
+            // Permission to access the location is missing. Ask for permission
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, false);
             permissionAsked = true;
         } else if (gMap != null) {
             // Access to the location has been granted to the app.
             gMap.setMyLocationEnabled(true);
-            //setMapPadding();
             gMap.getUiSettings().setMyLocationButtonEnabled(false);
 
             // Zoom naar huidige of standaardlocatie bij eerste opstart app
-            // of bij menukeuze 'Zoom naar mijn locatie'
-            //Log.i("HermLog", "savedInstanceStateGlobal: " + savedInstanceStateGlobal);
-            if (savedInstanceStateGlobal == null || zoomAction) locationProvider.connect();
-            //|| !locationProvider.isZoomToStandardIfLocationNotAvailable())
+            if (savedInstanceStateGlobal == null) locationProvider.zoomToDeviceOrStandardLocation();
+            // Zoom naar locatie toestel bij klik op 'Zoom naar mijn locatie'
+            else locationProvider.zoomToDeviceLocation();
         }
     }
 
@@ -963,12 +910,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     // int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
-    private void showMyLocationIcon(boolean showIcon) {
-        myLocationIconVisible = showIcon;
-        invalidateOptionsMenu();
-    }
-
-    // int visibility is View.VISIBLE, View.GONE of View.INVISIBLE
     private void showLegend(int visibility) {
         View legend = findViewById(R.id.legend_scrollview);
         legend.setVisibility(visibility);
@@ -1041,9 +982,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         //Log.i("HermLog", "onResume()");
-
         isPlayServicesAvailable();
-        locationProvider = initializeZoomToLocation(savedInstanceStateGlobal == null);
     }
 
     @Override
@@ -1062,7 +1001,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        if (locationProvider.isConnected()) locationProvider.disconnect();
     }
 
     /*
