@@ -543,6 +543,9 @@ public class MainActivity extends AppCompatActivity
         //Log.i("HermLog", "onMapReady()");
         gMap = googleMap;
 
+        // Zoom eerst naar midden van Nederland, later naar locatie toestel (indien beschikbaar)
+        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, Float.valueOf(getResources().getInteger(R.integer.standard_zoom_level))));
+
         // Instellingen basiskaart
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setCompassEnabled(false);
@@ -666,16 +669,7 @@ public class MainActivity extends AppCompatActivity
 
         return dot;
     }
-/*
-    @Override
-    public boolean onMyLocationButtonClick() {
-        //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
 
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
-        return false;
-    }
-*/
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
@@ -694,7 +688,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     // Blauwe stip zetten op huidige locatie (in de 'my location layer')
-    // zoomAction: moet ingezoomd worden of niet
     private void enableMyLocation() {
         //Log.i("HermLog", "enableMyLocation()");
 

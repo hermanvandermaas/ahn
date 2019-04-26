@@ -34,18 +34,22 @@ class LocationProvider(val context: Context, val gMap: GoogleMap, var standardLo
     }
 
     fun zoomToDeviceLocation() {
+        requestLocationUpdate()
+        /*
         fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     if (location != null) {
                         // Locatie beschikbaar
+                        Log.i("HermLog", "zoomToDeviceLocation(): laatste locatie beschikbaar");
                         val lat = location.getLatitude()
                         val lon = location.getLongitude()
                         zoomToLocation(LatLng(lat, lon), standardZoomLevel)
                     } else {
                         // Locatie niet beschikbaar, vraag locatie op
+                        Log.i("HermLog", "zoomToDeviceLocation(): laatste locatie niet beschikbaar");
                         requestLocationUpdate()
                     }
-                }
+                }*/
     }
 
     fun requestLocationUpdate() {
@@ -59,19 +63,22 @@ class LocationProvider(val context: Context, val gMap: GoogleMap, var standardLo
     }
 
     override fun onLocationResult(locationResult: LocationResult?) {
-        Log.i("HermLog", "locationResult: " + locationResult.toString())
         fusedLocationClient.removeLocationUpdates(this)
 
         if (locationResult == null) {
             // Locatie definitief niet beschikbaar
+            Log.i("HermLog", "onLocationResult: locatie update opgevraagd maar niet beschikbaar")
             Toast.makeText(context, context.resources.getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show()
             if (zoomToStandardLocationAsDefault) zoomToLocation(standardLocation, standardZoomLevel)
             zoomToStandardLocationAsDefault = false
         } else {
             // Locatie opgevraagd en beschikbaar
+            Log.i("HermLog", "onLocationResult: locatie update opgevraagd en beschikbaar")
             val location: Location? = locationResult.locations[0]
             val lat = location?.latitude
             val lon = location?.longitude
+            Log.i("HermLog", "onLocationResult: lat: " + lat)
+            Log.i("HermLog", "onLocationResult: long: " + lon)
             zoomToLocation(LatLng(lat!!, lon!!), standardZoomLevel)
         }
     }
