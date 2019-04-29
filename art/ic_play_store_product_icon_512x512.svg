@@ -7,11 +7,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   viewBox="0 0 48 48"
+   viewBox="0 0 512 512"
    version="1.1"
    id="svg3741"
    sodipodi:docname="ic_play_store_product_icon_512x512.svg"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   height="100%"
+   width="100%"
+   inkscape:export-filename="C:\Users\Gebruiker\StudioProjects\ahn\art\ic_play_store_product_icon_512x512.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <metadata
      id="metadata3745">
     <rdf:RDF>
@@ -20,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,23 +42,52 @@
      inkscape:window-height="1001"
      id="namedview3743"
      showgrid="false"
-     inkscape:zoom="16.833333"
-     inkscape:cx="24"
-     inkscape:cy="24"
+     inkscape:zoom="1.578125"
+     inkscape:cx="256"
+     inkscape:cy="256"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg3741" />
+     inkscape:current-layer="layer3"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="205.10516,447.99634"
+       orientation="0,1"
+       id="guide20"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="-594,64"
+       orientation="0,1"
+       id="guide22"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="64,538"
+       orientation="1,0"
+       id="guide24"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="448,500"
+       orientation="1,0"
+       id="guide26"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+  </sodipodi:namedview>
   <defs
      id="defs3735">
     <linearGradient
        id="gradient-0"
        gradientUnits="userSpaceOnUse"
        x1="30.743"
-       y1="18.127"
+       y1="18.127001"
        x2="30.743"
-       y2="48.324"
-       gradientTransform="matrix(0.927262, -0.927262, 0.927262, 0.927262, -26.097373, 34.223038)"
+       y2="48.324001"
+       gradientTransform="matrix(16.184936,-16.184936,16.184936,16.184936,-618.49667,412.7575)"
        spreadMethod="pad">
       <stop
          offset="0"
@@ -65,12 +99,38 @@
          id="stop3732" />
     </linearGradient>
   </defs>
-  <path
-     style="fill: url(#gradient-0); fill-opacity: 0.4;"
-     d="M 13.004 30.016 L 31.873 48.751 L 48.561 48.324 L 48.721 40.709 L 26.013 18.047 L 26.383 29.625 L 18.992 22.037 L 13.004 30.016 Z"
-     id="path3737" />
-  <path
-     d="M 26 18 L 22.25 23 L 25.1 26.8 L 23.5 28 C 21.81 25.75 19 22 19 22 L 13 30 L 35 30 L 26 18 Z"
-     style="fill: rgb(255, 255, 255);"
-     id="path3739" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Achtergrondkleur"
+     style="display:inline">
+    <rect
+       style="display:inline;fill:#ff6230;fill-opacity:1;stroke-width:1.00000012"
+       y="-3.1683297"
+       x="-2.5346527"
+       height="518.33661"
+       width="522.77228"
+       id="rect6885" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Schaduw"
+     style="display:inline">
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:url(#gradient-0);fill-opacity:0.4;stroke-width:17.45454407;opacity:0.6"
+       d="m 64,339.32557 329.34981,327.0109 291.28145,-7.45309 2.79272,-132.91636 -396.3578,-395.5549 6.45818,202.08872 -129.00654,-132.44509 z"
+       id="path3737" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Berg">
+    <path
+       inkscape:connector-curvature="0"
+       d="m 290.83927,129.59175 -65.45455,87.27273 49.74546,66.32727 -27.92728,20.94545 C 217.70472,264.86448 168.65745,199.40993 168.65745,199.40993 L 63.930182,339.04629 H 447.93017 Z"
+       style="display:inline;fill:#ffffff;stroke-width:17.45454407"
+       id="path3739" />
+  </g>
 </svg>
