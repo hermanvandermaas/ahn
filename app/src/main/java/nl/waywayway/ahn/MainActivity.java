@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.action_myposition:
                 permissionAsked = false;
-                enableMyLocation();
+                enableMyLocation(true);
 
                 return true;
 
@@ -543,9 +543,6 @@ public class MainActivity extends AppCompatActivity
         //Log.i("HermLog", "onMapReady()");
         gMap = googleMap;
 
-        // Zoom eerst naar midden van Nederland, later naar locatie toestel (indien beschikbaar)
-        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(amersfoort, Float.valueOf(getResources().getInteger(R.integer.standard_zoom_level))));
-
         // Instellingen basiskaart
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setCompassEnabled(false);
@@ -578,7 +575,7 @@ public class MainActivity extends AppCompatActivity
         gMap.setOnMarkerClickListener(CustomOnMarkerClickListener.getListener(IS_DOT));
         //gMap.setOnMyLocationButtonClickListener(this);
         locationProvider = new LocationProvider(context, gMap, amersfoort);
-        enableMyLocation();
+        enableMyLocation(false);
         switchMode(elevationProfileMenuVisible);
     }
 
@@ -674,12 +671,13 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
             Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+            locationProvider.zoomToLocation(amersfoort, getResources().getInteger(R.integer.standard_zoom_level));
             return;
         }
 
         if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Enable the my location layer if the permission has been granted.
-            enableMyLocation();
+            enableMyLocation(false);
         } else {
             // geen toestemming, zoom naar standaard locatie
             Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
@@ -688,7 +686,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // Blauwe stip zetten op huidige locatie (in de 'my location layer')
-    private void enableMyLocation() {
+    private void enableMyLocation(boolean zoomAction) {
         //Log.i("HermLog", "enableMyLocation()");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -707,7 +705,7 @@ public class MainActivity extends AppCompatActivity
             // Zoom naar huidige of standaardlocatie bij eerste opstart app
             if (savedInstanceStateGlobal == null) locationProvider.zoomToDeviceOrStandardLocation();
             // Zoom naar locatie toestel bij klik op 'Zoom naar mijn locatie'
-            else locationProvider.zoomToDeviceLocation();
+            else if (zoomAction) locationProvider.zoomToDeviceLocation();
         }
     }
 
