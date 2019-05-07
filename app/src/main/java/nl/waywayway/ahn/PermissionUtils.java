@@ -3,6 +3,7 @@ package nl.waywayway.ahn;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -14,16 +15,34 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+
 /**
  * Utility class for access to runtime permissions.
  */
 public abstract class PermissionUtils {
+    private static PermissionCallbacks callbacks;
+
+    // Interface voor callback methods, in de aanroepende Activity te implementeren en uit te voeren
+    public interface PermissionCallbacks {
+        void zoomToStandardLocation();
+    }
 
     /**
      * Requests the fine location permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
      */
     public static void requestPermission(AppCompatActivity activity, int requestId, String permission, boolean finishActivity) {
+
+        // controle: aanroepende Activity moet callback interface implementeren
+        if (!(activity instanceof PermissionUtils.PermissionCallbacks))
+        {
+            throw new IllegalStateException("Activity must implement the PermissionCallbacks interface.");
+        }
+
+        // Hold a reference to the callback methods in the parent Activity
+        callbacks = (PermissionUtils.PermissionCallbacks) activity;
+
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             // Display a dialog with rationale.
             PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity)
@@ -86,11 +105,14 @@ public abstract class PermissionUtils {
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
+
             if (mFinishActivity) {
                 Toast.makeText(getActivity(), R.string.permission_required_toast,
                         Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
+
+            callbacks.zoomToStandardLocation();
         }
     }
 
@@ -148,15 +170,14 @@ public abstract class PermissionUtils {
                             mFinishActivity = false;
                         }
                     })
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-
-                    })
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> callbacks.zoomToStandardLocation())
                     .create();
         }
 
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
+
             if (mFinishActivity) {
                 Toast.makeText(getActivity(),
                         R.string.permission_required_toast,
@@ -164,6 +185,8 @@ public abstract class PermissionUtils {
                         .show();
                 getActivity().finish();
             }
+
+            callbacks.zoomToStandardLocation();
         }
     }
 }

@@ -67,18 +67,18 @@ class LocationProvider(val context: Context, val gMap: GoogleMap, var standardLo
 
         if (locationResult == null) {
             // Locatie definitief niet beschikbaar
-            Log.i("HermLog", "onLocationResult: locatie update opgevraagd maar niet beschikbaar")
+            //Log.i("HermLog", "onLocationResult: locatie update opgevraagd maar niet beschikbaar")
             Toast.makeText(context, context.resources.getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show()
             if (zoomToStandardLocationAsDefault) zoomToLocation(standardLocation, standardZoomLevel)
             zoomToStandardLocationAsDefault = false
         } else {
             // Locatie opgevraagd en beschikbaar
-            Log.i("HermLog", "onLocationResult: locatie update opgevraagd en beschikbaar")
+            //Log.i("HermLog", "onLocationResult: locatie update opgevraagd en beschikbaar")
             val location: Location? = locationResult.locations[0]
             val lat = location?.latitude
             val lon = location?.longitude
-            Log.i("HermLog", "onLocationResult: lat: " + lat)
-            Log.i("HermLog", "onLocationResult: long: " + lon)
+            //Log.i("HermLog", "onLocationResult: lat: " + lat)
+            //Log.i("HermLog", "onLocationResult: long: " + lon)
             zoomToLocation(LatLng(lat!!, lon!!), standardZoomLevel)
         }
     }

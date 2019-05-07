@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         GoogleMap.OnMapClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         TaskFragment.TaskCallbacks,
+        PermissionUtils.PermissionCallbacks,
         CancelOrProceedDialogFragment.YesNoDialog,
         MyOnChartValueSelectedListener.Callbacks {
     private static final String TAG_TASK_FRAGMENT = "task_fragment";
@@ -677,7 +678,7 @@ public class MainActivity extends AppCompatActivity
 
         if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Enable the my location layer if the permission has been granted.
-            enableMyLocation(false);
+            enableMyLocation(true);
         } else {
             // geen toestemming, zoom naar standaard locatie
             Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
@@ -705,7 +706,7 @@ public class MainActivity extends AppCompatActivity
             // Zoom naar huidige of standaardlocatie bij eerste opstart app
             if (savedInstanceStateGlobal == null) locationProvider.zoomToDeviceOrStandardLocation();
             // Zoom naar locatie toestel bij klik op 'Zoom naar mijn locatie'
-            else if (zoomAction) locationProvider.zoomToDeviceLocation();
+            else if (zoomAction) locationProvider.zoomToDeviceOrStandardLocation();
         }
     }
 
@@ -1062,5 +1063,15 @@ public class MainActivity extends AppCompatActivity
             chartVisible = true;
             makeAndShowChart(true);
         }
+    }
+
+    /*
+    PermissionUtils callbacks
+     */
+
+    @Override
+    public void zoomToStandardLocation() {
+        Toast.makeText(context, context.getResources().getString(R.string.device_location_not_available_message), Toast.LENGTH_SHORT).show();
+        locationProvider.zoomToLocation(amersfoort, getResources().getInteger(R.integer.standard_zoom_level));
     }
 }
