@@ -3,19 +3,14 @@ package nl.waywayway.ahn;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 
 /**
  * Utility class for access to runtime permissions.
@@ -76,7 +71,6 @@ public abstract class PermissionUtils {
     public static class PermissionDeniedDialog extends DialogFragment {
 
         private static final String ARGUMENT_FINISH_ACTIVITY = "finish";
-
         private boolean mFinishActivity = false;
 
         /**
