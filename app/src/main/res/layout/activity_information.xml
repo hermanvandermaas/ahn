@@ -109,17 +109,6 @@
 					style="@style/activity_info_text_body"
 					android:text="@string/over_ahn_body" />
 				
-				<ImageView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingTop="20dp"
-					android:paddingBottom="16dp"
-					android:maxHeight="@dimen/ahn3kaart_max_height"
-					android:gravity="center_horizontal"
-					android:scaleType="fitCenter"
-					android:src="@drawable/ahn3jarenkaart"
-					android:adjustViewBounds="true" />
-				
 				<TextView
 					style="@style/activity_info_text_title"
 					android:text="@string/bronvermelding_title" />

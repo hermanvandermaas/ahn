@@ -133,24 +133,21 @@ public class OnBoardingScreenActivity extends AppCompatActivity
                 R.string.ob_header1,
                 R.string.ob_header2,
                 R.string.ob_header3,
-                R.string.ob_header4,
-				R.string.ob_header5
+                R.string.ob_header4
         };
 
         int[] desc = {
                 R.string.ob_desc1,
                 R.string.ob_desc2,
                 R.string.ob_desc3,
-                R.string.ob_desc4,
-				R.string.ob_desc5
+                R.string.ob_desc4
         };
 
         int[] imageId = {
                 R.drawable.onboard_page1,
                 R.drawable.onboard_page2,
                 R.drawable.onboard_page3,
-                R.drawable.onboard_page4,
-                R.drawable.onboard_page5
+                R.drawable.onboard_page4
         };
 
         for (int i=0; i < imageId.length; i++)

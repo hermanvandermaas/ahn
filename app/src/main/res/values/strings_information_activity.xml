@@ -29,10 +29,8 @@
 		\n
 		\n• AHN 3: 2014-2019
 		\n• AHN 2: 2008-2012
-		\n• AHN 1: 1996-2003
-		\n
-		\nHet AHN 3 wordt momenteel ingemeten en is nog niet landsdekkend. Op onderstaande kaart staat de planning voor beschikbaarheid.</string>
-		
+		\n• AHN 1: 1996-2003</string>
+
 	<string name="bronvermelding_title">Bronvermelding</string>
 	<string name="bronvermelding_body">De hoogtekaarten in deze app zijn afkomstig van <a href="http://nationaalgeoregister.nl/">www.nationaalgeoregister.nl</a>. Deze gegevens zijn zonder beperkingen beschikbaar gesteld als open data.\n\n</string>
 </resources>
