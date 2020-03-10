@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
+
 public class InformationActivity extends AppCompatActivity
 {
 	@Override
