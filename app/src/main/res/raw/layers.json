@@ -14,8 +14,8 @@
 			"maxy": 7082066.659439815,
             "minZoom": "",
             "maxZoom": "",
-			"visibleByDefault": "false",
-			"opacityDefault": 90,
+			"visibleByDefault": "true",
+			"opacityDefault": 100,
 			"queryable": "true",
 			"isBaseMap": "false"
 		},
@@ -33,7 +33,7 @@
             "minZoom": "",
             "maxZoom": "",
             "visibleByDefault": "false",
-			"opacityDefault": 100,
+			"opacityDefault": 85,
 			"queryable": "true",
 			"isBaseMap": "false"
 		},
@@ -50,8 +50,8 @@
 			"maxy": 7082066.659439815,
             "minZoom": "",
             "maxZoom": "",
-            "visibleByDefault": "true",
-			"opacityDefault": 100,
+            "visibleByDefault": "false",
+			"opacityDefault": 90,
 			"queryable": "true",
 			"isBaseMap": "false"
 		},
