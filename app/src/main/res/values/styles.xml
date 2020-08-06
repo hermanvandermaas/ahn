@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 	
 <resources>
-	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+	<style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
@@ -15,7 +15,7 @@
 		<item name="android:layout_width">match_parent</item>
 	</style>
 
-	<style name="transparent_toolbar" parent="Theme.AppCompat.Light">
+	<style name="transparent_toolbar" parent="Theme.MaterialComponents.Light">
 		<item name="background">@android:color/transparent</item>
 		<!-- Used for the title of the Toolbar -->
 		<item name="android:textColorPrimary">@color/primary_dark</item>
@@ -27,56 +27,56 @@
 		<item name="actionMenuTextColor">@color/primary_dark</item>
 	</style>
 
-	<style name="white_toolbar" parent="Theme.AppCompat.Light">
+	<style name="white_toolbar" parent="Theme.MaterialComponents.Light">
 		<item name="android:background">@color/white</item>
 		<!-- Used for the title of the Toolbar -->
 		<item name="android:textColorPrimary">@color/rood</item>
 		<item name="colorControlNormal">@color/rood</item>
 	</style>
 
-	<style name="overflow_menu" parent="ThemeOverlay.AppCompat.Light">
+	<style name="overflow_menu" parent="ThemeOverlay.MaterialComponents.Light">
 	</style>
 	
-	<style name="elevation_profile_menu" parent="Theme.AppCompat.Light">
+	<style name="elevation_profile_menu" parent="Theme.MaterialComponents.Light">
 		<item name="cardBackgroundColor">@color/white</item>
 		<!-- <item name="android:background">@android:color/transparent</item> -->
 	</style>
 
-	<style name="text_title" parent="TextAppearance.AppCompat.Title">
+	<style name="text_title" parent="TextAppearance.MaterialComponents.Headline6">
 		<item name="android:textSize">16sp</item>
 	</style>
 
-	<style name="text_body" parent="TextAppearance.AppCompat.Body1">
+	<style name="text_body" parent="TextAppearance.MaterialComponents.Body1">
 		<item name="android:textColorPrimary">@color/primary_dark</item>
 		<!--<item name="android:textSize">16sp</item>-->
 	</style>
 
-	<style name="navigation_drawer" parent="ThemeOverlay.AppCompat.Light">
+	<style name="navigation_drawer" parent="ThemeOverlay.MaterialComponents.Light">
 	</style>
 
-	<style name="layers_menu_title" parent="ThemeOverlay.AppCompat.Light">
+	<style name="layers_menu_title" parent="ThemeOverlay.MaterialComponents.Light">
 		<item name="android:textSize">16sp</item>
 		<item name="android:paddingBottom">16dp</item>
 	</style>
 
-	<style name="layer_checkbox" parent="ThemeOverlay.AppCompat.Light">
+	<style name="layer_checkbox" parent="ThemeOverlay.MaterialComponents.Light">
 		<item name="android:layout_marginTop">12dp</item>
 		<item name="android:paddingBottom">4dp</item>
 	</style>
 
-	<style name="layer_seekbar" parent="ThemeOverlay.AppCompat.Light">
+	<style name="layer_seekbar" parent="ThemeOverlay.MaterialComponents.Light">
 		<item name="android:layout_marginTop">8dp</item>
 		<item name="android:paddingBottom">12dp</item>
 	</style>
 
-	<style name="seekbar_label" parent="TextAppearance.AppCompat.Caption">
+	<style name="seekbar_label" parent="TextAppearance.MaterialComponents.Caption">
 		<item name="android:textColor">@color/primary_dark</item>
 		<item name="android:textSize">12sp</item>
 		<item name="android:paddingBottom">16dp</item>
 		<item name="android:paddingLeft">16dp</item>
 	</style>
 
-	<style name="activity_info_text_title" parent="TextAppearance.AppCompat.Title">
+	<style name="activity_info_text_title" parent="TextAppearance.MaterialComponents.Headline6">
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:paddingTop">20dp</item>
@@ -86,7 +86,7 @@
 		<item name="android:textIsSelectable">true</item>
 	</style>
 	
-	<style name="activity_info_text_body" parent="TextAppearance.AppCompat.Body1">
+	<style name="activity_info_text_body" parent="TextAppearance.MaterialComponents.Body1">
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:paddingTop">0dp</item>
