@@ -224,28 +224,26 @@
                 </androidx.core.widget.NestedScrollView>
             </RelativeLayout>
 
-            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            <ProgressBar
                 android:id="@+id/progressbar"
-                style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal.NoPadding"
+                style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxHeight="2dp"
                 android:layout_gravity="bottom"
                 android:indeterminate="true"
-                android:visibility="gone"
-                app:mpb_progressStyle="horizontal"
-                app:mpb_useIntrinsicPadding="false" />
+                android:visibility="gone" />
 
-            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            <ProgressBar
                 android:id="@+id/progressbar_determinate"
-                style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal.NoPadding"
+                style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxHeight="2dp"
                 android:layout_gravity="bottom"
                 android:indeterminate="false"
                 android:progress="0"
-                android:visibility="gone"
-                app:mpb_progressStyle="horizontal"
-                app:mpb_useIntrinsicPadding="false" />
+                android:visibility="gone" />
 
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
