@@ -76,6 +76,6 @@ public class LineChartMaker
         lineChart.setOnChartValueSelectedListener(MyOnChartValueSelectedListener.getListener(context, lineChart));
 
         //chart.invalidate();
-        lineChart.animateY(300, Easing.EasingOption.EaseInOutCubic);
+        lineChart.animateY(300, Easing.EaseInOutCubic);
     }
 }
