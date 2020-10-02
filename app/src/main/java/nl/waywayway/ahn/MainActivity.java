@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -144,7 +145,6 @@ public class MainActivity extends AppCompatActivity
         POINT, LINE
     }
 
-    ;
     private Mode mode = Mode.POINT;
     Polyline line;
 
@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Initialiseer
+        MainViewModel model = new ViewModelProvider(this).get(MainViewModel.class);
         context = this;
         savedInstanceStateGlobal = savedInstanceState;
         drawerLayout = findViewById(R.id.drawer_layout);
